@@ -1,4 +1,4 @@
-\# Fluxo Git da Equipe
+# Fluxo Git da Equipe
 
 
 
@@ -6,7 +6,7 @@ Este documento define o fluxo de trabalho utilizado no Projeto Barbearia.
 
 
 
-\## Regra principal
+## Regra principal
 
 
 
@@ -22,11 +22,11 @@ Cada nova tarefa deve ser desenvolvida em uma branch própria.
 
 
 
-\---
+---
 
 
 
-\## 1. Atualizar a main
+## 1. Atualizar a main
 
 
 
