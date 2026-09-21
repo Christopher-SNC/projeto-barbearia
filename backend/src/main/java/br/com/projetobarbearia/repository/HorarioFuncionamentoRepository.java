@@ -6,4 +6,5 @@ import br.com.projetobarbearia.entity.HorarioFuncionamento;
 
 public interface HorarioFuncionamentoRepository
         extends JpaRepository<HorarioFuncionamento, Long> {
+            boolean existsByBarbearia_IdBarbeariaAndFechadoFalse(Long idBarbearia);
 }
