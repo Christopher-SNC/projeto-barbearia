@@ -7,4 +7,7 @@ import br.com.projetobarbearia.entity.BarbeiroServico;
 public interface BarbeiroServicoRepository
         extends JpaRepository<BarbeiroServico, Long> {
 
+    boolean existsByBarbeiro_IdBarbeiroAndServico_IdServicoAndAtivoTrue(
+            Long idBarbeiro,
+            Long idServico);
 }

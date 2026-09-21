@@ -7,4 +7,6 @@ import br.com.projetobarbearia.entity.Avaliacao;
 public interface AvaliacaoRepository
         extends JpaRepository<Avaliacao, Long> {
 
+    boolean existsByAgendamento_IdAgendamento(Long idAgendamento);
+
 }
