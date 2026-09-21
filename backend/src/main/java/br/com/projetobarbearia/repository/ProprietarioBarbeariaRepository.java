@@ -7,4 +7,5 @@ import br.com.projetobarbearia.entity.ProprietarioBarbearia;
 public interface ProprietarioBarbeariaRepository
         extends JpaRepository<ProprietarioBarbearia, Long> {
 
+        boolean existsByBarbearia_IdBarbeariaAndAtivoTrue(Long idBarbearia);
 }
