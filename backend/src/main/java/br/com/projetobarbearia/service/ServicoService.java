@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.projetobarbearia.entity.Servico;
 import br.com.projetobarbearia.repository.ServicoRepository;
@@ -12,9 +13,14 @@ import br.com.projetobarbearia.repository.ServicoRepository;
 public class ServicoService {
 
     private final ServicoRepository servicoRepository;
+    private final BarbeariaService barbeariaService;
 
-    public ServicoService(ServicoRepository servicoRepository) {
+    public ServicoService(
+            ServicoRepository servicoRepository,
+            BarbeariaService barbeariaService) {
+
         this.servicoRepository = servicoRepository;
+        this.barbeariaService = barbeariaService;
     }
 
     public List<Servico> listarTodos() {
@@ -25,38 +31,64 @@ public class ServicoService {
         return servicoRepository.findById(id);
     }
 
+    @Transactional
     public Servico salvar(Servico servico) {
-        return servicoRepository.save(servico);
+
+        Servico servicoSalvo =
+                servicoRepository.save(servico);
+
+        barbeariaService.desativarSeInvalida(
+                servicoSalvo.getBarbearia().getIdBarbearia());
+
+        return servicoSalvo;
     }
 
+    @Transactional
     public Servico ativar(Long id) {
 
         Servico servico = servicoRepository.findById(id)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Serviço não encontrado."));
+                        new IllegalArgumentException(
+                                "Serviço não encontrado."));
 
         servico.setAtivo(true);
 
         return servicoRepository.save(servico);
     }
 
+    @Transactional
     public Servico desativar(Long id) {
 
         Servico servico = servicoRepository.findById(id)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Serviço não encontrado."));
+                        new IllegalArgumentException(
+                                "Serviço não encontrado."));
 
         servico.setAtivo(false);
 
-        return servicoRepository.save(servico);
+        Servico servicoSalvo =
+                servicoRepository.save(servico);
+
+        barbeariaService.desativarSeInvalida(
+                servico.getBarbearia().getIdBarbearia());
+
+        return servicoSalvo;
     }
 
+    @Transactional
     public void excluir(Long id) {
 
-        if (!servicoRepository.existsById(id)) {
-            throw new IllegalArgumentException("Serviço não encontrado.");
-        }
+        Servico servico = servicoRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Serviço não encontrado."));
 
-        servicoRepository.deleteById(id);
+        Long idBarbearia =
+                servico.getBarbearia().getIdBarbearia();
+
+        servicoRepository.delete(servico);
+        servicoRepository.flush();
+
+        barbeariaService.desativarSeInvalida(idBarbearia);
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.projetobarbearia.entity.HorarioFuncionamento;
 import br.com.projetobarbearia.repository.HorarioFuncionamentoRepository;
@@ -12,11 +13,16 @@ import br.com.projetobarbearia.repository.HorarioFuncionamentoRepository;
 public class HorarioFuncionamentoService {
 
     private final HorarioFuncionamentoRepository horarioFuncionamentoRepository;
+    private final BarbeariaService barbeariaService;
 
     public HorarioFuncionamentoService(
-            HorarioFuncionamentoRepository horarioFuncionamentoRepository) {
+            HorarioFuncionamentoRepository horarioFuncionamentoRepository,
+            BarbeariaService barbeariaService) {
 
-        this.horarioFuncionamentoRepository = horarioFuncionamentoRepository;
+        this.horarioFuncionamentoRepository =
+                horarioFuncionamentoRepository;
+
+        this.barbeariaService = barbeariaService;
     }
 
     public List<HorarioFuncionamento> listarTodos() {
@@ -27,19 +33,39 @@ public class HorarioFuncionamentoService {
         return horarioFuncionamentoRepository.findById(id);
     }
 
+    @Transactional
     public HorarioFuncionamento salvar(
             HorarioFuncionamento horarioFuncionamento) {
 
-        return horarioFuncionamentoRepository.save(horarioFuncionamento);
+        HorarioFuncionamento salvo =
+                horarioFuncionamentoRepository.save(
+                        horarioFuncionamento);
+
+        barbeariaService.desativarSeInvalida(
+                salvo.getBarbearia().getIdBarbearia());
+
+        return salvo;
     }
 
+    @Transactional
     public void excluir(Long id) {
 
-        if (!horarioFuncionamentoRepository.existsById(id)) {
-            throw new IllegalArgumentException(
-                    "Horário de funcionamento não encontrado.");
-        }
+        HorarioFuncionamento horario =
+                horarioFuncionamentoRepository.findById(id)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Horário de funcionamento não encontrado."));
 
-        horarioFuncionamentoRepository.deleteById(id);
+        Long idBarbearia =
+                horario.getBarbearia()
+                        .getIdBarbearia();
+
+        horarioFuncionamentoRepository.delete(
+                horario);
+
+        horarioFuncionamentoRepository.flush();
+
+        barbeariaService.desativarSeInvalida(
+                idBarbearia);
     }
 }

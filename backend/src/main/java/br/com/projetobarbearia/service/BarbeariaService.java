@@ -116,4 +116,48 @@ public class BarbeariaService {
 
         barbeariaRepository.deleteById(id);
     }
+
+    public void desativarSeInvalida(Long idBarbearia) {
+
+    Barbearia barbearia = barbeariaRepository.findById(idBarbearia)
+            .orElseThrow(() ->
+                    new IllegalArgumentException(
+                            "Barbearia não encontrada."));
+
+    if (!barbearia.isAtiva()) {
+        return;
+    }
+
+    boolean possuiProprietario =
+            proprietarioBarbeariaRepository
+                    .existsByBarbearia_IdBarbeariaAndAtivoTrue(idBarbearia);
+
+    boolean possuiEndereco =
+            enderecoRepository
+                    .existsByBarbearia_IdBarbearia(idBarbearia);
+
+    boolean possuiHorario =
+            horarioFuncionamentoRepository
+                    .existsByBarbearia_IdBarbeariaAndFechadoFalse(idBarbearia);
+
+    boolean possuiBarbeiro =
+            barbeiroRepository
+                    .existsByBarbearia_IdBarbeariaAndAtivoTrue(idBarbearia);
+
+    boolean possuiServico =
+            servicoRepository
+                    .existsByBarbearia_IdBarbeariaAndAtivoTrue(idBarbearia);
+
+    boolean continuaValida =
+            possuiProprietario
+            && possuiEndereco
+            && possuiHorario
+            && possuiBarbeiro
+            && possuiServico;
+
+    if (!continuaValida) {
+        barbearia.setAtiva(false);
+        barbeariaRepository.save(barbearia);
+    }
+}
 }

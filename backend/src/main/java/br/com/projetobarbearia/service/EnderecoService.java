@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.projetobarbearia.entity.Endereco;
 import br.com.projetobarbearia.repository.EnderecoRepository;
@@ -12,9 +13,14 @@ import br.com.projetobarbearia.repository.EnderecoRepository;
 public class EnderecoService {
 
     private final EnderecoRepository enderecoRepository;
+    private final BarbeariaService barbeariaService;
 
-    public EnderecoService(EnderecoRepository enderecoRepository) {
+    public EnderecoService(
+            EnderecoRepository enderecoRepository,
+            BarbeariaService barbeariaService) {
+
         this.enderecoRepository = enderecoRepository;
+        this.barbeariaService = barbeariaService;
     }
 
     public List<Endereco> listarTodos() {
@@ -25,16 +31,34 @@ public class EnderecoService {
         return enderecoRepository.findById(id);
     }
 
+    @Transactional
     public Endereco salvar(Endereco endereco) {
-        return enderecoRepository.save(endereco);
+
+        Endereco enderecoSalvo =
+                enderecoRepository.save(endereco);
+
+        barbeariaService.desativarSeInvalida(
+                enderecoSalvo.getBarbearia()
+                        .getIdBarbearia());
+
+        return enderecoSalvo;
     }
 
+    @Transactional
     public void excluir(Long id) {
 
-        if (!enderecoRepository.existsById(id)) {
-            throw new IllegalArgumentException("Endereço não encontrado.");
-        }
+        Endereco endereco = enderecoRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Endereço não encontrado."));
 
-        enderecoRepository.deleteById(id);
+        Long idBarbearia =
+                endereco.getBarbearia().getIdBarbearia();
+
+        enderecoRepository.delete(endereco);
+        enderecoRepository.flush();
+
+        barbeariaService.desativarSeInvalida(
+                idBarbearia);
     }
 }

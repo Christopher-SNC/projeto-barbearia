@@ -16,6 +16,7 @@ import br.com.projetobarbearia.entity.Disponibilidade;
 import br.com.projetobarbearia.entity.HorarioFuncionamento;
 import br.com.projetobarbearia.entity.ItemAgendamento;
 import br.com.projetobarbearia.entity.Servico;
+import br.com.projetobarbearia.entity.Usuario;
 import br.com.projetobarbearia.enums.DiaSemana;
 import br.com.projetobarbearia.enums.StatusAgendamento;
 import br.com.projetobarbearia.repository.AgendamentoRepository;
@@ -26,6 +27,7 @@ import br.com.projetobarbearia.repository.DisponibilidadeRepository;
 import br.com.projetobarbearia.repository.HorarioFuncionamentoRepository;
 import br.com.projetobarbearia.repository.ItemAgendamentoRepository;
 import br.com.projetobarbearia.repository.ServicoRepository;
+import br.com.projetobarbearia.repository.UsuarioRepository;
 
 @Service
 public class AgendamentoService {
@@ -40,6 +42,7 @@ public class AgendamentoService {
     private final BarbeiroServicoRepository barbeiroServicoRepository;
     private final HorarioFuncionamentoRepository horarioFuncionamentoRepository;
     private final DisponibilidadeRepository disponibilidadeRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public AgendamentoService(
             AgendamentoRepository agendamentoRepository,
@@ -49,7 +52,8 @@ public class AgendamentoService {
             ServicoRepository servicoRepository,
             BarbeiroServicoRepository barbeiroServicoRepository,
             HorarioFuncionamentoRepository horarioFuncionamentoRepository,
-            DisponibilidadeRepository disponibilidadeRepository) {
+            DisponibilidadeRepository disponibilidadeRepository,
+            UsuarioRepository usuarioRepository) {
 
         this.agendamentoRepository = agendamentoRepository;
         this.itemAgendamentoRepository = itemAgendamentoRepository;
@@ -59,6 +63,7 @@ public class AgendamentoService {
         this.barbeiroServicoRepository = barbeiroServicoRepository;
         this.horarioFuncionamentoRepository = horarioFuncionamentoRepository;
         this.disponibilidadeRepository = disponibilidadeRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     public List<Agendamento> listarTodos() {
@@ -75,6 +80,17 @@ public class AgendamentoService {
             List<ItemAgendamento> itens) {
 
         validarDados(agendamento, itens);
+
+        Usuario cliente = usuarioRepository
+                .findById(agendamento.getCliente().getIdUsuario())
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Cliente não encontrado."));
+
+        if (!cliente.isAtivo()) {
+            throw new IllegalArgumentException(
+                    "O cliente está inativo.");
+        }
 
         Barbearia barbearia = barbeariaRepository
                 .findById(agendamento.getBarbearia().getIdBarbearia())
@@ -111,6 +127,7 @@ public class AgendamentoService {
                 barbearia.getIdBarbearia(),
                 barbeiro.getIdBarbeiro());
 
+        agendamento.setCliente(cliente);
         agendamento.setBarbearia(barbearia);
         agendamento.setBarbeiro(barbeiro);
 
@@ -155,7 +172,8 @@ public class AgendamentoService {
 
         validarStatusConfirmado(agendamento);
 
-        agendamento.setStatus(StatusAgendamento.CANCELADO);
+        agendamento.setStatus(
+                StatusAgendamento.CANCELADO);
 
         return agendamentoRepository.save(agendamento);
     }
@@ -167,7 +185,8 @@ public class AgendamentoService {
 
         validarStatusConfirmado(agendamento);
 
-        agendamento.setStatus(StatusAgendamento.CONCLUIDO);
+        agendamento.setStatus(
+                StatusAgendamento.CONCLUIDO);
 
         return agendamentoRepository.save(agendamento);
     }
@@ -207,6 +226,14 @@ public class AgendamentoService {
     private void validarDados(
             Agendamento agendamento,
             List<ItemAgendamento> itens) {
+
+        if (agendamento.getCliente() == null
+                || agendamento.getCliente()
+                        .getIdUsuario() == null) {
+
+            throw new IllegalArgumentException(
+                    "O cliente é obrigatório.");
+        }
 
         if (agendamento.getBarbearia() == null
                 || agendamento.getBarbearia()
