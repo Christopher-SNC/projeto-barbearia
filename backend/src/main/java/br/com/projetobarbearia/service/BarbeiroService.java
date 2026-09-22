@@ -6,89 +6,141 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.projetobarbearia.entity.Barbearia;
 import br.com.projetobarbearia.entity.Barbeiro;
+import br.com.projetobarbearia.entity.Usuario;
 import br.com.projetobarbearia.repository.BarbeiroRepository;
 
 @Service
 public class BarbeiroService {
 
-    private final BarbeiroRepository barbeiroRepository;
-    private final BarbeariaService barbeariaService;
+        private final BarbeiroRepository barbeiroRepository;
+        private final UsuarioService usuarioService;
+        private final BarbeariaService barbeariaService;
 
-    public BarbeiroService(
-            BarbeiroRepository barbeiroRepository,
-            BarbeariaService barbeariaService) {
+        public BarbeiroService(
+                        BarbeiroRepository barbeiroRepository,
+                        UsuarioService usuarioService,
+                        BarbeariaService barbeariaService) {
 
-        this.barbeiroRepository = barbeiroRepository;
-        this.barbeariaService = barbeariaService;
-    }
+                this.barbeiroRepository = barbeiroRepository;
+                this.usuarioService = usuarioService;
+                this.barbeariaService = barbeariaService;
+        }
 
-    public List<Barbeiro> listarTodos() {
-        return barbeiroRepository.findAll();
-    }
+        public List<Barbeiro> listarTodos() {
+                return barbeiroRepository.findAll();
+        }
 
-    public Optional<Barbeiro> buscarPorId(Long id) {
-        return barbeiroRepository.findById(id);
-    }
+        public Optional<Barbeiro> buscarPorId(Long id) {
+                return barbeiroRepository.findById(id);
+        }
 
-    @Transactional
-    public Barbeiro salvar(Barbeiro barbeiro) {
+        public Barbeiro cadastrar(
+                        Long idUsuario,
+                        Long idBarbearia,
+                        String descricao) {
 
-        Barbeiro barbeiroSalvo =
-                barbeiroRepository.save(barbeiro);
+                Usuario usuario = usuarioService.buscarPorId(idUsuario)
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "Usuário não encontrado."));
 
-        barbeariaService.desativarSeInvalida(
-                barbeiroSalvo.getBarbearia().getIdBarbearia());
+                if (!usuario.isAtivo()) {
+                        throw new IllegalArgumentException(
+                                        "O usuário precisa estar ativo.");
+                }
 
-        return barbeiroSalvo;
-    }
+                Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "Barbearia não encontrada."));
 
-    @Transactional
-    public Barbeiro ativar(Long id) {
+                Barbeiro barbeiro = new Barbeiro();
+                barbeiro.setUsuario(usuario);
+                barbeiro.setBarbearia(barbearia);
+                barbeiro.setDescricao(descricao);
+                barbeiro.setAtivo(true);
 
-        Barbeiro barbeiro = barbeiroRepository.findById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Barbeiro não encontrado."));
+                return barbeiroRepository.save(barbeiro);
+        }
 
-        barbeiro.setAtivo(true);
+        public Barbeiro atualizar(
+                        Long id,
+                        Long idUsuario,
+                        Long idBarbearia,
+                        String descricao) {
 
-        return barbeiroRepository.save(barbeiro);
-    }
+                Barbeiro barbeiro = barbeiroRepository.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "Barbeiro não encontrado."));
 
-    @Transactional
-    public Barbeiro desativar(Long id) {
+                Usuario usuario = usuarioService.buscarPorId(idUsuario)
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "Usuário não encontrado."));
 
-        Barbeiro barbeiro = barbeiroRepository.findById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Barbeiro não encontrado."));
+                if (!usuario.isAtivo()) {
+                        throw new IllegalArgumentException(
+                                        "O usuário precisa estar ativo.");
+                }
 
-        barbeiro.setAtivo(false);
+                Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "Barbearia não encontrada."));
 
-        Barbeiro barbeiroSalvo =
-                barbeiroRepository.save(barbeiro);
+                Long idBarbeariaAnterior = barbeiro.getBarbearia().getIdBarbearia();
 
-        barbeariaService.desativarSeInvalida(
-                barbeiro.getBarbearia().getIdBarbearia());
+                barbeiro.setUsuario(usuario);
+                barbeiro.setBarbearia(barbearia);
+                barbeiro.setDescricao(descricao);
 
-        return barbeiroSalvo;
-    }
+                Barbeiro salvo = barbeiroRepository.save(barbeiro);
 
-    @Transactional
-    public void excluir(Long id) {
+                if (!idBarbeariaAnterior.equals(idBarbearia)) {
+                        barbeariaService.desativarSeInvalida(
+                                        idBarbeariaAnterior);
+                }
 
-        Barbeiro barbeiro = barbeiroRepository.findById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Barbeiro não encontrado."));
+                return salvo;
+        }
 
-        Long idBarbearia =
-                barbeiro.getBarbearia().getIdBarbearia();
+        public Barbeiro ativar(Long id) {
 
-        barbeiroRepository.delete(barbeiro);
-        barbeiroRepository.flush();
+                Barbeiro barbeiro = barbeiroRepository.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "Barbeiro não encontrado."));
 
-        barbeariaService.desativarSeInvalida(idBarbearia);
-    }
+                barbeiro.setAtivo(true);
+
+                return barbeiroRepository.save(barbeiro);
+        }
+
+        public Barbeiro desativar(Long id) {
+
+                Barbeiro barbeiro = barbeiroRepository.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "Barbeiro não encontrado."));
+
+                barbeiro.setAtivo(false);
+
+                Barbeiro salvo = barbeiroRepository.save(barbeiro);
+
+                barbeariaService.desativarSeInvalida(
+                                barbeiro.getBarbearia().getIdBarbearia());
+
+                return salvo;
+        }
+
+        @Transactional
+        public void excluir(Long id) {
+
+                Barbeiro barbeiro = barbeiroRepository.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "Barbeiro não encontrado."));
+
+                Long idBarbearia = barbeiro.getBarbearia().getIdBarbearia();
+
+                barbeiroRepository.delete(barbeiro);
+                barbeiroRepository.flush();
+
+                barbeariaService.desativarSeInvalida(idBarbearia);
+        }
 }
