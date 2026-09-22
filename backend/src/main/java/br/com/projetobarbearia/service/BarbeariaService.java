@@ -16,148 +16,170 @@ import br.com.projetobarbearia.repository.ServicoRepository;
 @Service
 public class BarbeariaService {
 
-    private final BarbeariaRepository barbeariaRepository;
-    private final ProprietarioBarbeariaRepository proprietarioBarbeariaRepository;
-    private final EnderecoRepository enderecoRepository;
-    private final HorarioFuncionamentoRepository horarioFuncionamentoRepository;
-    private final BarbeiroRepository barbeiroRepository;
-    private final ServicoRepository servicoRepository;
+        private final BarbeariaRepository barbeariaRepository;
+        private final ProprietarioBarbeariaRepository proprietarioBarbeariaRepository;
+        private final EnderecoRepository enderecoRepository;
+        private final HorarioFuncionamentoRepository horarioFuncionamentoRepository;
+        private final BarbeiroRepository barbeiroRepository;
+        private final ServicoRepository servicoRepository;
 
-    public BarbeariaService(
-            BarbeariaRepository barbeariaRepository,
-            ProprietarioBarbeariaRepository proprietarioBarbeariaRepository,
-            EnderecoRepository enderecoRepository,
-            HorarioFuncionamentoRepository horarioFuncionamentoRepository,
-            BarbeiroRepository barbeiroRepository,
-            ServicoRepository servicoRepository) {
+        public BarbeariaService(
+                        BarbeariaRepository barbeariaRepository,
+                        ProprietarioBarbeariaRepository proprietarioBarbeariaRepository,
+                        EnderecoRepository enderecoRepository,
+                        HorarioFuncionamentoRepository horarioFuncionamentoRepository,
+                        BarbeiroRepository barbeiroRepository,
+                        ServicoRepository servicoRepository) {
 
-        this.barbeariaRepository = barbeariaRepository;
-        this.proprietarioBarbeariaRepository = proprietarioBarbeariaRepository;
-        this.enderecoRepository = enderecoRepository;
-        this.horarioFuncionamentoRepository = horarioFuncionamentoRepository;
-        this.barbeiroRepository = barbeiroRepository;
-        this.servicoRepository = servicoRepository;
-    }
-
-    public List<Barbearia> listarTodas() {
-        return barbeariaRepository.findAll();
-    }
-
-    public Optional<Barbearia> buscarPorId(Long id) {
-        return barbeariaRepository.findById(id);
-    }
-
-   public Barbearia salvar(Barbearia barbearia) {
-
-    // Nova barbearia sempre começa inativa
-    if (barbearia.getIdBarbearia() == null) {
-        barbearia.setAtiva(false);
-        return barbeariaRepository.save(barbearia);
-    }
-
-    Barbearia barbeariaAtual = barbeariaRepository
-            .findById(barbearia.getIdBarbearia())
-            .orElseThrow(() ->
-                    new IllegalArgumentException("Barbearia não encontrada."));
-
-    // Impede ativação direta pelo método salvar()
-    if (!barbeariaAtual.isAtiva() && barbearia.isAtiva()) {
-        throw new IllegalArgumentException(
-                "Para ativar a barbearia, utilize a operação de ativação.");
-    }
-
-    return barbeariaRepository.save(barbearia);
-}
-
-    public Barbearia ativar(Long id) {
-
-    Barbearia barbearia = barbeariaRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Barbearia não encontrada."));
-
-    if (!proprietarioBarbeariaRepository
-            .existsByBarbearia_IdBarbeariaAndAtivoTrue(id)) {
-        throw new IllegalArgumentException(
-                "A barbearia precisa possuir pelo menos um proprietário ativo.");
-    }
-
-    if (!enderecoRepository.existsByBarbearia_IdBarbearia(id)) {
-        throw new IllegalArgumentException(
-                "A barbearia precisa possuir um endereço cadastrado.");
-    }
-
-    if (!horarioFuncionamentoRepository
-            .existsByBarbearia_IdBarbeariaAndFechadoFalse(id)) {
-        throw new IllegalArgumentException(
-                "A barbearia precisa possuir pelo menos um horário de funcionamento.");
-    }
-
-    if (!barbeiroRepository
-            .existsByBarbearia_IdBarbeariaAndAtivoTrue(id)) {
-        throw new IllegalArgumentException(
-                "A barbearia precisa possuir pelo menos um barbeiro ativo.");
-    }
-
-    if (!servicoRepository
-            .existsByBarbearia_IdBarbeariaAndAtivoTrue(id)) {
-        throw new IllegalArgumentException(
-                "A barbearia precisa possuir pelo menos um serviço ativo.");
-    }
-
-    barbearia.setAtiva(true);
-
-    return barbeariaRepository.save(barbearia);
-}
-
-    public void excluir(Long id) {
-
-        if (!barbeariaRepository.existsById(id)) {
-            throw new IllegalArgumentException("Barbearia não encontrada.");
+                this.barbeariaRepository = barbeariaRepository;
+                this.proprietarioBarbeariaRepository = proprietarioBarbeariaRepository;
+                this.enderecoRepository = enderecoRepository;
+                this.horarioFuncionamentoRepository = horarioFuncionamentoRepository;
+                this.barbeiroRepository = barbeiroRepository;
+                this.servicoRepository = servicoRepository;
         }
 
-        barbeariaRepository.deleteById(id);
-    }
+        public List<Barbearia> listarTodas() {
+                return barbeariaRepository.findAll();
+        }
 
-    public void desativarSeInvalida(Long idBarbearia) {
+        public Optional<Barbearia> buscarPorId(Long id) {
+                return barbeariaRepository.findById(id);
+        }
 
-    Barbearia barbearia = barbeariaRepository.findById(idBarbearia)
-            .orElseThrow(() ->
-                    new IllegalArgumentException(
-                            "Barbearia não encontrada."));
+        public Barbearia salvar(Barbearia barbearia) {
 
-    if (!barbearia.isAtiva()) {
-        return;
-    }
+                if (barbearia.getCnpj() != null
+                                && !barbearia.getCnpj().isBlank()) {
 
-    boolean possuiProprietario =
-            proprietarioBarbeariaRepository
-                    .existsByBarbearia_IdBarbeariaAndAtivoTrue(idBarbearia);
+                        Optional<Barbearia> barbeariaComMesmoCnpj = barbeariaRepository.findByCnpj(
+                                        barbearia.getCnpj());
 
-    boolean possuiEndereco =
-            enderecoRepository
-                    .existsByBarbearia_IdBarbearia(idBarbearia);
+                        if (barbeariaComMesmoCnpj.isPresent()
+                                        && !barbeariaComMesmoCnpj.get()
+                                                        .getIdBarbearia()
+                                                        .equals(barbearia.getIdBarbearia())) {
 
-    boolean possuiHorario =
-            horarioFuncionamentoRepository
-                    .existsByBarbearia_IdBarbeariaAndFechadoFalse(idBarbearia);
+                                throw new IllegalArgumentException(
+                                                "CNPJ já cadastrado.");
+                        }
+                }
 
-    boolean possuiBarbeiro =
-            barbeiroRepository
-                    .existsByBarbearia_IdBarbeariaAndAtivoTrue(idBarbearia);
+                // Nova barbearia sempre começa inativa
+                if (barbearia.getIdBarbearia() == null) {
+                        barbearia.setAtiva(false);
+                        return barbeariaRepository.save(barbearia);
+                }
 
-    boolean possuiServico =
-            servicoRepository
-                    .existsByBarbearia_IdBarbeariaAndAtivoTrue(idBarbearia);
+                Barbearia barbeariaAtual = barbeariaRepository
+                                .findById(barbearia.getIdBarbearia())
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "Barbearia não encontrada."));
 
-    boolean continuaValida =
-            possuiProprietario
-            && possuiEndereco
-            && possuiHorario
-            && possuiBarbeiro
-            && possuiServico;
+                // Impede ativação direta pelo método salvar()
+                if (!barbeariaAtual.isAtiva()
+                                && barbearia.isAtiva()) {
 
-    if (!continuaValida) {
-        barbearia.setAtiva(false);
-        barbeariaRepository.save(barbearia);
-    }
-}
+                        throw new IllegalArgumentException(
+                                        "Para ativar a barbearia, utilize a operação de ativação.");
+                }
+
+                return barbeariaRepository.save(barbearia);
+        }
+
+        public Barbearia ativar(Long id) {
+
+                Barbearia barbearia = barbeariaRepository.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException("Barbearia não encontrada."));
+
+                if (!proprietarioBarbeariaRepository
+                                .existsByBarbearia_IdBarbeariaAndAtivoTrue(id)) {
+                        throw new IllegalArgumentException(
+                                        "A barbearia precisa possuir pelo menos um proprietário ativo.");
+                }
+
+                if (!enderecoRepository.existsByBarbearia_IdBarbearia(id)) {
+                        throw new IllegalArgumentException(
+                                        "A barbearia precisa possuir um endereço cadastrado.");
+                }
+
+                if (!horarioFuncionamentoRepository
+                                .existsByBarbearia_IdBarbeariaAndFechadoFalse(id)) {
+                        throw new IllegalArgumentException(
+                                        "A barbearia precisa possuir pelo menos um horário de funcionamento.");
+                }
+
+                if (!barbeiroRepository
+                                .existsByBarbearia_IdBarbeariaAndAtivoTrue(id)) {
+                        throw new IllegalArgumentException(
+                                        "A barbearia precisa possuir pelo menos um barbeiro ativo.");
+                }
+
+                if (!servicoRepository
+                                .existsByBarbearia_IdBarbeariaAndAtivoTrue(id)) {
+                        throw new IllegalArgumentException(
+                                        "A barbearia precisa possuir pelo menos um serviço ativo.");
+                }
+
+                barbearia.setAtiva(true);
+
+                return barbeariaRepository.save(barbearia);
+        }
+
+        public void excluir(Long id) {
+
+                if (!barbeariaRepository.existsById(id)) {
+                        throw new IllegalArgumentException("Barbearia não encontrada.");
+                }
+
+                barbeariaRepository.deleteById(id);
+        }
+
+        public void desativarSeInvalida(Long idBarbearia) {
+
+                Barbearia barbearia = barbeariaRepository.findById(idBarbearia)
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "Barbearia não encontrada."));
+
+                if (!barbearia.isAtiva()) {
+                        return;
+                }
+
+                boolean possuiProprietario = proprietarioBarbeariaRepository
+                                .existsByBarbearia_IdBarbeariaAndAtivoTrue(idBarbearia);
+
+                boolean possuiEndereco = enderecoRepository
+                                .existsByBarbearia_IdBarbearia(idBarbearia);
+
+                boolean possuiHorario = horarioFuncionamentoRepository
+                                .existsByBarbearia_IdBarbeariaAndFechadoFalse(idBarbearia);
+
+                boolean possuiBarbeiro = barbeiroRepository
+                                .existsByBarbearia_IdBarbeariaAndAtivoTrue(idBarbearia);
+
+                boolean possuiServico = servicoRepository
+                                .existsByBarbearia_IdBarbeariaAndAtivoTrue(idBarbearia);
+
+                boolean continuaValida = possuiProprietario
+                                && possuiEndereco
+                                && possuiHorario
+                                && possuiBarbeiro
+                                && possuiServico;
+
+                if (!continuaValida) {
+                        barbearia.setAtiva(false);
+                        barbeariaRepository.save(barbearia);
+                }
+        }
+
+        public Barbearia desativar(Long id) {
+
+                Barbearia barbearia = barbeariaRepository.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "Barbearia não encontrada."));
+
+                barbearia.setAtiva(false);
+
+                return barbeariaRepository.save(barbearia);
+        }
 }
