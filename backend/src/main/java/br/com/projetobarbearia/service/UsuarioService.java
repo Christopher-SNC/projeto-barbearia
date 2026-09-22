@@ -83,4 +83,33 @@ public class UsuarioService {
 
         usuarioRepository.deleteById(id);
     }
+
+    public Usuario atualizar(
+        Long id,
+        Usuario dadosAtualizados) {
+
+    Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() ->
+                    new IllegalArgumentException(
+                            "Usuário não encontrado."));
+
+    Optional<Usuario> usuarioComMesmoEmail =
+            usuarioRepository.findByEmail(
+                    dadosAtualizados.getEmail());
+
+    if (usuarioComMesmoEmail.isPresent()
+            && !usuarioComMesmoEmail.get()
+                    .getIdUsuario()
+                    .equals(id)) {
+
+        throw new IllegalArgumentException(
+                "E-mail já cadastrado.");
+    }
+
+    usuario.setNome(dadosAtualizados.getNome());
+    usuario.setEmail(dadosAtualizados.getEmail());
+    usuario.setTelefone(dadosAtualizados.getTelefone());
+
+    return usuarioRepository.save(usuario);
+    }
 }
