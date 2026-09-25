@@ -32,3 +32,52 @@
   font-size: 1.1rem;
   line-height: 1.6;
 }
+
+.primary-link {
+  display: inline-block;
+  margin-top: 32px;
+  padding: 12px 24px;
+  border-radius: 6px;
+  background-color: #1f1f1f;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.primary-link:hover {
+  background-color: #3a3a3a;
+}
+
+.page {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.page h1 {
+  margin-top: 0;
+}
+
+.barbearias-lista {
+  display: grid;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.barbearia-card {
+  padding: 24px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.barbearia-card h2 {
+  margin-top: 0;
+}
+
+.barbearia-card a {
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
