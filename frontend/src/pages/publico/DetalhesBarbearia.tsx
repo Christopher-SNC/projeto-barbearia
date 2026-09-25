@@ -211,10 +211,10 @@ function DetalhesBarbearia() {
                 {horario.fechado
                   ? 'Fechado'
                   : `${formatarHora(
-                      horario.horaAbertura,
-                    )} às ${formatarHora(
-                      horario.horaFechamento,
-                    )}`}
+                    horario.horaAbertura,
+                  )} às ${formatarHora(
+                    horario.horaFechamento,
+                  )}`}
               </li>
             ))}
           </ul>
@@ -274,6 +274,15 @@ function DetalhesBarbearia() {
           </div>
         )}
       </section>
+
+      <p>
+        <Link
+          className="primary-link"
+          to={`/barbearias/${barbearia.idBarbearia}/agendar`}
+        >
+          Agendar horário
+        </Link>
+      </p>
 
       <Link to="/barbearias">
         Voltar para barbearias

@@ -119,3 +119,52 @@
 .detalhes-card h3 {
   margin-top: 0;
 }
+
+.agendamento-form {
+  display: grid;
+  gap: 20px;
+  max-width: 600px;
+  margin-top: 32px;
+}
+
+.agendamento-form label {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.agendamento-form select,
+.agendamento-form input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  background-color: #ffffff;
+}
+
+.agendamento-form button {
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 6px;
+  background-color: #1f1f1f;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.agendamento-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mensagem-erro {
+  padding: 12px;
+  border: 1px solid #cc0000;
+  border-radius: 6px;
+}
+
+.mensagem-sucesso {
+  padding: 12px;
+  border: 1px solid #16803a;
+  border-radius: 6px;
+}
