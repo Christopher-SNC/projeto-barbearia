@@ -81,3 +81,41 @@
   color: #1f1f1f;
 }
 
+.detalhes-barbearia {
+  display: grid;
+  gap: 32px;
+}
+
+.detalhes-secao {
+  padding-top: 24px;
+  border-top: 1px solid #dddddd;
+}
+
+.detalhes-secao h2 {
+  margin-top: 0;
+}
+
+.lista-detalhes {
+  padding-left: 20px;
+  line-height: 1.8;
+}
+
+.detalhes-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(220px, 1fr)
+  );
+}
+
+.detalhes-card {
+  padding: 20px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.detalhes-card h3 {
+  margin-top: 0;
+}
