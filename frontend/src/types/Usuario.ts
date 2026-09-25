@@ -1,0 +1,7 @@
+export interface Usuario {
+  idUsuario: number
+  nome: string
+  email: string
+  telefone: string | null
+  ativo: boolean
+}
