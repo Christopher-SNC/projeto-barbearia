@@ -1,0 +1,568 @@
+.home-page {
+  background-color: var(--color-bg-page);
+}
+
+.home-container {
+  width: min(
+    calc(100% - (var(--spacing-lg) * 2)),
+    var(--container-width)
+  );
+  margin: 0 auto;
+}
+
+/* HERO */
+
+.home-hero {
+  padding: 72px 0 68px;
+}
+
+.home-hero__grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.05fr)
+    minmax(420px, 0.95fr);
+  align-items: center;
+  gap: 64px;
+}
+
+.home-hero__content {
+  max-width: 600px;
+}
+
+.home-eyebrow {
+  margin-bottom: var(--spacing-lg);
+
+  color: var(--color-text-accent);
+
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.home-hero h1 {
+  margin-bottom: var(--spacing-lg);
+
+  font-size: clamp(2.8rem, 4vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+.home-hero__description {
+  max-width: 520px;
+  margin-bottom: var(--spacing-lg);
+
+  color: var(--color-text-secondary);
+
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.home-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--spacing-sm);
+
+  max-width: 590px;
+}
+
+.home-search__field {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: var(--spacing-sm);
+
+  padding: 0 var(--spacing-md);
+
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+
+  background-color: var(--color-bg-surface);
+}
+
+.home-search__field:focus-within {
+  border-color: var(--color-gold-500);
+}
+
+.home-search__dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+
+  border-radius: var(--radius-full);
+
+  background-color: var(--color-gold-500);
+}
+
+.home-search__field input {
+  width: 100%;
+
+  padding: 0;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.home-search__field input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.home-location {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+
+  margin-top: var(--spacing-md);
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+  color: var(--color-text-primary);
+
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.home-location span {
+  color: var(--color-gold-500);
+}
+
+/* MAPA */
+
+.home-map {
+  position: relative;
+
+  height: 350px;
+
+  overflow: hidden;
+
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+
+  background-color: #ebe7de;
+}
+
+.home-map__block {
+  position: absolute;
+
+  border: 1px solid #d9d3c7;
+  border-radius: var(--radius-md);
+
+  background-color: #dfdbd1;
+}
+
+.home-map__block--1 {
+  top: 16px;
+  left: 16px;
+  width: 90px;
+  height: 56px;
+}
+
+.home-map__block--2 {
+  top: 16px;
+  left: 122px;
+  width: 74px;
+  height: 64px;
+}
+
+.home-map__block--3 {
+  top: 16px;
+  right: 94px;
+  width: 68px;
+  height: 56px;
+}
+
+.home-map__block--4 {
+  top: 16px;
+  right: 16px;
+  width: 62px;
+  height: 56px;
+}
+
+.home-map__block--5 {
+  bottom: 108px;
+  left: 20px;
+  width: 92px;
+  height: 56px;
+}
+
+.home-map__block--6 {
+  right: 96px;
+  bottom: 108px;
+  width: 88px;
+  height: 56px;
+}
+
+.home-map__block--7 {
+  right: 26px;
+  bottom: 108px;
+  width: 48px;
+  height: 62px;
+}
+
+.home-map__road {
+  position: absolute;
+  z-index: 2;
+
+  display: block;
+
+  background-color: var(--color-white);
+}
+
+.home-map__road--horizontal {
+  top: 132px;
+  left: 0;
+
+  width: 100%;
+  height: 22px;
+
+  border-radius: var(--radius-full);
+}
+
+.home-map__road--diagonal {
+  top: -45px;
+  left: 45%;
+
+  width: 24px;
+  height: 460px;
+
+  transform: rotate(23deg);
+}
+
+.home-map__pin {
+  position: absolute;
+  z-index: 3;
+
+  display: grid;
+  width: 21px;
+  height: 21px;
+  place-items: center;
+
+  border-radius: 50% 50% 50% 0;
+
+  background-color: var(--color-bg-inverse);
+  color: var(--color-gold-500);
+
+  font-size: 0.45rem;
+
+  transform: rotate(-45deg);
+}
+
+.home-map__pin::first-letter {
+  transform: rotate(45deg);
+}
+
+.home-map__pin--1 {
+  top: 75px;
+  right: 132px;
+}
+
+.home-map__pin--2 {
+  top: 198px;
+  left: 190px;
+}
+
+.home-map__pin--3 {
+  right: 68px;
+  bottom: 126px;
+}
+
+/* DESTAQUES */
+
+.home-featured {
+  padding: 64px 0 72px;
+
+  background-color: var(--color-bg-surface);
+}
+
+.home-section-heading {
+  margin-bottom: var(--spacing-lg);
+}
+
+.home-section-heading h2 {
+  margin-bottom: var(--spacing-xs);
+
+  font-size: 1.9rem;
+  letter-spacing: -0.025em;
+}
+
+.home-section-heading p {
+  margin-bottom: 0;
+
+  color: var(--color-text-secondary);
+
+  line-height: 1.5;
+}
+
+.home-featured__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.home-barbershop-card {
+  overflow: hidden;
+
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-bg-surface);
+
+  box-shadow: var(--shadow-card);
+}
+
+.home-barbershop-card__image {
+  position: relative;
+
+  height: 158px;
+
+  background-color: var(--color-graphite-800);
+}
+
+.home-barbershop-card__image span {
+  position: absolute;
+  bottom: 18px;
+  left: 18px;
+
+  width: 98px;
+  height: 4px;
+
+  border-radius: var(--radius-full);
+
+  background-color: var(--color-gold-500);
+}
+
+.home-barbershop-card__content {
+  padding: var(--spacing-md);
+}
+
+.home-barbershop-card h3 {
+  margin-bottom: var(--spacing-xs);
+
+  font-size: 1rem;
+}
+
+.home-barbershop-card p {
+  margin-bottom: 5px;
+
+  color: var(--color-text-secondary);
+
+  font-size: 0.75rem;
+}
+
+.home-barbershop-card strong {
+  display: block;
+
+  margin-top: var(--spacing-xs);
+
+  color: var(--color-text-accent);
+
+  font-size: 0.72rem;
+}
+
+.home-featured__mobile-action {
+  display: none;
+}
+
+/* PASSOS */
+
+.home-steps {
+  padding: 60px 0 70px;
+}
+
+.home-steps__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.home-step-card {
+  padding: var(--spacing-lg);
+
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-bg-surface);
+}
+
+.home-step-card span {
+  display: block;
+
+  margin-bottom: var(--spacing-sm);
+
+  color: var(--color-text-accent);
+
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.home-step-card h3 {
+  margin-bottom: var(--spacing-xs);
+
+  font-size: 1rem;
+}
+
+.home-step-card p {
+  margin-bottom: 0;
+
+  color: var(--color-text-secondary);
+
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+/* CTA FINAL */
+
+.home-final-cta {
+  padding: 46px 0;
+
+  background-color: var(--color-bg-inverse);
+  color: var(--color-text-inverse);
+}
+
+.home-final-cta__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xl);
+}
+
+.home-final-cta h2 {
+  margin-bottom: var(--spacing-xs);
+
+  font-size: 1.7rem;
+}
+
+.home-final-cta p {
+  margin-bottom: 0;
+
+  color: var(--color-graphite-300);
+
+  font-size: 0.85rem;
+}
+
+/* MOBILE */
+
+@media (max-width: 767px) {
+  .home-container {
+    width: min(
+      calc(100% - (var(--spacing-lg) * 2)),
+      100%
+    );
+  }
+
+  .home-hero {
+    padding: 36px 0 24px;
+  }
+
+  .home-hero__grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .home-eyebrow {
+    margin-bottom: var(--spacing-md);
+
+    font-size: 0.62rem;
+  }
+
+  .home-hero h1 {
+    margin-bottom: var(--spacing-md);
+
+    font-size: 2.35rem;
+    line-height: 1;
+  }
+
+  .home-hero__description {
+    margin-bottom: var(--spacing-md);
+
+    font-size: 0.85rem;
+  }
+
+  .home-search {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .home-search .button {
+    width: 100%;
+  }
+
+  .home-location {
+    margin-top: var(--spacing-sm);
+  }
+
+  .home-map {
+    height: 245px;
+
+    border-radius: var(--radius-lg);
+  }
+
+  .home-map__road--horizontal {
+    top: 112px;
+  }
+
+  .home-map__road--diagonal {
+    left: 40%;
+  }
+
+  .home-featured {
+    padding: 42px 0;
+  }
+
+  .home-section-heading h2 {
+    font-size: 1.55rem;
+  }
+
+  .home-featured__grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .home-barbershop-card:nth-child(3) {
+    display: none;
+  }
+
+  .home-barbershop-card__image {
+    height: 170px;
+  }
+
+  .home-featured__mobile-action {
+    display: block;
+
+    margin-top: var(--spacing-md);
+  }
+
+  .home-steps {
+    padding: 42px 0;
+  }
+
+  .home-steps__grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .home-step-card {
+    padding: var(--spacing-md);
+  }
+
+  .home-final-cta {
+    padding: 32px 0;
+  }
+
+  .home-final-cta__content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .home-final-cta h2 {
+    font-size: 1.35rem;
+  }
+
+  .home-final-cta .button {
+    width: 100%;
+  }
+}

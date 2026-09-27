@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
 import './Header.css'
 
@@ -13,7 +13,7 @@ function Header() {
     return (
         <header className="site-header">
             <div className="site-header__container">
-                <NavLink
+                <Link
                     className="site-header__brand"
                     to="/"
                     onClick={fecharMenu}
@@ -23,8 +23,8 @@ function Header() {
                         aria-hidden="true"
                     />
 
-                    <span>Projeto Barbearia</span>
-                </NavLink>
+                    <span>Barber</span>
+                </Link>
 
                 <button
                     className="site-header__menu-button"
@@ -53,39 +53,35 @@ function Header() {
                         .join(' ')}
                 >
                     <NavLink
-                        className={({ isActive }) =>
-                            [
-                                'site-header__link',
-                                isActive
-                                    ? 'site-header__link--active'
-                                    : '',
-                            ]
-                                .filter(Boolean)
-                                .join(' ')
-                        }
-                        end
-                        to="/"
-                        onClick={fecharMenu}
-                    >
-                        Início
-                    </NavLink>
-
-                    <NavLink
-                        className={({ isActive }) =>
-                            [
-                                'site-header__link',
-                                isActive
-                                    ? 'site-header__link--active'
-                                    : '',
-                            ]
-                                .filter(Boolean)
-                                .join(' ')
-                        }
+                        className="site-header__link"
                         to="/barbearias"
                         onClick={fecharMenu}
                     >
                         Barbearias
                     </NavLink>
+
+                    <a
+                        className="site-header__link"
+                        href="/#como-funciona"
+                        onClick={fecharMenu}
+                    >
+                        Como funciona
+                    </a>
+
+                    <span
+                        className="site-header__link site-header__link--disabled"
+                        aria-disabled="true"
+                    >
+                        Entrar
+                    </span>
+
+                    <Link
+                        className="site-header__cta"
+                        to="/barbearias"
+                        onClick={fecharMenu}
+                    >
+                        Agendar agora
+                    </Link>
                 </nav>
             </div>
         </header>
