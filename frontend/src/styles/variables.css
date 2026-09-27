@@ -1,0 +1,87 @@
+:root {
+  /* =========================
+     Cores primitivas
+     ========================= */
+
+  --color-graphite-950: #151515;
+  --color-graphite-900: #1d1d1b;
+  --color-graphite-800: #2a2926;
+  --color-graphite-600: #5d5a54;
+  --color-graphite-300: #c9c4ba;
+  --color-graphite-150: #e8e3d9;
+
+  --color-cream-50: #f8f5ef;
+  --color-white: #ffffff;
+
+  --color-gold-500: #b88a44;
+  --color-gold-600: #9d7337;
+
+  --color-success-500: #2e7d5b;
+  --color-danger-500: #b64b45;
+
+  /* =========================
+     Cores semânticas
+     ========================= */
+
+  --color-bg-page: var(--color-cream-50);
+  --color-bg-surface: var(--color-white);
+  --color-bg-inverse: var(--color-graphite-950);
+  --color-bg-accent: var(--color-gold-500);
+
+  --color-text-primary: var(--color-graphite-950);
+  --color-text-secondary: var(--color-graphite-600);
+  --color-text-inverse: var(--color-white);
+  --color-text-accent: var(--color-gold-600);
+
+  --color-border-default: var(--color-graphite-150);
+
+  --color-success: var(--color-success-500);
+  --color-error: var(--color-danger-500);
+
+  /* =========================
+     Tipografia
+     ========================= */
+
+  --font-family-base:
+    'Inter',
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  /* =========================
+     Espaçamentos
+     ========================= */
+
+  --spacing-2xs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  --spacing-4xl: 96px;
+
+  /* =========================
+     Bordas
+     ========================= */
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 999px;
+
+  /* =========================
+     Sombras
+     ========================= */
+
+  --shadow-card:
+    0 8px 24px -8px rgb(0 0 0 / 8%);
+
+  /* =========================
+     Layout
+     ========================= */
+
+  --container-width: 1200px;
+}
