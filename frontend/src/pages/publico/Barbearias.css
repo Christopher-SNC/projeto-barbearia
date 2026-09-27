@@ -1,0 +1,402 @@
+.barbershops-page {
+  background-color: var(--color-bg-page);
+}
+
+/* CABEÇALHO / BUSCA */
+
+.barbershops-search {
+  padding: 56px 0 40px;
+}
+
+.barbershops-container {
+  width: min(
+    calc(100% - (var(--spacing-lg) * 2)),
+    var(--container-width)
+  );
+
+  margin: 0 auto;
+}
+
+.barbershops-search h1 {
+  max-width: 680px;
+  margin-bottom: var(--spacing-sm);
+
+  font-size: 2.4rem;
+  letter-spacing: -0.04em;
+}
+
+.barbershops-search__description {
+  margin-bottom: var(--spacing-md);
+
+  color: var(--color-text-secondary);
+
+  line-height: 1.6;
+}
+
+.barbershops-search__form {
+  display: grid;
+  grid-template-columns: minmax(0, 430px) max-content;
+  gap: var(--spacing-sm);
+
+  margin-bottom: var(--spacing-md);
+}
+
+.barbershops-search__form .button {
+  justify-self: start;
+}
+
+.barbershops-search__field {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: var(--spacing-sm);
+
+  padding: 0 var(--spacing-md);
+
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+
+  background-color: var(--color-bg-surface);
+}
+
+.barbershops-search__field:focus-within {
+  border-color: var(--color-gold-500);
+}
+
+.barbershops-search__dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+
+  border-radius: var(--radius-full);
+
+  background-color: var(--color-gold-500);
+}
+
+.barbershops-search__field input {
+  width: 100%;
+
+  padding: 0;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.barbershops-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.barbershops-filter {
+  min-height: 34px;
+
+  padding: 0 var(--spacing-md);
+
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-secondary);
+
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.barbershops-filter--active {
+  border-color: var(--color-bg-inverse);
+
+  background-color: var(--color-bg-inverse);
+  color: var(--color-text-inverse);
+}
+
+.barbershops-filter:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.barbershops-filter__mobile {
+  display: none;
+}
+
+/* RESULTADOS */
+
+.barbershops-results {
+  min-height: 650px;
+
+  padding: 36px 0 72px;
+
+  background-color: var(--color-bg-surface);
+}
+
+.barbershops-results__grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) minmax(380px, 1fr);
+  align-items: start;
+  gap: 110px;
+}
+
+.barbershops-results__count {
+  margin-bottom: var(--spacing-md);
+
+  color: var(--color-text-secondary);
+
+  font-size: 0.8rem;
+}
+
+.barbershops-list {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+/* MAPA ILUSTRATIVO */
+
+.barbershops-map {
+  position: sticky;
+  top: 110px;
+
+  width: min(100%, 420px);
+  height: 510px;
+
+  justify-self: end;
+  overflow: hidden;
+
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+
+  background-color: #ebe7de;
+}
+
+.barbershops-map__block {
+  position: absolute;
+
+  border: 1px solid #d9d3c7;
+  border-radius: var(--radius-md);
+
+  background-color: #dfdbd1;
+}
+
+.barbershops-map__block--1 {
+  top: 20px;
+  left: 20px;
+  width: 100px;
+  height: 62px;
+}
+
+.barbershops-map__block--2 {
+  top: 20px;
+  left: 140px;
+  width: 82px;
+  height: 72px;
+}
+
+.barbershops-map__block--3 {
+  top: 20px;
+  right: 24px;
+  width: 96px;
+  height: 62px;
+}
+
+.barbershops-map__block--4 {
+  top: 110px;
+  left: 20px;
+  width: 96px;
+  height: 60px;
+}
+
+.barbershops-map__block--5 {
+  top: 200px;
+  left: 140px;
+  width: 88px;
+  height: 68px;
+}
+
+.barbershops-map__block--6 {
+  top: 200px;
+  right: 28px;
+  width: 108px;
+  height: 68px;
+}
+
+.barbershops-map__road {
+  position: absolute;
+  z-index: 2;
+
+  display: block;
+
+  background-color: var(--color-white);
+}
+
+.barbershops-map__road--horizontal {
+  top: 145px;
+  left: 0;
+
+  width: 100%;
+  height: 22px;
+
+  border-radius: var(--radius-full);
+}
+
+.barbershops-map__road--diagonal {
+  top: -60px;
+  left: 45%;
+
+  width: 26px;
+  height: 650px;
+
+  transform: rotate(22deg);
+}
+
+.barbershops-map__pin {
+  position: absolute;
+  z-index: 3;
+
+  width: 18px;
+  height: 18px;
+
+  border: 5px solid var(--color-bg-inverse);
+  border-radius: 50%;
+
+  background-color: var(--color-gold-500);
+}
+
+.barbershops-map__pin--1 {
+  top: 78px;
+  right: 110px;
+}
+
+.barbershops-map__pin--2 {
+  top: 220px;
+  left: 155px;
+}
+
+.barbershops-map__pin--3 {
+  top: 185px;
+  right: 55px;
+}
+
+.barbershops-empty,
+.barbershops-feedback {
+  padding: var(--spacing-xl);
+
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-bg-page);
+
+  color: var(--color-text-secondary);
+}
+
+/* MOBILE */
+
+@media (max-width: 767px) {
+
+.barbershops-results__grid > div:first-child {
+  width: 100%;
+}
+
+.barbershops-list {
+  width: 100%;
+}
+
+.barbershops-list .barbershop-card {
+  width: 100%;
+}
+
+  .barbershops-search {
+    padding: 36px 0 30px;
+  }
+
+  .barbershops-search h1 {
+    max-width: 280px;
+
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .barbershops-search__form {
+    grid-template-columns: 1fr;
+  }
+
+  .barbershops-search__form .button {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .barbershops-filter {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .barbershops-filter__desktop {
+    display: none;
+  }
+
+  .barbershops-filter__mobile {
+    display: inline;
+  }
+
+  .barbershops-results {
+    padding: var(--spacing-lg) 0 48px;
+  }
+
+  .barbershops-results__grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .barbershops-map {
+    position: relative;
+    top: auto;
+
+    order: -1;
+
+    width: 100%;
+    height: 230px;
+
+    margin-bottom: 0;
+
+    border-radius: var(--radius-lg);
+  }
+
+  .barbershops-map__road--horizontal {
+    top: 112px;
+  }
+
+  .barbershops-map__road--diagonal {
+    left: 42%;
+  }
+
+  .barbershops-map__block--5,
+  .barbershops-map__block--6 {
+    top: 150px;
+  }
+
+  .barbershops-map__pin--2 {
+    top: 162px;
+  }
+
+  .barbershops-map__pin--3 {
+    top: 142px;
+  }
+
+  .barbershops-results__count {
+    margin-top: 0;
+  }
+
+  .barbershops-results__grid > div:first-child {
+  width: 100%;
+}
+
+.barbershops-list {
+  width: 100%;
+  gap: var(--spacing-md);
+}
+
+.barbershops-list .barbershop-card {
+  width: 100%;
+}
+
+}

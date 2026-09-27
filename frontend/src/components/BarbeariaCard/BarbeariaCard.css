@@ -1,0 +1,95 @@
+.barbershop-card {
+  display: block;
+  overflow: hidden;
+
+  border-radius: var(--radius-lg);
+
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
+
+  text-decoration: none;
+
+  box-shadow: var(--shadow-card);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.barbershop-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 30px -10px rgb(0 0 0 / 14%);
+}
+
+.barbershop-card__image {
+  position: relative;
+
+  height: 158px;
+
+  background-color: var(--color-graphite-800);
+}
+
+.barbershop-card__image span {
+  position: absolute;
+  bottom: 18px;
+  left: 18px;
+
+  width: 96px;
+  height: 4px;
+
+  border-radius: var(--radius-full);
+
+  background-color: var(--color-gold-500);
+}
+
+.barbershop-card__content {
+  padding: var(--spacing-md);
+}
+
+.barbershop-card__content h2 {
+  margin-bottom: var(--spacing-xs);
+
+  font-size: 1rem;
+}
+
+.barbershop-card__content p {
+  margin-bottom: 5px;
+
+  color: var(--color-text-secondary);
+
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.barbershop-card__description {
+  display: -webkit-box;
+  overflow: hidden;
+
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.barbershop-card__details {
+  display: inline-block;
+
+  margin-top: var(--spacing-xs);
+
+  color: var(--color-text-accent);
+
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.barbershop-card:focus-visible {
+  outline: 2px solid var(--color-gold-500);
+  outline-offset: 3px;
+}
+
+@media (max-width: 767px) {
+  .barbershop-card__image {
+    height: 180px;
+  }
+}
