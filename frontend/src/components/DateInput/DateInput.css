@@ -1,0 +1,52 @@
+.date-input {
+  display: grid;
+  gap: var(--spacing-xs);
+  width: 100%;
+  max-width: 392px;
+}
+
+.date-input--full-width {
+  max-width: none;
+}
+
+.date-input__label {
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.date-input__field {
+  width: 100%;
+  min-height: 52px;
+
+  padding: 0 var(--spacing-md);
+
+  border: 1px solid var(--color-border-default);
+  border-radius: 14px;
+
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
+
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.date-input__field:hover {
+  border-color: var(--color-graphite-300);
+}
+
+.date-input__field:focus {
+  border-color: var(--color-gold-500);
+  outline: none;
+}
+
+.date-input__field:focus-visible {
+  outline: 2px solid var(--color-gold-500);
+  outline-offset: 2px;
+}
+
+.date-input__field:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
