@@ -4,6 +4,8 @@ import PublicLayout from '../layouts/PublicLayout/PublicLayout'
 
 import NovoAgendamento from '../pages/cliente/NovoAgendamento'
 
+import MeusAgendamentos from '../pages/cliente/MeusAgendamentos'
+
 import Barbearias from '../pages/publico/Barbearias'
 import DetalhesBarbearia from '../pages/publico/DetalhesBarbearia'
 import Home from '../pages/publico/Home'
@@ -27,6 +29,10 @@ function AppRoutes() {
         <Route
           path="/barbearias/:id/agendar"
           element={<NovoAgendamento />}
+        />
+        <Route
+          path="/meus-agendamentos"
+          element={<MeusAgendamentos />}
         />
       </Route>
     </Routes>

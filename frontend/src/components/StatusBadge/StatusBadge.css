@@ -14,7 +14,11 @@
   white-space: nowrap;
 }
 
-.status-badge--confirmed,
+.status-badge--confirmed {
+  background-color: var(--color-bg-inverse);
+  color: var(--color-text-inverse);
+}
+
 .status-badge--active {
   background-color: #f4eadb;
   color: var(--color-gold-600);
