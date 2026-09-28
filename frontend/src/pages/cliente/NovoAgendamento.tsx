@@ -311,7 +311,29 @@ function NovoAgendamento() {
         },
       )
 
-      if (!conflito) {
+      const hoje = new Date()
+
+      const dataSelecionada = new Date(
+        `${data}T00:00:00`,
+      )
+
+      const mesmaDataDeHoje =
+        dataSelecionada.getFullYear() ===
+        hoje.getFullYear() &&
+        dataSelecionada.getMonth() ===
+        hoje.getMonth() &&
+        dataSelecionada.getDate() ===
+        hoje.getDate()
+
+      const minutosAgora =
+        hoje.getHours() * 60 +
+        hoje.getMinutes()
+
+      const horarioJaPassou =
+        mesmaDataDeHoje &&
+        candidato <= minutosAgora
+
+      if (!conflito && !horarioJaPassou) {
         opcoes.push(minutosParaHora(candidato))
       }
     }
