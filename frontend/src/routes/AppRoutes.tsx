@@ -6,6 +6,8 @@ import NovoAgendamento from '../pages/cliente/NovoAgendamento'
 
 import MeusAgendamentos from '../pages/cliente/MeusAgendamentos'
 
+import AgendaBarbearia from '../pages/proprietario/AgendaBarbearia'
+
 import AdminLayout from '../layouts/AdminLayout/AdminLayout'
 import DashboardProprietario from '../pages/proprietario/DashboardProprietario'
 
@@ -45,6 +47,10 @@ function AppRoutes() {
         <Route
           index
           element={<DashboardProprietario />}
+        />
+        <Route
+          path="agenda"
+          element={<AgendaBarbearia />}
         />
       </Route>
     </Routes>
