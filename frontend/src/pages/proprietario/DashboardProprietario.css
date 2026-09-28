@@ -1,0 +1,346 @@
+.admin-dashboard {
+    min-height: 100vh;
+
+    padding: 32px 36px;
+
+    background-color: var(--color-bg-page);
+}
+
+/* TOPO */
+
+.admin-dashboard__topbar {
+    display: flex;
+    min-height: 70px;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+
+    max-width: 1120px;
+}
+
+.admin-dashboard__topbar h1 {
+    margin-bottom: 6px;
+
+    color: var(--color-text-primary);
+
+    font-size: 1.875rem;
+    line-height: 1.1;
+}
+
+.admin-dashboard__topbar p {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.8125rem;
+}
+
+.admin-dashboard__topbar .button {
+    min-height: 45px;
+
+    padding-inline: 20px;
+
+    border-radius: 12px;
+}
+
+/* MÉTRICAS */
+
+.admin-dashboard__stats {
+    display: grid;
+    grid-template-columns: repeat(4,
+            minmax(0, 250px));
+    gap: 16px;
+
+    margin-top: 26px;
+}
+
+/* COLUNAS */
+
+.admin-dashboard__columns {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 700px) minmax(280px, 330px);
+    align-items: start;
+    gap: 20px;
+
+    margin-top: 26px;
+}
+
+/* PRÓXIMOS AGENDAMENTOS */
+
+.admin-dashboard__appointments {
+    padding: 20px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 16px;
+
+    background-color: var(--color-bg-surface);
+}
+
+.admin-dashboard__appointments h2,
+.admin-dashboard__side-card h2 {
+    margin-bottom: 12px;
+
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.admin-dashboard__section-subtitle {
+    margin-bottom: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+}
+
+.admin-dashboard__appointment-list {
+    margin-top: 2px;
+}
+
+.admin-dashboard__appointment-row {
+    display: grid;
+    min-height: 58px;
+    grid-template-columns:
+        minmax(190px, 1fr) minmax(180px, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+
+    padding: 0 18px;
+
+    border-bottom: 1px solid var(--color-border-default);
+}
+
+.admin-dashboard__appointment-row:last-child {
+    border-bottom: 0;
+}
+
+.admin-dashboard__appointment-main strong {
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.admin-dashboard__appointment-service {
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+}
+
+.admin-dashboard__appointment-view {
+    color: var(--color-text-accent);
+
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.admin-dashboard__appointment-status {
+    display: none;
+}
+
+/* COLUNA LATERAL */
+
+.admin-dashboard__side {
+    display: grid;
+    gap: 18px;
+}
+
+.admin-dashboard__side-card {
+    padding: 20px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 16px;
+
+    background-color: var(--color-bg-surface);
+}
+
+.admin-dashboard__services-ranking {
+    display: grid;
+    gap: 12px;
+
+    margin: 0;
+    padding-left: 18px;
+}
+
+.admin-dashboard__services-ranking li {
+    padding-left: 2px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.8125rem;
+}
+
+.admin-dashboard__services-ranking li:first-child {
+    color: var(--color-text-primary);
+
+    font-weight: 500;
+}
+
+.admin-dashboard__services-ranking strong {
+    color: inherit;
+    font-weight: 500;
+}
+
+.admin-dashboard__services-ranking span::after {
+    content: ' • ';
+}
+
+.admin-dashboard__reviews-placeholder,
+.admin-dashboard__empty {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+.admin-dashboard__message {
+    max-width: 1120px;
+    margin-top: 26px;
+
+    padding: 16px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 12px;
+
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+
+    font-size: 0.8125rem;
+}
+
+/* DESKTOP MENOR / TABLET */
+
+@media (max-width: 1250px) and (min-width: 768px) {
+    .admin-dashboard__stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 250px));
+    }
+
+    .admin-dashboard__columns {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-dashboard__side {
+        grid-template-columns: repeat(2,
+                minmax(0, 1fr));
+
+        max-width: 700px;
+    }
+}
+
+/* MOBILE */
+
+@media (max-width: 767px) {
+    .admin-dashboard {
+        padding: 24px 24px 32px;
+    }
+
+    .admin-dashboard__topbar {
+        display: block;
+        min-height: 0;
+    }
+
+    .admin-dashboard__topbar h1 {
+        margin-bottom: 14px;
+
+        font-size: 1.75rem;
+        line-height: 34px;
+    }
+
+    .admin-dashboard__topbar p {
+        font-size: 0.75rem;
+        line-height: 18px;
+    }
+
+    .admin-dashboard__topbar .button {
+        display: none;
+    }
+
+    .admin-dashboard__stats {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 22px;
+
+        margin-top: 22px;
+    }
+
+    .admin-dashboard__columns {
+        display: block;
+
+        margin-top: 22px;
+    }
+
+    .admin-dashboard__appointments {
+        padding: 0;
+
+        border: 0;
+
+        background-color: transparent;
+    }
+
+    .admin-dashboard__appointments h2 {
+        margin-bottom: 10px;
+
+        font-size: 1.25rem;
+        line-height: 28px;
+    }
+
+    .admin-dashboard__section-subtitle {
+        margin-bottom: 10px;
+
+        font-size: 0.75rem;
+    }
+
+    .admin-dashboard__appointment-list {
+        display: grid;
+        gap: 10px;
+
+        margin-top: 0;
+    }
+
+    .admin-dashboard__appointment-row {
+        display: flex;
+        min-height: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+
+        padding: 18px;
+
+        border: 1px solid var(--color-border-default);
+        border-radius: 16px;
+
+        background-color: var(--color-bg-surface);
+    }
+
+    .admin-dashboard__appointment-main {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .admin-dashboard__appointment-main strong {
+        font-size: 0.8125rem;
+    }
+
+    .admin-dashboard__appointment-service {
+        font-size: 0.75rem;
+    }
+
+    .admin-dashboard__appointment-status {
+        display: block;
+    }
+
+    .admin-dashboard__appointment-view {
+        display: none;
+    }
+
+    .admin-dashboard__side {
+        display: none;
+    }
+
+    .admin-dashboard__message {
+        margin-top: 22px;
+    }
+}
