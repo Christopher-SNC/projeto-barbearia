@@ -1,7 +1,17 @@
-import { useEffect, useMemo, useState } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-import { listarAgendamentos, criarAgendamento } from '../../services/agendamentoService'
+import Button from '../../components/Button/Button'
+import DateInput from '../../components/DateInput/DateInput'
+
+import {
+  criarAgendamento,
+  listarAgendamentos,
+} from '../../services/agendamentoService'
 import { listarBarbeiros } from '../../services/barbeiroService'
 import { listarBarbeirosServicos } from '../../services/barbeiroServicoService'
 import { listarDisponibilidades } from '../../services/disponibilidadeService'
@@ -16,6 +26,8 @@ import type { Disponibilidade } from '../../types/Disponibilidade'
 import type { HorarioFuncionamento } from '../../types/HorarioFuncionamento'
 import type { Servico } from '../../types/Servico'
 import type { Usuario } from '../../types/Usuario'
+
+import './NovoAgendamento.css'
 
 const BUFFER_MINUTOS = 15
 const ID_CLIENTE_TESTE = 1
@@ -32,6 +44,7 @@ const diasSemana: Record<number, string> = {
 
 function horaParaMinutos(hora: string) {
   const [horas, minutos] = hora.split(':').map(Number)
+
   return horas * 60 + minutos
 }
 
@@ -39,11 +52,14 @@ function minutosParaHora(total: number) {
   const horas = Math.floor(total / 60)
   const minutos = total % 60
 
-  return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`
+  return `${String(horas).padStart(2, '0')}:${String(
+    minutos,
+  ).padStart(2, '0')}`
 }
 
 function obterDiaSemana(data: string) {
   const dataLocal = new Date(`${data}T12:00:00`)
+
   return diasSemana[dataLocal.getDay()]
 }
 
@@ -54,21 +70,47 @@ function formatarPreco(valor: number) {
   }).format(valor)
 }
 
+function formatarData(data: string) {
+  if (!data) {
+    return '—'
+  }
+
+  const [ano, mes, dia] = data.split('-')
+
+  return `${dia}/${mes}/${ano}`
+}
+
 function NovoAgendamento() {
   const { id } = useParams()
 
   const idBarbearia = Number(id)
 
   const [servicos, setServicos] = useState<Servico[]>([])
-  const [barbeiros, setBarbeiros] = useState<Barbeiro[]>([])
-  const [usuarios, setUsuarios] = useState<Usuario[]>([])
-  const [vinculos, setVinculos] = useState<BarbeiroServico[]>([])
-  const [disponibilidades, setDisponibilidades] = useState<Disponibilidade[]>([])
-  const [horariosFuncionamento, setHorariosFuncionamento] = useState<HorarioFuncionamento[]>([])
-  const [agendamentos, setAgendamentos] = useState<Agendamento[]>([])
+  const [barbeiros, setBarbeiros] = useState<
+    Barbeiro[]
+  >([])
+  const [usuarios, setUsuarios] = useState<Usuario[]>(
+    [],
+  )
+  const [vinculos, setVinculos] = useState<
+    BarbeiroServico[]
+  >([])
+  const [disponibilidades, setDisponibilidades] =
+    useState<Disponibilidade[]>([])
+  const [
+    horariosFuncionamento,
+    setHorariosFuncionamento,
+  ] = useState<HorarioFuncionamento[]>([])
+  const [agendamentos, setAgendamentos] = useState<
+    Agendamento[]
+  >([])
 
-  const [idServico, setIdServico] = useState<number | null>(null)
-  const [idBarbeiro, setIdBarbeiro] = useState<number | null>(null)
+  const [idServico, setIdServico] = useState<
+    number | null
+  >(null)
+  const [idBarbeiro, setIdBarbeiro] = useState<
+    number | null
+  >(null)
   const [data, setData] = useState('')
   const [hora, setHora] = useState('')
 
@@ -115,8 +157,8 @@ function NovoAgendamento() {
         setBarbeiros(
           dadosBarbeiros.filter(
             (barbeiro) =>
-              barbeiro.idBarbearia === idBarbearia &&
-              barbeiro.ativo,
+              barbeiro.idBarbearia ===
+              idBarbearia && barbeiro.ativo,
           ),
         )
 
@@ -127,7 +169,10 @@ function NovoAgendamento() {
         setAgendamentos(dadosAgendamentos)
       } catch (error) {
         console.error(error)
-        setErro('Não foi possível carregar os dados do agendamento.')
+
+        setErro(
+          'Não foi possível carregar os dados do agendamento.',
+        )
       } finally {
         setCarregando(false)
       }
@@ -138,6 +183,10 @@ function NovoAgendamento() {
 
   const servicoSelecionado = servicos.find(
     (servico) => servico.idServico === idServico,
+  )
+
+  const barbeiroSelecionado = barbeiros.find(
+    (barbeiro) => barbeiro.idBarbeiro === idBarbeiro,
   )
 
   const barbeirosDisponiveis = useMemo(() => {
@@ -169,35 +218,51 @@ function NovoAgendamento() {
 
     const diaSemana = obterDiaSemana(data)
 
-    const horarioBarbearia = horariosFuncionamento.find(
-      (horario) =>
-        horario.idBarbearia === idBarbearia &&
-        horario.diaSemana === diaSemana &&
-        !horario.fechado,
-    )
+    const horarioBarbearia =
+      horariosFuncionamento.find(
+        (horario) =>
+          horario.idBarbearia === idBarbearia &&
+          horario.diaSemana === diaSemana &&
+          !horario.fechado,
+      )
 
-    const disponibilidadeBarbeiro = disponibilidades.find(
-      (disponibilidade) =>
-        disponibilidade.idBarbeiro === idBarbeiro &&
-        disponibilidade.diaSemana === diaSemana &&
-        disponibilidade.ativo,
-    )
+    const disponibilidadeBarbeiro =
+      disponibilidades.find(
+        (disponibilidade) =>
+          disponibilidade.idBarbeiro ===
+          idBarbeiro &&
+          disponibilidade.diaSemana ===
+          diaSemana &&
+          disponibilidade.ativo,
+      )
 
-    if (!horarioBarbearia || !disponibilidadeBarbeiro) {
+    if (
+      !horarioBarbearia ||
+      !disponibilidadeBarbeiro
+    ) {
       return []
     }
 
     const inicio = Math.max(
-      horaParaMinutos(horarioBarbearia.horaAbertura),
-      horaParaMinutos(disponibilidadeBarbeiro.horaInicio),
+      horaParaMinutos(
+        horarioBarbearia.horaAbertura,
+      ),
+      horaParaMinutos(
+        disponibilidadeBarbeiro.horaInicio,
+      ),
     )
 
     const fim = Math.min(
-      horaParaMinutos(horarioBarbearia.horaFechamento),
-      horaParaMinutos(disponibilidadeBarbeiro.horaFim),
+      horaParaMinutos(
+        horarioBarbearia.horaFechamento,
+      ),
+      horaParaMinutos(
+        disponibilidadeBarbeiro.horaFim,
+      ),
     )
 
-    const duracao = servicoSelecionado.duracaoMinutos
+    const duracao =
+      servicoSelecionado.duracaoMinutos
 
     const ocupados = agendamentos.filter(
       (agendamento) =>
@@ -216,30 +281,35 @@ function NovoAgendamento() {
       const candidatoFimComBuffer =
         candidato + duracao + BUFFER_MINUTOS
 
-      const conflito = ocupados.some((agendamento) => {
-        const dataHora = agendamento.dataHoraInicio
-        const horaExistente = dataHora.split('T')[1]
+      const conflito = ocupados.some(
+        (agendamento) => {
+          const dataHora =
+            agendamento.dataHoraInicio
 
-        const inicioExistente =
-          horaParaMinutos(horaExistente)
+          const horaExistente =
+            dataHora.split('T')[1]
 
-        const duracaoExistente =
-          agendamento.itens.reduce(
-            (total, item) =>
-              total + item.duracaoMinutos,
-            0,
+          const inicioExistente =
+            horaParaMinutos(horaExistente)
+
+          const duracaoExistente =
+            agendamento.itens.reduce(
+              (total, item) =>
+                total + item.duracaoMinutos,
+              0,
+            )
+
+          const fimExistenteComBuffer =
+            inicioExistente +
+            duracaoExistente +
+            BUFFER_MINUTOS
+
+          return (
+            candidato < fimExistenteComBuffer &&
+            candidatoFimComBuffer > inicioExistente
           )
-
-        const fimExistenteComBuffer =
-          inicioExistente +
-          duracaoExistente +
-          BUFFER_MINUTOS
-
-        return (
-          candidato < fimExistenteComBuffer &&
-          candidatoFimComBuffer > inicioExistente
-        )
-      })
+        },
+      )
 
       if (!conflito) {
         opcoes.push(minutosParaHora(candidato))
@@ -266,14 +336,48 @@ function NovoAgendamento() {
     )
   }
 
+  function selecionarServico(idSelecionado: number) {
+    setIdServico(idSelecionado)
+    setIdBarbeiro(null)
+    setData('')
+    setHora('')
+    setErro('')
+    setSucesso('')
+  }
+
+  function selecionarBarbeiro(idSelecionado: number) {
+    setIdBarbeiro(idSelecionado)
+    setData('')
+    setHora('')
+    setErro('')
+    setSucesso('')
+  }
+
+  const agendamentoCompleto = Boolean(
+    idServico &&
+    idBarbeiro &&
+    data &&
+    hora,
+  )
+
   async function confirmarAgendamento() {
-    if (
-      !idServico ||
-      !idBarbeiro ||
-      !data ||
-      !hora
-    ) {
-      setErro('Preencha todas as informações do agendamento.')
+    if (!idServico) {
+      setErro('Escolha um serviço.')
+      return
+    }
+
+    if (!idBarbeiro) {
+      setErro('Escolha um barbeiro.')
+      return
+    }
+
+    if (!data) {
+      setErro('Escolha uma data.')
+      return
+    }
+
+    if (!hora) {
+      setErro('Escolha um horário.')
       return
     }
 
@@ -300,11 +404,16 @@ function NovoAgendamento() {
 
       setHora('')
 
-      const atualizados = await listarAgendamentos()
+      const atualizados =
+        await listarAgendamentos()
+
       setAgendamentos(atualizados)
     } catch (error) {
       console.error(error)
-      setErro('Não foi possível criar o agendamento.')
+
+      setErro(
+        'Não foi possível criar o agendamento.',
+      )
     } finally {
       setEnviando(false)
     }
@@ -312,155 +421,346 @@ function NovoAgendamento() {
 
   if (carregando) {
     return (
-      <main className="page">
-        <p>Carregando opções de agendamento...</p>
+      <main className="booking-page">
+        <div className="booking-container">
+          <p>Carregando opções de agendamento...</p>
+        </div>
       </main>
     )
   }
 
   return (
-    <main className="page">
-      <h1>Novo agendamento</h1>
+    <main className="booking-page">
+      <section className="booking-header">
+        <div className="booking-container">
+          <h1>Novo agendamento</h1>
 
-      {erro && (
-        <p className="mensagem-erro">{erro}</p>
-      )}
+          <p>
+            Escolha o serviço, profissional, data e
+            horário.
+          </p>
 
-      {sucesso && (
-        <p className="mensagem-sucesso">{sucesso}</p>
-      )}
+          <div className="booking-progress">
+            <span
+              className={
+                idServico
+                  ? 'booking-progress__item booking-progress__item--complete'
+                  : 'booking-progress__item booking-progress__item--active'
+              }
+            >
+              Serviço
+            </span>
 
-      <div className="agendamento-form">
-        <label>
-          Serviço
+            <span
+              className={
+                idBarbeiro
+                  ? 'booking-progress__item booking-progress__item--complete'
+                  : 'booking-progress__item'
+              }
+            >
+              Barbeiro
+            </span>
 
-          <select
-            value={idServico ?? ''}
-            onChange={(event) => {
-              const valor = Number(event.target.value)
+            <span
+              className={
+                data
+                  ? 'booking-progress__item booking-progress__item--complete'
+                  : 'booking-progress__item'
+              }
+            >
+              Data
+            </span>
 
-              setIdServico(valor || null)
-              setIdBarbeiro(null)
-              setData('')
-              setHora('')
-            }}
-          >
-            <option value="">
-              Selecione um serviço
-            </option>
+            <span
+              className={
+                hora
+                  ? 'booking-progress__item booking-progress__item--complete'
+                  : 'booking-progress__item'
+              }
+            >
+              Horário
+            </span>
+          </div>
+        </div>
+      </section>
 
-            {servicos.map((servico) => (
-              <option
-                key={servico.idServico}
-                value={servico.idServico}
-              >
-                {servico.nome} -{' '}
-                {formatarPreco(servico.preco)} -{' '}
-                {servico.duracaoMinutos} min
-              </option>
-            ))}
-          </select>
-        </label>
+      <section className="booking-content">
+        <div className="booking-container booking-layout">
+          <div className="booking-form">
+            {erro && (
+              <p className="booking-message booking-message--error">
+                {erro}
+              </p>
+            )}
 
-        <label>
-          Barbeiro
+            {sucesso && (
+              <p className="booking-message booking-message--success">
+                {sucesso}
+              </p>
+            )}
 
-          <select
-            value={idBarbeiro ?? ''}
-            disabled={!idServico}
-            onChange={(event) => {
-              const valor = Number(event.target.value)
+            <section className="booking-section">
+              <h2>1. Escolha o serviço</h2>
 
-              setIdBarbeiro(valor || null)
-              setData('')
-              setHora('')
-            }}
-          >
-            <option value="">
-              Selecione um barbeiro
-            </option>
+              <div className="booking-options">
+                {servicos.map((servico) => {
+                  const selecionado =
+                    servico.idServico === idServico
 
-            {barbeirosDisponiveis.map((barbeiro) => (
-              <option
-                key={barbeiro.idBarbeiro}
-                value={barbeiro.idBarbeiro}
-              >
-                {nomeBarbeiro(barbeiro)}
-              </option>
-            ))}
-          </select>
-        </label>
+                  return (
+                    <button
+                      className={[
+                        'booking-option',
+                        selecionado
+                          ? 'booking-option--selected'
+                          : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                      key={servico.idServico}
+                      type="button"
+                      onClick={() =>
+                        selecionarServico(
+                          servico.idServico,
+                        )
+                      }
+                    >
+                      <span className="booking-option__content">
+                        <strong>{servico.nome}</strong>
 
-        <label>
-          Data
+                        <small>
+                          {servico.duracaoMinutos} min •{' '}
+                          {formatarPreco(
+                            servico.preco,
+                          )}
+                        </small>
+                      </span>
 
-          <input
-            type="date"
-            value={data}
-            disabled={!idBarbeiro}
-            min={new Date().toISOString().split('T')[0]}
-            onChange={(event) => {
-              setData(event.target.value)
-              setHora('')
-            }}
-          />
-        </label>
+                      <span
+                        className={[
+                          'booking-option__action',
+                          selecionado
+                            ? 'booking-option__action--selected'
+                            : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                      >
+                        {selecionado
+                          ? 'Selecionado'
+                          : 'Selecionar'}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </section>
 
-        <label>
-          Horário
+            <section className="booking-section">
+              <h2>2. Escolha o barbeiro</h2>
 
-          <select
-            value={hora}
-            disabled={!data}
-            onChange={(event) =>
-              setHora(event.target.value)
-            }
-          >
-            <option value="">
-              Selecione um horário
-            </option>
+              {!idServico ? (
+                <p className="booking-help">
+                  Escolha primeiro um serviço.
+                </p>
+              ) : barbeirosDisponiveis.length ===
+                0 ? (
+                <p className="booking-help">
+                  Nenhum barbeiro disponível para este
+                  serviço.
+                </p>
+              ) : (
+                <div className="booking-options">
+                  {barbeirosDisponiveis.map(
+                    (barbeiro) => {
+                      const selecionado =
+                        barbeiro.idBarbeiro ===
+                        idBarbeiro
 
-            {horariosDisponiveis.map((horario) => (
-              <option
-                key={horario}
-                value={horario}
-              >
-                {horario}
-              </option>
-            ))}
-          </select>
-        </label>
+                      return (
+                        <button
+                          className={[
+                            'booking-option',
+                            selecionado
+                              ? 'booking-option--selected'
+                              : '',
+                          ]
+                            .filter(Boolean)
+                            .join(' ')}
+                          key={barbeiro.idBarbeiro}
+                          type="button"
+                          onClick={() =>
+                            selecionarBarbeiro(
+                              barbeiro.idBarbeiro,
+                            )
+                          }
+                        >
+                          <span className="booking-option__content">
+                            <strong>
+                              {nomeBarbeiro(barbeiro)}
+                            </strong>
 
-        {data &&
-          idBarbeiro &&
-          horariosDisponiveis.length === 0 && (
-            <p>
-              Nenhum horário disponível para esta data.
-            </p>
-          )}
+                            {barbeiro.descricao && (
+                              <small>
+                                {barbeiro.descricao}
+                              </small>
+                            )}
+                          </span>
 
-        <button
-          type="button"
-          disabled={
-            !idServico ||
-            !idBarbeiro ||
-            !data ||
-            !hora ||
-            enviando
-          }
-          onClick={confirmarAgendamento}
-        >
-          {enviando
-            ? 'Confirmando...'
-            : 'Confirmar agendamento'}
-        </button>
-      </div>
+                          <span
+                            className={[
+                              'booking-option__action',
+                              selecionado
+                                ? 'booking-option__action--selected'
+                                : '',
+                            ]
+                              .filter(Boolean)
+                              .join(' ')}
+                          >
+                            {selecionado
+                              ? 'Selecionado'
+                              : 'Selecionar'}
+                          </span>
+                        </button>
+                      )
+                    },
+                  )}
+                </div>
+              )}
+            </section>
 
-      <p>
-        <Link to={`/barbearias/${idBarbearia}`}>
-          Voltar para a barbearia
-        </Link>
-      </p>
+            <section className="booking-section">
+              <h2>3. Escolha a data</h2>
+
+              <DateInput
+                id="booking-date"
+                value={data}
+                disabled={!idBarbeiro}
+                min={
+                  new Date()
+                    .toISOString()
+                    .split('T')[0]
+                }
+                onChange={(event) => {
+                  setData(event.target.value)
+                  setHora('')
+                  setErro('')
+                }}
+              />
+            </section>
+
+            <section className="booking-section">
+              <h2>4. Escolha o horário</h2>
+
+              {!data ? (
+                <p className="booking-help">
+                  Escolha primeiro uma data.
+                </p>
+              ) : horariosDisponiveis.length === 0 ? (
+                <p className="booking-help">
+                  Nenhum horário disponível para esta
+                  data.
+                </p>
+              ) : (
+                <div className="booking-times">
+                  {horariosDisponiveis.map(
+                    (horario) => (
+                      <button
+                        className={[
+                          'booking-time',
+                          hora === horario
+                            ? 'booking-time--selected'
+                            : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                        key={horario}
+                        type="button"
+                        onClick={() => {
+                          setHora(horario)
+                          setErro('')
+                        }}
+                      >
+                        {horario}
+                      </button>
+                    ),
+                  )}
+                </div>
+              )}
+            </section>
+          </div>
+
+          <aside className="booking-summary">
+            <h2>Resumo</h2>
+
+            <dl>
+              <div>
+                <dt>Serviço</dt>
+                <dd>
+                  {servicoSelecionado?.nome ?? '—'}
+                </dd>
+              </div>
+
+              <div>
+                <dt>Barbeiro</dt>
+                <dd>
+                  {barbeiroSelecionado
+                    ? nomeBarbeiro(
+                      barbeiroSelecionado,
+                    )
+                    : '—'}
+                </dd>
+              </div>
+
+              <div>
+                <dt>Data</dt>
+                <dd>{formatarData(data)}</dd>
+              </div>
+
+              <div>
+                <dt>Horário</dt>
+                <dd>{hora || '—'}</dd>
+              </div>
+
+              <div>
+                <dt>Total</dt>
+                <dd>
+                  {servicoSelecionado
+                    ? formatarPreco(
+                      servicoSelecionado.preco,
+                    )
+                    : '—'}
+                </dd>
+              </div>
+            </dl>
+
+            <Button
+              className={[
+                'booking-confirm-button',
+                agendamentoCompleto
+                  ? 'booking-confirm-button--ready'
+                  : 'booking-confirm-button--incomplete',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              fullWidth
+              type="button"
+              disabled={enviando}
+              onClick={confirmarAgendamento}
+            >
+              {enviando
+                ? 'Confirmando...'
+                : 'Confirmar agendamento'}
+            </Button>
+          </aside>
+        </div>
+
+        <div className="booking-container booking-back">
+          <Link to={`/barbearias/${idBarbearia}`}>
+            ← Voltar para a barbearia
+          </Link>
+        </div>
+      </section>
     </main>
   )
 }
