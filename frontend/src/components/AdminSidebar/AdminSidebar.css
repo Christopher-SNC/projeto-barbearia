@@ -1,0 +1,245 @@
+.admin-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 20;
+
+    display: flex;
+    width: 248px;
+    min-height: 100vh;
+    flex-direction: column;
+    gap: 22px;
+
+    padding: 28px 20px;
+
+    background-color: var(--color-graphite-950);
+}
+
+.admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: var(--color-white);
+
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+
+.admin-brand__mark {
+    position: relative;
+
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
+
+    border-radius: 9px;
+
+    background-color: var(--color-cream-50);
+}
+
+.admin-brand__mark::after {
+    position: absolute;
+    top: 6px;
+    left: 13px;
+
+    width: 4px;
+    height: 16px;
+
+    border-radius: 2px;
+
+    background-color: var(--color-gold-500);
+
+    content: '';
+    transform: rotate(18deg);
+}
+
+.admin-store {
+    display: grid;
+    gap: 4px;
+
+    padding: 14px;
+
+    border-radius: 12px;
+
+    background-color: #242422;
+}
+
+.admin-store strong {
+    color: var(--color-white);
+
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.admin-store span {
+    color: var(--color-graphite-300);
+
+    font-size: 0.6875rem;
+}
+
+.admin-navigation {
+    display: grid;
+    gap: 6px;
+}
+
+.admin-navigation__item {
+    display: flex;
+    width: 208px;
+    height: 44px;
+    align-items: center;
+
+    padding: 0 14px;
+
+    border-radius: 10px;
+
+    color: var(--color-graphite-300);
+
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.admin-navigation__item:hover {
+    background-color: var(--color-graphite-800);
+    color: var(--color-white);
+}
+
+.admin-navigation__item--active {
+    background-color: var(--color-graphite-800);
+    color: var(--color-white);
+
+    font-weight: 600;
+}
+
+.admin-sidebar__logout {
+    margin-top: auto;
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+    color: var(--color-graphite-300);
+
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-align: left;
+}
+
+.admin-sidebar__logout:hover {
+    color: var(--color-white);
+}
+
+/* MOBILE */
+
+.admin-mobile-header,
+.admin-mobile-menu {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .admin-sidebar {
+        display: none;
+    }
+
+    .admin-mobile-header {
+        position: relative;
+        z-index: 30;
+
+        display: flex;
+        width: 100%;
+        height: 72px;
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 0 24px;
+
+        border-bottom: 1px solid var(--color-border-default);
+
+        background-color: var(--color-bg-page);
+    }
+
+    .admin-mobile-header__brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        color: var(--color-text-primary);
+
+        font-size: 0.8125rem;
+    }
+
+    .admin-mobile-header__mark {
+        position: relative;
+
+        width: 26px;
+        height: 26px;
+
+        border-radius: 8px;
+
+        background-color: var(--color-bg-inverse);
+    }
+
+    .admin-mobile-header__mark::after {
+        position: absolute;
+        top: 5px;
+        left: 11px;
+
+        width: 4px;
+        height: 14px;
+
+        border-radius: 2px;
+
+        background-color: var(--color-gold-500);
+
+        content: '';
+        transform: rotate(18deg);
+    }
+
+    .admin-mobile-header__menu {
+        display: grid;
+        width: 36px;
+        height: 36px;
+        place-items: center;
+
+        padding: 0;
+
+        border: 1px solid var(--color-border-default);
+        border-radius: 10px;
+
+        background-color: var(--color-bg-surface);
+        color: var(--color-text-primary);
+
+        font-size: 1rem;
+    }
+
+    .admin-mobile-menu {
+        position: absolute;
+        z-index: 25;
+        top: 72px;
+        right: 0;
+        left: 0;
+
+        display: grid;
+        gap: 16px;
+
+        padding: 20px 24px 24px;
+
+        border-bottom: 1px solid var(--color-border-default);
+
+        background-color: var(--color-graphite-950);
+
+        box-shadow: var(--shadow-card);
+    }
+
+    .admin-store--mobile {
+        width: 100%;
+    }
+
+    .admin-mobile-menu .admin-navigation__item {
+        width: 100%;
+    }
+
+    .admin-mobile-menu .admin-sidebar__logout {
+        margin-top: 10px;
+    }
+}

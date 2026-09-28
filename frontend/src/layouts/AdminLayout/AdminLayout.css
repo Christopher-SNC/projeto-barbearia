@@ -1,0 +1,17 @@
+.admin-layout {
+    min-height: 100vh;
+
+    background-color: var(--color-bg-page);
+}
+
+.admin-layout__content {
+    min-height: 100vh;
+
+    margin-left: 248px;
+}
+
+@media (max-width: 767px) {
+    .admin-layout__content {
+        margin-left: 0;
+    }
+}
