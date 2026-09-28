@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
+
+import Button from '../../components/Button/Button'
 
 import { buscarBarbeariaPorId } from '../../services/barbeariaService'
 import { listarBarbeiros } from '../../services/barbeiroService'
@@ -14,6 +20,8 @@ import type { Endereco } from '../../types/Endereco'
 import type { HorarioFuncionamento } from '../../types/HorarioFuncionamento'
 import type { Servico } from '../../types/Servico'
 import type { Usuario } from '../../types/Usuario'
+
+import './DetalhesBarbearia.css'
 
 const nomesDias: Record<string, string> = {
   SEGUNDA: 'Segunda-feira',
@@ -38,12 +46,24 @@ function formatarPreco(valor: number) {
 
 function DetalhesBarbearia() {
   const { id } = useParams()
+  const navigate = useNavigate()
 
-  const [barbearia, setBarbearia] = useState<Barbearia | null>(null)
-  const [endereco, setEndereco] = useState<Endereco | null>(null)
-  const [horarios, setHorarios] = useState<HorarioFuncionamento[]>([])
+  const [barbearia, setBarbearia] =
+    useState<Barbearia | null>(null)
+
+  const [endereco, setEndereco] =
+    useState<Endereco | null>(null)
+
+  const [horarios, setHorarios] = useState<
+    HorarioFuncionamento[]
+  >([])
+
   const [servicos, setServicos] = useState<Servico[]>([])
-  const [barbeiros, setBarbeiros] = useState<Barbeiro[]>([])
+
+  const [barbeiros, setBarbeiros] = useState<
+    Barbeiro[]
+  >([])
+
   const [usuarios, setUsuarios] = useState<Usuario[]>([])
 
   const [carregando, setCarregando] = useState(true)
@@ -80,34 +100,41 @@ function DetalhesBarbearia() {
 
         setEndereco(
           dadosEnderecos.find(
-            (item) => item.idBarbearia === idBarbearia,
+            (item) =>
+              item.idBarbearia === idBarbearia,
           ) ?? null,
         )
 
         setHorarios(
           dadosHorarios.filter(
-            (item) => item.idBarbearia === idBarbearia,
+            (item) =>
+              item.idBarbearia === idBarbearia,
           ),
         )
 
         setServicos(
           dadosServicos.filter(
             (item) =>
-              item.idBarbearia === idBarbearia && item.ativo,
+              item.idBarbearia === idBarbearia &&
+              item.ativo,
           ),
         )
 
         setBarbeiros(
           dadosBarbeiros.filter(
             (item) =>
-              item.idBarbearia === idBarbearia && item.ativo,
+              item.idBarbearia === idBarbearia &&
+              item.ativo,
           ),
         )
 
         setUsuarios(dadosUsuarios)
       } catch (error) {
         console.error(error)
-        setErro('Não foi possível carregar os dados da barbearia.')
+
+        setErro(
+          'Não foi possível carregar os dados da barbearia.',
+        )
       } finally {
         setCarregando(false)
       }
@@ -124,169 +151,224 @@ function DetalhesBarbearia() {
     return usuario?.nome ?? 'Barbeiro'
   }
 
+  function irParaAgendamento() {
+    if (!barbearia) {
+      return
+    }
+
+    navigate(
+      `/barbearias/${barbearia.idBarbearia}/agendar`,
+    )
+  }
+
   if (carregando) {
     return (
-      <main className="page">
-        <p>Carregando barbearia...</p>
+      <main className="barbershop-details">
+        <section className="barbershop-details__content">
+          <div className="barbershop-details__container">
+            <p>Carregando barbearia...</p>
+          </div>
+        </section>
       </main>
     )
   }
 
   if (erro || !barbearia) {
     return (
-      <main className="page">
-        <p>{erro || 'Barbearia não encontrada.'}</p>
+      <main className="barbershop-details">
+        <section className="barbershop-details__content">
+          <div className="barbershop-details__container">
+            <p>
+              {erro || 'Barbearia não encontrada.'}
+            </p>
 
-        <Link to="/barbearias">
-          Voltar para barbearias
-        </Link>
+            <Link to="/barbearias">
+              ← Voltar para barbearias
+            </Link>
+          </div>
+        </section>
       </main>
     )
   }
 
   return (
-    <main className="page detalhes-barbearia">
-      <section>
-        <h1>{barbearia.nome}</h1>
+    <main className="barbershop-details">
+      <section className="barbershop-details__hero">
+        <div className="barbershop-details__container barbershop-details__hero-grid">
+          <div className="barbershop-details__image">
+            <span />
+          </div>
 
-        {barbearia.descricao && (
-          <p>{barbearia.descricao}</p>
-        )}
+          <div className="barbershop-details__intro">
+            <h1>{barbearia.nome}</h1>
 
-        {barbearia.telefone && (
-          <p>
-            <strong>Telefone:</strong> {barbearia.telefone}
-          </p>
-        )}
+            {endereco && (
+              <p className="barbershop-details__location">
+                {endereco.bairro}, {endereco.cidade}
+              </p>
+            )}
 
-        {barbearia.cnpj && (
-          <p>
-            <strong>CNPJ:</strong> {barbearia.cnpj}
-          </p>
-        )}
+            {barbearia.descricao && (
+              <p className="barbershop-details__description">
+                {barbearia.descricao}
+              </p>
+            )}
 
-        <p>
-          <strong>Status:</strong>{' '}
-          {barbearia.ativa ? 'Ativa' : 'Inativa'}
-        </p>
+            <Button
+              variant="accent"
+              type="button"
+              onClick={irParaAgendamento}
+            >
+              Agendar horário
+            </Button>
+          </div>
+        </div>
       </section>
 
-      <section className="detalhes-secao">
-        <h2>Endereço</h2>
+      <section className="barbershop-details__content">
+        <div className="barbershop-details__container barbershop-details__content-grid">
+          <div className="barbershop-details__main">
+            <section className="barbershop-details__section">
+              <h2>Serviços</h2>
 
-        {endereco ? (
-          <>
-            <p>
-              {endereco.logradouro}, {endereco.numero}
-              {endereco.complemento
-                ? ` - ${endereco.complemento}`
-                : ''}
-            </p>
-
-            <p>
-              {endereco.bairro} - {endereco.cidade}/{endereco.estado}
-            </p>
-
-            <p>CEP: {endereco.cep}</p>
-          </>
-        ) : (
-          <p>Endereço não informado.</p>
-        )}
-      </section>
-
-      <section className="detalhes-secao">
-        <h2>Horários de funcionamento</h2>
-
-        {horarios.length === 0 ? (
-          <p>Nenhum horário cadastrado.</p>
-        ) : (
-          <ul className="lista-detalhes">
-            {horarios.map((horario) => (
-              <li key={horario.idHorario}>
-                <strong>
-                  {nomesDias[horario.diaSemana] ??
-                    horario.diaSemana}
-                  :
-                </strong>{' '}
-                {horario.fechado
-                  ? 'Fechado'
-                  : `${formatarHora(
-                    horario.horaAbertura,
-                  )} às ${formatarHora(
-                    horario.horaFechamento,
-                  )}`}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section className="detalhes-secao">
-        <h2>Serviços</h2>
-
-        {servicos.length === 0 ? (
-          <p>Nenhum serviço disponível.</p>
-        ) : (
-          <div className="detalhes-grid">
-            {servicos.map((servico) => (
-              <article
-                className="detalhes-card"
-                key={servico.idServico}
-              >
-                <h3>{servico.nome}</h3>
-
-                {servico.descricao && (
-                  <p>{servico.descricao}</p>
-                )}
-
-                <p>
-                  <strong>{formatarPreco(servico.preco)}</strong>
+              {servicos.length === 0 ? (
+                <p className="barbershop-details__empty">
+                  Nenhum serviço disponível.
                 </p>
+              ) : (
+                <div className="barbershop-services">
+                  {servicos.map((servico) => (
+                    <article
+                      className="barbershop-service"
+                      key={servico.idServico}
+                    >
+                      <div>
+                        <h3>{servico.nome}</h3>
 
-                <p>{servico.duracaoMinutos} minutos</p>
-              </article>
-            ))}
+                        <p>
+                          {servico.duracaoMinutos} min •{' '}
+                          {formatarPreco(servico.preco)}
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={irParaAgendamento}
+                      >
+                        <span className="barbershop-service__desktop-action">
+                          Agendar
+                        </span>
+
+                        <span
+                          className="barbershop-service__mobile-action"
+                          aria-hidden="true"
+                        >
+                          ›
+                        </span>
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            <section className="barbershop-details__section">
+              <h2>Profissionais</h2>
+
+              {barbeiros.length === 0 ? (
+                <p className="barbershop-details__empty">
+                  Nenhum profissional disponível.
+                </p>
+              ) : (
+                <div className="barbershop-professionals">
+                  {barbeiros.map((barbeiro) => (
+                    <article
+                      className="barbershop-professional"
+                      key={barbeiro.idBarbeiro}
+                    >
+                      <div className="barbershop-professional__avatar" />
+
+                      <div className="barbershop-professional__info">
+                        <h3>
+                          {buscarNomeBarbeiro(
+                            barbeiro.idUsuario,
+                          )}
+                        </h3>
+
+                        {barbeiro.descricao && (
+                          <p>{barbeiro.descricao}</p>
+                        )}
+                      </div>
+
+                      <span
+                        className="barbershop-professional__arrow"
+                        aria-hidden="true"
+                      >
+                        ›
+                      </span>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
           </div>
-        )}
-      </section>
 
-      <section className="detalhes-secao">
-        <h2>Barbeiros</h2>
+          <aside className="barbershop-details__aside">
+            <section className="barbershop-hours">
+              <h2>Horário de funcionamento</h2>
 
-        {barbeiros.length === 0 ? (
-          <p>Nenhum barbeiro disponível.</p>
-        ) : (
-          <div className="detalhes-grid">
-            {barbeiros.map((barbeiro) => (
-              <article
-                className="detalhes-card"
-                key={barbeiro.idBarbeiro}
+              {horarios.length === 0 ? (
+                <p>Nenhum horário cadastrado.</p>
+              ) : (
+                <ul>
+                  {horarios.map((horario) => (
+                    <li key={horario.idHorario}>
+                      <span>
+                        {nomesDias[
+                          horario.diaSemana
+                        ] ?? horario.diaSemana}
+                      </span>
+
+                      <strong>
+                        {horario.fechado
+                          ? 'Fechado'
+                          : `${formatarHora(
+                              horario.horaAbertura,
+                            )}–${formatarHora(
+                              horario.horaFechamento,
+                            )}`}
+                      </strong>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <div
+                className="barbershop-details__map"
+                aria-label="Mapa ilustrativo da localização"
               >
-                <h3>
-                  {buscarNomeBarbeiro(barbeiro.idUsuario)}
-                </h3>
+                <span className="barbershop-details__map-block barbershop-details__map-block--1" />
+                <span className="barbershop-details__map-block barbershop-details__map-block--2" />
+                <span className="barbershop-details__map-block barbershop-details__map-block--3" />
 
-                {barbeiro.descricao && (
-                  <p>{barbeiro.descricao}</p>
-                )}
-              </article>
-            ))}
-          </div>
-        )}
+                <span className="barbershop-details__map-road barbershop-details__map-road--horizontal" />
+                <span className="barbershop-details__map-road barbershop-details__map-road--diagonal" />
+
+                <span className="barbershop-details__map-pin barbershop-details__map-pin--1" />
+                <span className="barbershop-details__map-pin barbershop-details__map-pin--2" />
+              </div>
+            </section>
+          </aside>
+        </div>
       </section>
 
-      <p>
-        <Link
-          className="primary-link"
-          to={`/barbearias/${barbearia.idBarbearia}/agendar`}
-        >
-          Agendar horário
-        </Link>
-      </p>
-
-      <Link to="/barbearias">
-        Voltar para barbearias
-      </Link>
+      <div className="barbershop-details__back">
+        <div className="barbershop-details__container">
+          <Link to="/barbearias">
+            ← Voltar para barbearias
+          </Link>
+        </div>
+      </div>
     </main>
   )
 }
