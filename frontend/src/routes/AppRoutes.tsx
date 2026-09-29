@@ -10,6 +10,8 @@ import AgendaBarbearia from '../pages/proprietario/AgendaBarbearia'
 
 import AgendamentosProprietario from '../pages/proprietario/AgendamentosProprietario'
 
+import ServicosProprietario from '../pages/proprietario/ServicosProprietario'
+
 import AdminLayout from '../layouts/AdminLayout/AdminLayout'
 import DashboardProprietario from '../pages/proprietario/DashboardProprietario'
 
@@ -72,6 +74,11 @@ function AppRoutes() {
         <Route
           path="agendamentos"
           element={<AgendamentosProprietario />}
+        />
+
+        <Route
+          path="servicos"
+          element={<ServicosProprietario />}
         />
       </Route>
     </Routes>
