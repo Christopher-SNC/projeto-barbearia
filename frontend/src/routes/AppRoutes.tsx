@@ -8,6 +8,8 @@ import MeusAgendamentos from '../pages/cliente/MeusAgendamentos'
 
 import AgendaBarbearia from '../pages/proprietario/AgendaBarbearia'
 
+import AgendamentosProprietario from '../pages/proprietario/AgendamentosProprietario'
+
 import AdminLayout from '../layouts/AdminLayout/AdminLayout'
 import DashboardProprietario from '../pages/proprietario/DashboardProprietario'
 
@@ -51,6 +53,25 @@ function AppRoutes() {
         <Route
           path="agenda"
           element={<AgendaBarbearia />}
+        />
+      </Route>
+      <Route
+        path="/proprietario"
+        element={<AdminLayout />}
+      >
+        <Route
+          index
+          element={<DashboardProprietario />}
+        />
+
+        <Route
+          path="agenda"
+          element={<AgendaBarbearia />}
+        />
+
+        <Route
+          path="agendamentos"
+          element={<AgendamentosProprietario />}
         />
       </Route>
     </Routes>
