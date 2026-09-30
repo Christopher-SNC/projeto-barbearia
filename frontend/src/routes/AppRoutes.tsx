@@ -18,6 +18,8 @@ import HorariosProprietario from '../pages/proprietario/HorariosProprietario'
 
 import PromocoesProprietario from '../pages/proprietario/PromocoesProprietario'
 
+import AvaliacoesProprietario from '../pages/proprietario/AvaliacoesProprietario'
+
 import AdminLayout from '../layouts/AdminLayout/AdminLayout'
 import DashboardProprietario from '../pages/proprietario/DashboardProprietario'
 
@@ -99,6 +101,11 @@ function AppRoutes() {
         <Route
           path="promocoes"
           element={<PromocoesProprietario />}
+        />
+
+        <Route
+          path="avaliacoes"
+          element={<AvaliacoesProprietario />}
         />
       </Route>
     </Routes>
