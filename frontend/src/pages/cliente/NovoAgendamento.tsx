@@ -238,6 +238,9 @@ function NovoAgendamento() {
 
     if (
       !horarioBarbearia ||
+      horarioBarbearia.fechado ||
+      !horarioBarbearia.horaAbertura ||
+      !horarioBarbearia.horaFechamento ||
       !disponibilidadeBarbeiro
     ) {
       return []

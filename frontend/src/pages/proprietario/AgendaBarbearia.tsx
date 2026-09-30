@@ -206,7 +206,9 @@ function AgendaBarbearia() {
     const horariosGrade = useMemo(() => {
         if (
             !horarioBarbearia ||
-            horarioBarbearia.fechado
+            horarioBarbearia.fechado ||
+            !horarioBarbearia.horaAbertura ||
+            !horarioBarbearia.horaFechamento
         ) {
             return []
         }
@@ -276,9 +278,11 @@ function AgendaBarbearia() {
             )
 
         if (
-            !disponibilidade ||
             !horarioBarbearia ||
-            horarioBarbearia.fechado
+            horarioBarbearia.fechado ||
+            !horarioBarbearia.horaAbertura ||
+            !horarioBarbearia.horaFechamento ||
+            !disponibilidade
         ) {
             return false
         }

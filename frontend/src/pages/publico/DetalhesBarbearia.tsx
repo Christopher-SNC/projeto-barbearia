@@ -330,13 +330,21 @@ function DetalhesBarbearia() {
                       </span>
 
                       <strong>
-                        {horario.fechado
-                          ? 'Fechado'
-                          : `${formatarHora(
+                        {horario.fechado ||
+                          !horario.horaAbertura ||
+                          !horario.horaFechamento ? (
+                          'Fechado'
+                        ) : (
+                          <>
+                            {formatarHora(
                               horario.horaAbertura,
-                            )}–${formatarHora(
+                            )}
+                            {'–'}
+                            {formatarHora(
                               horario.horaFechamento,
-                            )}`}
+                            )}
+                          </>
+                        )}
                       </strong>
                     </li>
                   ))}

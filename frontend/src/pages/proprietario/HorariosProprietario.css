@@ -1,0 +1,380 @@
+.admin-hours {
+    min-height: 100vh;
+
+    padding: 32px 36px 64px;
+
+    background-color:
+        var(--color-bg-page);
+}
+
+.admin-hours form {
+    width: min(1080px, 100%);
+}
+
+.admin-hours__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.admin-hours__top h1 {
+    margin: 0 0 6px;
+
+    font-size: 1.875rem;
+    line-height: 1.1;
+}
+
+.admin-hours__top p {
+    margin: 0;
+
+    color:
+        var(--color-text-secondary);
+
+    font-size: 0.8125rem;
+}
+
+.admin-hours__desktop-save .button {
+    min-height: 44px;
+
+    padding-inline: 20px;
+
+    border-radius: 12px;
+}
+
+/* FEEDBACK */
+
+.admin-hours__feedback,
+.admin-hours__loading {
+    margin: 20px 0 0;
+
+    font-size: 0.8rem;
+}
+
+.admin-hours__feedback {
+    padding: 14px 16px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 12px;
+
+    background-color:
+        var(--color-bg-surface);
+}
+
+.admin-hours__feedback--success {
+    border-color: #9bcab4;
+
+    background-color: #edf8f2;
+    color: #16734f;
+}
+
+.admin-hours__feedback--error {
+    border-color: #e9aaa5;
+
+    background-color: #fff0ef;
+    color: #b83a32;
+}
+
+/* CARD */
+
+.admin-hours__card {
+    margin-top: 28px;
+    padding: 22px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 18px;
+
+    background-color:
+        var(--color-bg-surface);
+}
+
+.admin-hours__card-heading {
+    margin-bottom: 18px;
+}
+
+.admin-hours__card-heading h2 {
+    margin: 0 0 4px;
+
+    font-size: 1.1rem;
+}
+
+.admin-hours__card-heading p {
+    margin: 0;
+
+    color:
+        var(--color-text-secondary);
+
+    font-size: 0.72rem;
+}
+
+/* DAYS */
+
+.admin-hours__list {
+    display: grid;
+}
+
+.admin-hours__day {
+    display: grid;
+    grid-template-columns:
+        minmax(160px, 1fr) auto 90px;
+    align-items: center;
+    gap: 24px;
+
+    min-height: 68px;
+
+    border-top: 1px solid var(--color-border-default);
+}
+
+.admin-hours__day:first-child {
+    border-top: 0;
+}
+
+.admin-hours__day-name {
+    font-size: 0.82rem;
+}
+
+.admin-hours__times {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-hours__times input {
+    width: 125px;
+    min-height: 42px;
+
+    padding: 8px 10px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 10px;
+
+    outline: none;
+
+    background-color:
+        var(--color-bg-surface);
+
+    color:
+        var(--color-text-primary);
+
+    font: inherit;
+    font-size: 0.78rem;
+}
+
+.admin-hours__times input:focus {
+    border-color:
+        var(--color-gold-500);
+}
+
+.admin-hours__times input:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.admin-hours__times span {
+    color:
+        var(--color-text-secondary);
+
+    font-size: 0.68rem;
+}
+
+/* STATUS */
+
+.admin-hours__status {
+    justify-self: end;
+
+    min-width: 78px;
+
+    padding: 8px 12px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 999px;
+
+    font: inherit;
+    font-size: 0.7rem;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.admin-hours__status--open {
+    border-color: #e5c998;
+
+    background-color: #f8ead2;
+    color: #9b650e;
+}
+
+.admin-hours__status--closed {
+    background-color:
+        var(--color-bg-page);
+
+    color:
+        var(--color-text-secondary);
+}
+
+.admin-hours__day--closed .admin-hours__day-name {
+    color:
+        var(--color-text-secondary);
+}
+
+/* BUFFER */
+
+.admin-hours__buffer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    margin-top: 18px;
+    padding: 22px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 18px;
+
+    background-color:
+        var(--color-bg-surface);
+}
+
+.admin-hours__buffer h2 {
+    margin: 0 0 6px;
+
+    font-size: 1rem;
+}
+
+.admin-hours__buffer p {
+    margin: 0;
+
+    color:
+        var(--color-text-secondary);
+
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+.admin-hours__buffer>strong {
+    flex-shrink: 0;
+
+    padding: 8px 12px;
+
+    border-radius: 999px;
+
+    background-color: #f8ead2;
+    color: #9b650e;
+
+    font-size: 0.72rem;
+}
+
+.admin-hours__mobile-save {
+    display: none;
+}
+
+/* MOBILE */
+
+@media (max-width: 767px) {
+    .admin-hours {
+        padding: 24px 24px 36px;
+    }
+
+    .admin-hours form {
+        width: 100%;
+    }
+
+    .admin-hours__top {
+        display: block;
+    }
+
+    .admin-hours__top h1 {
+        font-size: 1.75rem;
+        line-height: 34px;
+    }
+
+    .admin-hours__top p {
+        font-size: 0.75rem;
+        line-height: 18px;
+    }
+
+    .admin-hours__desktop-save {
+        display: none;
+    }
+
+    .admin-hours__card {
+        margin-top: 24px;
+        padding: 0;
+
+        border: 0;
+
+        background: transparent;
+    }
+
+    .admin-hours__card-heading {
+        margin-bottom: 14px;
+    }
+
+    .admin-hours__list {
+        gap: 10px;
+    }
+
+    .admin-hours__day {
+        display: grid;
+        grid-template-columns:
+            1fr auto;
+        gap: 14px;
+
+        min-height: 0;
+
+        padding: 16px;
+
+        border: 1px solid var(--color-border-default);
+        border-radius: 14px;
+
+        background-color:
+            var(--color-bg-surface);
+    }
+
+    .admin-hours__day:first-child {
+        border-top: 1px solid var(--color-border-default);
+    }
+
+    .admin-hours__day-name {
+        align-self: center;
+    }
+
+    .admin-hours__status {
+        grid-column: 2;
+        grid-row: 1;
+
+        align-self: center;
+    }
+
+    .admin-hours__times {
+        grid-column: 1 / -1;
+
+        width: 100%;
+    }
+
+    .admin-hours__times input {
+        flex: 1;
+        width: auto;
+    }
+
+    .admin-hours__buffer {
+        align-items: flex-start;
+
+        padding: 18px;
+    }
+
+    .admin-hours__buffer>strong {
+        white-space: nowrap;
+    }
+
+    .admin-hours__mobile-save {
+        display: block;
+
+        margin-top: 18px;
+    }
+
+    .admin-hours__mobile-save .button {
+        min-height: 48px;
+
+        border-radius: 12px;
+    }
+}
