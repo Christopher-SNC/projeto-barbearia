@@ -12,6 +12,8 @@ import AgendamentosProprietario from '../pages/proprietario/AgendamentosPropriet
 
 import ServicosProprietario from '../pages/proprietario/ServicosProprietario'
 
+import BarbeirosProprietario from '../pages/proprietario/BarbeirosProprietario'
+
 import AdminLayout from '../layouts/AdminLayout/AdminLayout'
 import DashboardProprietario from '../pages/proprietario/DashboardProprietario'
 
@@ -79,6 +81,11 @@ function AppRoutes() {
         <Route
           path="servicos"
           element={<ServicosProprietario />}
+        />
+
+        <Route
+          path="barbeiros"
+          element={<BarbeirosProprietario />}
         />
       </Route>
     </Routes>

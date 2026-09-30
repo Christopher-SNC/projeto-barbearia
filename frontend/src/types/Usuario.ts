@@ -5,3 +5,16 @@ export interface Usuario {
   telefone: string | null
   ativo: boolean
 }
+
+export interface UsuarioRequest {
+  nome: string
+  email: string
+  senha: string
+  telefone: string | null
+}
+
+export interface UsuarioUpdateRequest {
+  nome: string
+  email: string
+  telefone: string | null
+}

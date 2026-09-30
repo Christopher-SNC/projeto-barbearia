@@ -4,3 +4,8 @@ export interface BarbeiroServico {
   idServico: number
   ativo: boolean
 }
+
+export interface BarbeiroServicoRequest {
+  idBarbeiro: number
+  idServico: number
+}
