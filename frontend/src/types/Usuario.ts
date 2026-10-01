@@ -18,3 +18,9 @@ export interface UsuarioUpdateRequest {
   email: string
   telefone: string | null
 }
+
+export interface AlterarSenhaRequest {
+  senhaAtual: string
+  novaSenha: string
+  confirmarNovaSenha: string
+}

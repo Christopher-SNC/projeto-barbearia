@@ -1,16 +1,25 @@
 import api from './api'
 
 import type {
+  AlterarSenhaRequest,
   Usuario,
   UsuarioRequest,
   UsuarioUpdateRequest,
 } from '../types/Usuario'
 
-export async function listarUsuarios(): Promise<
-  Usuario[]
-> {
+export async function listarUsuarios(): Promise<Usuario[]> {
   const response = await api.get<Usuario[]>(
     '/api/usuarios',
+  )
+
+  return response.data
+}
+
+export async function buscarUsuarioPorId(
+  id: number,
+): Promise<Usuario> {
+  const response = await api.get<Usuario>(
+    `/api/usuarios/${id}`,
   )
 
   return response.data
@@ -37,4 +46,14 @@ export async function atualizarUsuario(
   )
 
   return response.data
+}
+
+export async function alterarSenhaUsuario(
+  id: number,
+  dados: AlterarSenhaRequest,
+): Promise<void> {
+  await api.patch(
+    `/api/usuarios/${id}/senha`,
+    dados,
+  )
 }

@@ -45,6 +45,10 @@ const links = [
         label: 'Fotos',
         to: '/proprietario/fotos',
     },
+    {
+        label: 'Configurações',
+        to: '/proprietario/configuracoes',
+    },
 ]
 
 function AdminSidebar() {

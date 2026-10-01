@@ -24,6 +24,8 @@ import DadosBarbeariaProprietario from '../pages/proprietario/DadosBarbeariaProp
 
 import FotosProprietario from '../pages/proprietario/FotosProprietario'
 
+import ConfiguracoesProprietario from '../pages/proprietario/ConfiguracoesProprietario'
+
 import AdminLayout from '../layouts/AdminLayout/AdminLayout'
 import DashboardProprietario from '../pages/proprietario/DashboardProprietario'
 
@@ -119,6 +121,10 @@ function AppRoutes() {
         <Route
           path="fotos"
           element={<FotosProprietario />}
+        />
+        <Route
+          path="configuracoes"
+          element={<ConfiguracoesProprietario />}
         />
       </Route>
     </Routes>

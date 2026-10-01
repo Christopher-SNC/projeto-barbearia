@@ -1,0 +1,240 @@
+.admin-settings {
+    display: flex;
+    width: 100%;
+    max-width: none;
+    flex-direction: column;
+    gap: 26px;
+
+    padding: 32px 36px;
+
+    box-sizing: border-box;
+
+    color: var(--color-text-primary);
+}
+
+.admin-settings__topbar {
+    display: flex;
+    min-height: 70px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-settings__topbar h1 {
+    margin: 0 0 6px;
+
+    font-size: 1.875rem;
+    line-height: 1.2;
+}
+
+.admin-settings__topbar p {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.8125rem;
+}
+
+.admin-settings__subtitle-mobile {
+    display: none;
+}
+
+.admin-settings__columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 540px));
+    gap: 20px;
+}
+
+.admin-settings__card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    padding: 20px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 16px;
+
+    background-color: var(--color-bg-surface);
+}
+
+.admin-settings__card h2 {
+    margin: 0 0 2px;
+
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.admin-settings__field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.admin-settings__field span {
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.admin-settings__field input {
+    width: 100%;
+    height: 48px;
+
+    padding: 0 14px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 12px;
+    outline: none;
+
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-primary);
+
+    font: inherit;
+    font-size: 0.8125rem;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.admin-settings__field input:focus {
+    border-color: var(--color-gold-500);
+
+    box-shadow: 0 0 0 3px rgb(184 138 68 / 12%);
+}
+
+.admin-settings__hint {
+    margin: -2px 0 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.6875rem;
+    line-height: 1.5;
+}
+
+.admin-settings__preferences {
+    width: 100%;
+    max-width: 1100px;
+    box-sizing: border-box;
+}
+
+.admin-settings__preference {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid var(--color-border-default);
+
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.admin-settings__preference:last-child {
+    border-bottom: 0;
+}
+
+.admin-settings__preference strong {
+    color: var(--color-gold-600);
+
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.admin-settings__message {
+    padding: 12px 14px;
+
+    border: 1px solid;
+    border-radius: 10px;
+
+    font-size: 0.8125rem;
+}
+
+.admin-settings__message--success {
+    border-color: #b8d4b1;
+
+    background-color: #eef5eb;
+    color: #3d6535;
+}
+
+.admin-settings__message--error {
+    border-color: #e3c1bc;
+
+    background-color: #faeeee;
+    color: #8c3028;
+}
+
+.admin-settings__save-mobile {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .admin-settings {
+        max-width: none;
+        gap: 22px;
+
+        padding: 24px;
+    }
+
+    .admin-settings__topbar {
+        min-height: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .admin-settings__topbar h1 {
+        margin: 0;
+
+        font-size: 1.75rem;
+        line-height: 34px;
+    }
+
+    .admin-settings__subtitle-desktop {
+        display: none;
+    }
+
+    .admin-settings__subtitle-mobile {
+        display: block;
+    }
+
+    .admin-settings__save-desktop {
+        display: none;
+    }
+
+    .admin-settings__columns {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+
+    .admin-settings__card {
+        gap: 10px;
+
+        padding: 18px;
+    }
+
+    .admin-settings__card h2 {
+        font-size: 1.25rem;
+        line-height: 28px;
+    }
+
+    .admin-settings__preferences {
+        width: 100%;
+        max-width: none;
+    }
+
+    .admin-settings__preference {
+        gap: 14px;
+
+        font-size: 0.75rem;
+    }
+
+    .admin-settings__preference span {
+        max-width: 210px;
+    }
+
+    .admin-settings__save-mobile {
+        display: inline-flex;
+    }
+}
