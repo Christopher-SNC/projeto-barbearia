@@ -4,7 +4,7 @@ import {
     useState,
 } from 'react'
 
-import Button from '../../components/Button/Button'
+
 import DateInput from '../../components/DateInput/DateInput'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
@@ -416,9 +416,6 @@ function AgendaBarbearia() {
                     />
                 </div>
 
-                <Button type="button">
-                    Bloquear horário
-                </Button>
             </div>
 
             <div className="admin-agenda__mobile-filter">
@@ -656,12 +653,7 @@ function AgendaBarbearia() {
                             </div>
                         )}
 
-                        <Button
-                            fullWidth
-                            type="button"
-                        >
-                            Bloquear horário
-                        </Button>
+
                     </div>
                 </>
             )}
