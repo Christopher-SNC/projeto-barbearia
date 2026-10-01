@@ -19,93 +19,108 @@ import br.com.projetobarbearia.dto.UsuarioUpdateRequest;
 import br.com.projetobarbearia.entity.Usuario;
 import br.com.projetobarbearia.service.UsuarioService;
 
+import org.springframework.web.bind.annotation.PatchMapping;
+import br.com.projetobarbearia.dto.AlterarSenhaRequest;
+
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
-    private final UsuarioService usuarioService;
+        private final UsuarioService usuarioService;
 
-    public UsuarioController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }
+        public UsuarioController(UsuarioService usuarioService) {
+                this.usuarioService = usuarioService;
+        }
 
-    @GetMapping
-    public ResponseEntity<List<UsuarioResponse>> listarTodos() {
+        @GetMapping
+        public ResponseEntity<List<UsuarioResponse>> listarTodos() {
 
-        List<UsuarioResponse> usuarios = usuarioService
-                .listarTodos()
-                .stream()
-                .map(this::converterParaResponse)
-                .toList();
+                List<UsuarioResponse> usuarios = usuarioService
+                                .listarTodos()
+                                .stream()
+                                .map(this::converterParaResponse)
+                                .toList();
 
-        return ResponseEntity.ok(usuarios);
-    }
+                return ResponseEntity.ok(usuarios);
+        }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponse> buscarPorId(
-            @PathVariable Long id) {
+        @GetMapping("/{id}")
+        public ResponseEntity<UsuarioResponse> buscarPorId(
+                        @PathVariable Long id) {
 
-        return usuarioService.buscarPorId(id)
-                .map(this::converterParaResponse)
-                .map(ResponseEntity::ok)
-                .orElseGet(() ->
-                        ResponseEntity.notFound().build());
-    }
+                return usuarioService.buscarPorId(id)
+                                .map(this::converterParaResponse)
+                                .map(ResponseEntity::ok)
+                                .orElseGet(() -> ResponseEntity.notFound().build());
+        }
 
-    @PostMapping
-    public ResponseEntity<UsuarioResponse> cadastrar(
-            @RequestBody UsuarioRequest request) {
+        @PostMapping
+        public ResponseEntity<UsuarioResponse> cadastrar(
+                        @RequestBody UsuarioRequest request) {
 
-        Usuario usuario = new Usuario();
+                Usuario usuario = new Usuario();
 
-        usuario.setNome(request.getNome());
-        usuario.setEmail(request.getEmail());
-        usuario.setTelefone(request.getTelefone());
+                usuario.setNome(request.getNome());
+                usuario.setEmail(request.getEmail());
+                usuario.setTelefone(request.getTelefone());
 
-        Usuario usuarioSalvo = usuarioService.cadastrar(
-                usuario,
-                request.getSenha());
+                Usuario usuarioSalvo = usuarioService.cadastrar(
+                                usuario,
+                                request.getSenha());
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(converterParaResponse(usuarioSalvo));
-    }
+                return ResponseEntity
+                                .status(HttpStatus.CREATED)
+                                .body(converterParaResponse(usuarioSalvo));
+        }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UsuarioResponse> atualizar(
-            @PathVariable Long id,
-            @RequestBody UsuarioUpdateRequest request) {
+        @PutMapping("/{id}")
+        public ResponseEntity<UsuarioResponse> atualizar(
+                        @PathVariable Long id,
+                        @RequestBody UsuarioUpdateRequest request) {
 
-        Usuario usuario = new Usuario();
+                Usuario usuario = new Usuario();
 
-        usuario.setNome(request.getNome());
-        usuario.setEmail(request.getEmail());
-        usuario.setTelefone(request.getTelefone());
+                usuario.setNome(request.getNome());
+                usuario.setEmail(request.getEmail());
+                usuario.setTelefone(request.getTelefone());
 
-        Usuario usuarioAtualizado =
-                usuarioService.atualizar(id, usuario);
+                Usuario usuarioAtualizado = usuarioService.atualizar(id, usuario);
 
-        return ResponseEntity.ok(
-                converterParaResponse(usuarioAtualizado));
-    }
+                return ResponseEntity.ok(
+                                converterParaResponse(usuarioAtualizado));
+        }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluir(
-            @PathVariable Long id) {
+        @PatchMapping("/{id}/senha")
+        public ResponseEntity<Void> alterarSenha(
+                        @PathVariable Long id,
+                        @RequestBody AlterarSenhaRequest request) {
 
-        usuarioService.excluir(id);
+                usuarioService.alterarSenha(
+                                id,
+                                request.getSenhaAtual(),
+                                request.getNovaSenha(),
+                                request.getConfirmarNovaSenha());
 
-        return ResponseEntity.noContent().build();
-    }
+                return ResponseEntity.noContent().build();
+        }
 
-    private UsuarioResponse converterParaResponse(
-            Usuario usuario) {
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Void> excluir(
+                        @PathVariable Long id) {
 
-        return new UsuarioResponse(
-                usuario.getIdUsuario(),
-                usuario.getNome(),
-                usuario.getEmail(),
-                usuario.getTelefone(),
-                usuario.isAtivo());
-    }
+                usuarioService.excluir(id);
+
+                return ResponseEntity.noContent().build();
+        }
+
+        private UsuarioResponse converterParaResponse(
+                        Usuario usuario) {
+
+                return new UsuarioResponse(
+                                usuario.getIdUsuario(),
+                                usuario.getNome(),
+                                usuario.getEmail(),
+                                usuario.getTelefone(),
+                                usuario.isAtivo());
+        }
 }
