@@ -21,7 +21,8 @@ import type { Usuario } from '../../types/Usuario'
 
 import './MeusAgendamentos.css'
 
-const ID_CLIENTE_TESTE = 1
+import { DEMO_IDS } from '../../config/demo'
+
 
 type AbaAgendamentos = 'proximos' | 'historico'
 
@@ -128,7 +129,7 @@ function MeusAgendamentos() {
                     dadosAgendamentos.filter(
                         (agendamento) =>
                             agendamento.idCliente ===
-                            ID_CLIENTE_TESTE,
+                            DEMO_IDS.cliente,
                     ),
                 )
 

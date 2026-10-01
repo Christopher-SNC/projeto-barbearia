@@ -11,7 +11,9 @@ import {
 
 import './ConfiguracoesProprietario.css'
 
-const ID_USUARIO_PROPRIETARIO_TESTE = 2
+import { DEMO_IDS } from '../../config/demo'
+
+
 
 function formatarTelefone(valor: string) {
     const numeros = valor.replace(/\D/g, '').slice(0, 11)
@@ -46,7 +48,7 @@ function ConfiguracoesProprietario() {
     useEffect(() => {
         let componenteAtivo = true
 
-        buscarUsuarioPorId(ID_USUARIO_PROPRIETARIO_TESTE)
+        buscarUsuarioPorId(DEMO_IDS.usuarioProprietario)
             .then((usuario) => {
                 if (!componenteAtivo) {
                     return
@@ -125,7 +127,7 @@ function ConfiguracoesProprietario() {
             setSalvando(true)
 
             const usuarioAtualizado = await atualizarUsuario(
-                ID_USUARIO_PROPRIETARIO_TESTE,
+                DEMO_IDS.usuarioProprietario,
                 {
                     nome: nome.trim(),
                     email: email.trim(),
@@ -136,7 +138,7 @@ function ConfiguracoesProprietario() {
 
             if (desejaAlterarSenha) {
                 await alterarSenhaUsuario(
-                    ID_USUARIO_PROPRIETARIO_TESTE,
+                    DEMO_IDS.usuarioProprietario,
                     {
                         senhaAtual,
                         novaSenha,

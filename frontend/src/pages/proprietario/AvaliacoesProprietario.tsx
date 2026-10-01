@@ -16,7 +16,7 @@ import type { Usuario } from '../../types/Usuario'
 
 import './AvaliacoesProprietario.css'
 
-const ID_BARBEARIA_ADMIN_TESTE = 1
+import { DEMO_IDS } from '../../config/demo'
 
 function calcularMedia(
     valores: number[],
@@ -123,7 +123,7 @@ function AvaliacoesProprietario() {
             return agendamentos.filter(
                 (agendamento) =>
                     agendamento.idBarbearia ===
-                    ID_BARBEARIA_ADMIN_TESTE,
+                    DEMO_IDS.barbearia,
             )
         }, [agendamentos])
 
@@ -280,12 +280,11 @@ function AvaliacoesProprietario() {
                             value={formatarMedia(
                                 mediaBarbearia,
                             )}
-                            hint={`${avaliacoesBarbearia.length} ${
-                                avaliacoesBarbearia.length ===
-                                1
+                            hint={`${avaliacoesBarbearia.length} ${avaliacoesBarbearia.length ===
+                                    1
                                     ? 'avaliação'
                                     : 'avaliações'
-                            }`}
+                                }`}
                         />
 
                         <AdminStatCard
@@ -303,7 +302,7 @@ function AvaliacoesProprietario() {
                             }
                             hint={
                                 avaliacoesUltimos30Dias ===
-                                1
+                                    1
                                     ? 'nova avaliação'
                                     : 'novas avaliações'
                             }
@@ -316,7 +315,7 @@ function AvaliacoesProprietario() {
                         </h2>
 
                         {avaliacoesRecentes.length ===
-                        0 ? (
+                            0 ? (
                             <p className="admin-reviews__empty">
                                 Nenhuma avaliação encontrada.
                             </p>

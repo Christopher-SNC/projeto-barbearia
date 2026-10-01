@@ -21,7 +21,7 @@ import type {
 
 import './HorariosProprietario.css'
 
-const ID_BARBEARIA_ADMIN_TESTE = 1
+import { DEMO_IDS } from '../../config/demo'
 
 const DIAS: {
     valor: DiaSemana
@@ -132,7 +132,7 @@ function montarFormulario(
     for (const horario of horarios) {
         if (
             horario.idBarbearia !==
-            ID_BARBEARIA_ADMIN_TESTE
+            DEMO_IDS.barbearia
         ) {
             continue
         }
@@ -312,7 +312,7 @@ function HorariosProprietario() {
                 const dados: HorarioFuncionamentoRequest =
                 {
                     idBarbearia:
-                        ID_BARBEARIA_ADMIN_TESTE,
+                        DEMO_IDS.barbearia,
 
                     diaSemana:
                         horario.diaSemana,

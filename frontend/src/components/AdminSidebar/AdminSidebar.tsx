@@ -1,5 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
+
+import { DEMO_IDS } from '../../config/demo'
+import { buscarBarbeariaPorId } from '../../services/barbeariaService'
 
 import './AdminSidebar.css'
 
@@ -54,6 +57,30 @@ const links = [
 function AdminSidebar() {
     const [menuAberto, setMenuAberto] = useState(false)
 
+    const [nomeBarbearia, setNomeBarbearia] =
+        useState('Barbearia')
+
+    useEffect(() => {
+        let componenteAtivo = true
+
+        buscarBarbeariaPorId(DEMO_IDS.barbearia)
+            .then((barbearia) => {
+                if (componenteAtivo) {
+                    setNomeBarbearia(barbearia.nome)
+                }
+            })
+            .catch((error) => {
+                console.error(
+                    'Não foi possível carregar o nome da barbearia.',
+                    error,
+                )
+            })
+
+        return () => {
+            componenteAtivo = false
+        }
+    }, [])
+
     function fecharMenu() {
         setMenuAberto(false)
     }
@@ -105,7 +132,7 @@ function AdminSidebar() {
                 </div>
 
                 <div className="admin-store">
-                    <strong>Barbearia Central</strong>
+                    <strong>{nomeBarbearia}</strong>
                     <span>Proprietário</span>
                 </div>
 
@@ -142,7 +169,7 @@ function AdminSidebar() {
             {menuAberto && (
                 <div className="admin-mobile-menu">
                     <div className="admin-store admin-store--mobile">
-                        <strong>Barbearia Central</strong>
+                        <strong>{nomeBarbearia}</strong>
                         <span>Proprietário</span>
                     </div>
 

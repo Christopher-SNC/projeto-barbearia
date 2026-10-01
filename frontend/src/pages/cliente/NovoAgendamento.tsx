@@ -29,8 +29,10 @@ import type { Usuario } from '../../types/Usuario'
 
 import './NovoAgendamento.css'
 
+import { DEMO_IDS } from '../../config/demo'
+
 const BUFFER_MINUTOS = 15
-const ID_CLIENTE_TESTE = 1
+
 
 const diasSemana: Record<number, string> = {
   0: 'DOMINGO',
@@ -412,7 +414,7 @@ function NovoAgendamento() {
       setSucesso('')
 
       const agendamento = await criarAgendamento({
-        idCliente: ID_CLIENTE_TESTE,
+        idCliente: DEMO_IDS.cliente,
         idBarbearia,
         idBarbeiro,
         dataHoraInicio: `${data}T${hora}:00`,

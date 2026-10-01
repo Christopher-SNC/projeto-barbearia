@@ -21,7 +21,8 @@ import type { Usuario } from '../../types/Usuario'
 
 import './AgendaBarbearia.css'
 
-const ID_BARBEARIA_ADMIN_TESTE = 1
+import { DEMO_IDS } from '../../config/demo'
+
 const INTERVALO_GRADE = 30
 
 const diasSemana: Record<number, string> = {
@@ -151,7 +152,7 @@ function AgendaBarbearia() {
                     dadosBarbeiros.filter(
                         (barbeiro) =>
                             barbeiro.idBarbearia ===
-                            ID_BARBEARIA_ADMIN_TESTE &&
+                            DEMO_IDS.barbearia &&
                             barbeiro.ativo,
                     ),
                 )
@@ -183,7 +184,7 @@ function AgendaBarbearia() {
         return horariosFuncionamento.find(
             (horario) =>
                 horario.idBarbearia ===
-                ID_BARBEARIA_ADMIN_TESTE &&
+                DEMO_IDS.barbearia &&
                 horario.diaSemana === diaSemana,
         )
     }, [
@@ -195,7 +196,7 @@ function AgendaBarbearia() {
         return agendamentos.filter(
             (agendamento) =>
                 agendamento.idBarbearia ===
-                ID_BARBEARIA_ADMIN_TESTE &&
+                DEMO_IDS.barbearia &&
                 agendamento.status === 'CONFIRMADO' &&
                 agendamento.dataHoraInicio.startsWith(
                     data,

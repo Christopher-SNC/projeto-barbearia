@@ -35,7 +35,7 @@ import type { Servico } from '../../types/Servico'
 
 import './PromocoesProprietario.css'
 
-const ID_BARBEARIA_ADMIN_TESTE = 1
+import { DEMO_IDS } from '../../config/demo'
 
 function formatarPercentual(valor: number) {
     return new Intl.NumberFormat('pt-BR', {
@@ -126,7 +126,7 @@ function PromocoesProprietario() {
                     dadosPromocoes.filter(
                         (promocao) =>
                             promocao.idBarbearia ===
-                            ID_BARBEARIA_ADMIN_TESTE,
+                            DEMO_IDS.barbearia,
                     ),
                 )
 
@@ -137,7 +137,7 @@ function PromocoesProprietario() {
                         .filter(
                             (servico) =>
                                 servico.idBarbearia ===
-                                ID_BARBEARIA_ADMIN_TESTE,
+                                DEMO_IDS.barbearia,
                         )
                         .sort((a, b) =>
                             a.nome.localeCompare(b.nome),
@@ -343,7 +343,7 @@ function PromocoesProprietario() {
 
         const dados: PromocaoRequest = {
             idBarbearia:
-                ID_BARBEARIA_ADMIN_TESTE,
+                DEMO_IDS.barbearia,
 
             titulo:
                 tituloLimpo,

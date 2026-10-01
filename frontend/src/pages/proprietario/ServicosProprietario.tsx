@@ -22,7 +22,7 @@ import type {
 
 import './ServicosProprietario.css'
 
-const ID_BARBEARIA_ADMIN_TESTE = 1
+import { DEMO_IDS } from '../../config/demo'
 
 function formatarPreco(valor: number) {
     return new Intl.NumberFormat('pt-BR', {
@@ -71,7 +71,7 @@ function ServicosProprietario() {
                     dados.filter(
                         (servico) =>
                             servico.idBarbearia ===
-                            ID_BARBEARIA_ADMIN_TESTE,
+                            DEMO_IDS.barbearia,
                     ),
                 )
             } catch (error) {
@@ -180,7 +180,7 @@ function ServicosProprietario() {
 
         const dados: ServicoRequest = {
             idBarbearia:
-                ID_BARBEARIA_ADMIN_TESTE,
+                DEMO_IDS.barbearia,
             nome: nomeLimpo,
             descricao:
                 descricao.trim() || null,

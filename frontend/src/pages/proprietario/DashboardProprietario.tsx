@@ -21,7 +21,7 @@ import type { Usuario } from '../../types/Usuario'
 
 import './DashboardProprietario.css'
 
-const ID_BARBEARIA_ADMIN_TESTE = 1
+import { DEMO_IDS } from '../../config/demo'
 
 function obterDataLocalISO(data: Date) {
     const ano = data.getFullYear()
@@ -137,7 +137,7 @@ function DashboardProprietario() {
             barbearias.find(
                 (barbearia) =>
                     barbearia.idBarbearia ===
-                    ID_BARBEARIA_ADMIN_TESTE,
+                    DEMO_IDS.barbearia,
             ) ??
             barbearias[0] ??
             null

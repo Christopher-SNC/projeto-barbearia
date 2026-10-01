@@ -58,19 +58,7 @@ function AppRoutes() {
           element={<MeusAgendamentos />}
         />
       </Route>
-      <Route
-        path="/proprietario"
-        element={<AdminLayout />}
-      >
-        <Route
-          index
-          element={<DashboardProprietario />}
-        />
-        <Route
-          path="agenda"
-          element={<AgendaBarbearia />}
-        />
-      </Route>
+
       <Route
         path="/proprietario"
         element={<AdminLayout />}

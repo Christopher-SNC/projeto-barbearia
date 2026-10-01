@@ -23,7 +23,7 @@ import type {
 
 import './FotosProprietario.css'
 
-const ID_BARBEARIA_ADMIN_TESTE = 1
+import { DEMO_IDS } from '../../config/demo'
 
 function FotosProprietario() {
     const [fotos, setFotos] = useState<Foto[]>([])
@@ -54,7 +54,7 @@ function FotosProprietario() {
                 .filter(
                     (foto) =>
                         foto.idBarbearia ===
-                        ID_BARBEARIA_ADMIN_TESTE,
+                        DEMO_IDS.barbearia,
                 )
                 .sort(
                     (fotoA, fotoB) =>
@@ -84,7 +84,7 @@ function FotosProprietario() {
                     .filter(
                         (foto) =>
                             foto.idBarbearia ===
-                            ID_BARBEARIA_ADMIN_TESTE,
+                            DEMO_IDS.barbearia,
                     )
                     .sort(
                         (fotoA, fotoB) =>
@@ -166,7 +166,7 @@ function FotosProprietario() {
 
             const dados: FotoRequest = {
                 idBarbearia:
-                    ID_BARBEARIA_ADMIN_TESTE,
+                    DEMO_IDS.barbearia,
                 url: urlLimpa,
                 legenda: legendaLimpa || null,
                 ordem:
@@ -269,7 +269,7 @@ function FotosProprietario() {
             await Promise.all([
                 atualizarFoto(foto.idFoto, {
                     idBarbearia:
-                        ID_BARBEARIA_ADMIN_TESTE,
+                        DEMO_IDS.barbearia,
                     url: foto.url,
                     legenda: foto.legenda,
                     ordem: fotoDestino.ordem,
@@ -277,7 +277,7 @@ function FotosProprietario() {
 
                 atualizarFoto(fotoDestino.idFoto, {
                     idBarbearia:
-                        ID_BARBEARIA_ADMIN_TESTE,
+                        DEMO_IDS.barbearia,
                     url: fotoDestino.url,
                     legenda: fotoDestino.legenda,
                     ordem: foto.ordem,

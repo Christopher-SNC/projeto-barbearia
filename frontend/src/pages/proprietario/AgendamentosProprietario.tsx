@@ -21,7 +21,8 @@ import type { Usuario } from '../../types/Usuario'
 
 import './AgendamentosProprietario.css'
 
-const ID_BARBEARIA_ADMIN_TESTE = 1
+import { DEMO_IDS } from '../../config/demo'
+
 
 type FiltroAgendamento =
   | 'hoje'
@@ -141,7 +142,7 @@ function AgendamentosProprietario() {
           dadosAgendamentos.filter(
             (agendamento) =>
               agendamento.idBarbearia ===
-              ID_BARBEARIA_ADMIN_TESTE,
+              DEMO_IDS.barbearia,
           ),
         )
 
@@ -149,7 +150,7 @@ function AgendamentosProprietario() {
           dadosBarbeiros.filter(
             (barbeiro) =>
               barbeiro.idBarbearia ===
-              ID_BARBEARIA_ADMIN_TESTE,
+              DEMO_IDS.barbearia,
           ),
         )
 
@@ -288,7 +289,7 @@ function AgendamentosProprietario() {
 
   function novoAgendamento() {
     navigate(
-      `/barbearias/${ID_BARBEARIA_ADMIN_TESTE}/agendar`,
+      `/barbearias/${DEMO_IDS.barbearia}/agendar`,
     )
   }
 
@@ -296,27 +297,27 @@ function AgendamentosProprietario() {
     id: FiltroAgendamento
     label: string
   }[] = [
-    {
-      id: 'hoje',
-      label: 'Hoje',
-    },
-    {
-      id: 'confirmados',
-      label: 'Confirmados',
-    },
-    {
-      id: 'concluidos',
-      label: 'Concluídos',
-    },
-    {
-      id: 'cancelados',
-      label: 'Cancelados',
-    },
-    {
-      id: 'nao-compareceu',
-      label: 'Não compareceu',
-    },
-  ]
+      {
+        id: 'hoje',
+        label: 'Hoje',
+      },
+      {
+        id: 'confirmados',
+        label: 'Confirmados',
+      },
+      {
+        id: 'concluidos',
+        label: 'Concluídos',
+      },
+      {
+        id: 'cancelados',
+        label: 'Cancelados',
+      },
+      {
+        id: 'nao-compareceu',
+        label: 'Não compareceu',
+      },
+    ]
 
   return (
     <section className="admin-appointments">
@@ -383,13 +384,13 @@ function AgendamentosProprietario() {
               <p className="admin-appointments__count">
                 {agendamentosFiltrados.length}{' '}
                 {agendamentosFiltrados.length ===
-                1
+                  1
                   ? 'registro'
                   : 'registros'}
               </p>
 
               {agendamentosFiltrados.length ===
-              0 ? (
+                0 ? (
                 <p className="admin-appointments__empty">
                   Nenhum agendamento encontrado.
                 </p>
@@ -452,7 +453,7 @@ function AgendamentosProprietario() {
 
           <div className="admin-appointments__mobile">
             {agendamentosFiltrados.length ===
-            0 ? (
+              0 ? (
               <p className="admin-appointments__empty">
                 Nenhum agendamento encontrado.
               </p>

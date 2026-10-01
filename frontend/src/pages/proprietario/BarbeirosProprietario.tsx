@@ -56,7 +56,7 @@ import type { Usuario } from '../../types/Usuario'
 
 import './BarbeirosProprietario.css'
 
-const ID_BARBEARIA_ADMIN_TESTE = 1
+import { DEMO_IDS } from '../../config/demo'
 
 const DIAS: {
     valor: DiaSemana
@@ -239,7 +239,7 @@ function BarbeirosProprietario() {
                     dadosBarbeiros.filter(
                         (barbeiro) =>
                             barbeiro.idBarbearia ===
-                            ID_BARBEARIA_ADMIN_TESTE,
+                            DEMO_IDS.barbearia,
                     ),
                 )
 
@@ -249,7 +249,7 @@ function BarbeirosProprietario() {
                     dadosServicos.filter(
                         (servico) =>
                             servico.idBarbearia ===
-                            ID_BARBEARIA_ADMIN_TESTE &&
+                            DEMO_IDS.barbearia &&
                             servico.ativo,
                     ),
                 )
@@ -263,7 +263,7 @@ function BarbeirosProprietario() {
                     dadosAgendamentos.filter(
                         (agendamento) =>
                             agendamento.idBarbearia ===
-                            ID_BARBEARIA_ADMIN_TESTE,
+                            DEMO_IDS.barbearia,
                     ),
                 )
 
@@ -311,7 +311,7 @@ function BarbeirosProprietario() {
                         dadosBarbeiros.filter(
                             (barbeiro) =>
                                 barbeiro.idBarbearia ===
-                                ID_BARBEARIA_ADMIN_TESTE,
+                                DEMO_IDS.barbearia,
                         ),
                     )
 
@@ -321,7 +321,7 @@ function BarbeirosProprietario() {
                         dadosServicos.filter(
                             (servico) =>
                                 servico.idBarbearia ===
-                                ID_BARBEARIA_ADMIN_TESTE &&
+                                DEMO_IDS.barbearia &&
                                 servico.ativo,
                         ),
                     )
@@ -336,7 +336,7 @@ function BarbeirosProprietario() {
                         dadosAgendamentos.filter(
                             (agendamento) =>
                                 agendamento.idBarbearia ===
-                                ID_BARBEARIA_ADMIN_TESTE,
+                                DEMO_IDS.barbearia,
                         ),
                     )
 
@@ -812,7 +812,7 @@ function BarbeirosProprietario() {
                                 barbeiroEditando.idUsuario,
 
                             idBarbearia:
-                                ID_BARBEARIA_ADMIN_TESTE,
+                                DEMO_IDS.barbearia,
 
                             descricao:
                                 descricao.trim() || null,
@@ -834,7 +834,7 @@ function BarbeirosProprietario() {
                             usuarioCriado.idUsuario,
 
                         idBarbearia:
-                            ID_BARBEARIA_ADMIN_TESTE,
+                            DEMO_IDS.barbearia,
 
                         descricao:
                             descricao.trim() || null,
