@@ -10,7 +10,7 @@ import Button from '../../components/Button/Button'
 import StatusBadge from '../../components/StatusBadge/StatusBadge'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
-import { listarBarbearias } from '../../services/barbeariaService'
+import { buscarBarbeariaPorId } from '../../services/barbeariaService'
 import { listarBarbeiros } from '../../services/barbeiroService'
 import { listarUsuarios } from '../../services/usuarioService'
 
@@ -22,6 +22,9 @@ import type { Usuario } from '../../types/Usuario'
 import './DashboardProprietario.css'
 
 import { DEMO_IDS } from '../../config/demo'
+
+import { listarAvaliacoes } from '../../services/avaliacaoService'
+import type { Avaliacao } from '../../types/Avaliacao'
 
 function obterDataLocalISO(data: Date) {
     const ano = data.getFullYear()
@@ -54,6 +57,12 @@ function formatarHora(dataHora: string) {
     }).format(new Date(dataHora))
 }
 
+function formatarDataAvaliacao(data: string) {
+    return new Intl.DateTimeFormat('pt-BR').format(
+        new Date(data),
+    )
+}
+
 function formatarMoeda(valor: number) {
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
@@ -84,9 +93,12 @@ function DashboardProprietario() {
         Agendamento[]
     >([])
 
-    const [barbearias, setBarbearias] = useState<
-        Barbearia[]
+    const [avaliacoes, setAvaliacoes] = useState<
+        Avaliacao[]
     >([])
+
+    const [barbeariaAtual, setBarbeariaAtual] =
+        useState<Barbearia | null>(null)
 
     const [barbeiros, setBarbeiros] = useState<
         Barbeiro[]
@@ -104,18 +116,21 @@ function DashboardProprietario() {
             try {
                 const [
                     dadosAgendamentos,
-                    dadosBarbearias,
+                    dadosAvaliacoes,
+                    dadosBarbearia,
                     dadosBarbeiros,
                     dadosUsuarios,
                 ] = await Promise.all([
                     listarAgendamentos(),
-                    listarBarbearias(),
+                    listarAvaliacoes(),
+                    buscarBarbeariaPorId(DEMO_IDS.barbearia),
                     listarBarbeiros(),
                     listarUsuarios(),
                 ])
 
                 setAgendamentos(dadosAgendamentos)
-                setBarbearias(dadosBarbearias)
+                setAvaliacoes(dadosAvaliacoes)
+                setBarbeariaAtual(dadosBarbearia)
                 setBarbeiros(dadosBarbeiros)
                 setUsuarios(dadosUsuarios)
             } catch (error) {
@@ -132,18 +147,6 @@ function DashboardProprietario() {
         carregarDashboard()
     }, [])
 
-    const barbeariaAtual = useMemo(() => {
-        return (
-            barbearias.find(
-                (barbearia) =>
-                    barbearia.idBarbearia ===
-                    DEMO_IDS.barbearia,
-            ) ??
-            barbearias[0] ??
-            null
-        )
-    }, [barbearias])
-
     const agendamentosBarbearia = useMemo(() => {
         if (!barbeariaAtual) {
             return []
@@ -155,6 +158,50 @@ function DashboardProprietario() {
                 barbeariaAtual.idBarbearia,
         )
     }, [agendamentos, barbeariaAtual])
+
+    const avaliacoesBarbearia = useMemo(() => {
+        const idsAgendamentos = new Set(
+            agendamentosBarbearia.map(
+                (agendamento) =>
+                    agendamento.idAgendamento,
+            ),
+        )
+
+        return avaliacoes.filter((avaliacao) =>
+            idsAgendamentos.has(
+                avaliacao.idAgendamento,
+            ),
+        )
+    }, [avaliacoes, agendamentosBarbearia])
+
+
+    const avaliacaoMedia = useMemo(() => {
+        if (avaliacoesBarbearia.length === 0) {
+            return null
+        }
+
+        const soma = avaliacoesBarbearia.reduce(
+            (total, avaliacao) =>
+                total + avaliacao.notaBarbearia,
+            0,
+        )
+
+        return soma / avaliacoesBarbearia.length
+    }, [avaliacoesBarbearia])
+
+    const avaliacoesRecentes = useMemo(() => {
+        return [...avaliacoesBarbearia]
+            .sort(
+                (a, b) =>
+                    new Date(
+                        b.dataAvaliacao,
+                    ).getTime() -
+                    new Date(
+                        a.dataAvaliacao,
+                    ).getTime(),
+            )
+            .slice(0, 3)
+    }, [avaliacoesBarbearia])
 
     const metricas = useMemo(() => {
         const agora = new Date()
@@ -463,7 +510,11 @@ function DashboardProprietario() {
 
                         <AdminStatCard
                             label="Avaliação média"
-                            value="—"
+                            value={
+                                avaliacaoMedia === null
+                                    ? '—'
+                                    : `${avaliacaoMedia.toFixed(1)} / 5`
+                            }
                         />
                     </div>
 
@@ -562,11 +613,37 @@ function DashboardProprietario() {
                             <section className="admin-dashboard__side-card">
                                 <h2>Avaliações recentes</h2>
 
-                                <p className="admin-dashboard__reviews-placeholder">
-                                    As avaliações serão exibidas aqui
-                                    quando a integração de avaliações
-                                    estiver disponível no frontend.
-                                </p>
+                                {avaliacoesRecentes.length === 0 ? (
+                                    <p className="admin-dashboard__empty">
+                                        Nenhuma avaliação recebida ainda.
+                                    </p>
+                                ) : (
+                                    <div className="admin-dashboard__reviews">
+                                        {avaliacoesRecentes.map((avaliacao) => (
+                                            <article
+                                                className="admin-dashboard__review"
+                                                key={avaliacao.idAvaliacao}
+                                            >
+                                                <div className="admin-dashboard__review-top">
+                                                    <strong>
+                                                        {avaliacao.notaBarbearia.toFixed(1)} / 5
+                                                    </strong>
+
+                                                    <span>
+                                                        {formatarDataAvaliacao(
+                                                            avaliacao.dataAvaliacao,
+                                                        )}
+                                                    </span>
+                                                </div>
+
+                                                <p>
+                                                    {avaliacao.comentario ||
+                                                        'Sem comentário.'}
+                                                </p>
+                                            </article>
+                                        ))}
+                                    </div>
+                                )}
                             </section>
                         </aside>
                     </div>
