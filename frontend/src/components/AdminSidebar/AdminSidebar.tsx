@@ -41,6 +41,10 @@ const links = [
         label: 'Dados da Barbearia',
         to: '/proprietario/dados',
     },
+    {
+        label: 'Fotos',
+        to: '/proprietario/fotos',
+    },
 ]
 
 function AdminSidebar() {
