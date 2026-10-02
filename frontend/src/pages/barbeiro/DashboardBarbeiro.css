@@ -1,23 +1,275 @@
-.barbeiro-dashboard {
+.barber-dashboard {
+    min-height: 100vh;
+
     padding: 32px 36px;
+
+    background-color: var(--color-bg-page);
 }
 
-.barbeiro-dashboard h1 {
-    margin: 0;
+.barber-dashboard__header {
+    display: flex;
+    min-height: 70px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    max-width: 1120px;
+}
+
+.barber-dashboard__header h1 {
+    margin: 0 0 6px;
 
     color: var(--color-text-primary);
 
-    font-size: 1.75rem;
+    font-size: 1.875rem;
+    line-height: 1.1;
 }
 
-.barbeiro-dashboard p {
-    margin: 8px 0 0;
+.barber-dashboard__header p {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.8125rem;
+}
+
+.barber-dashboard__stats {
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 250px));
+    gap: 16px;
+
+    margin-top: 26px;
+}
+
+.barber-dashboard__appointments {
+    max-width: 1048px;
+
+    margin-top: 26px;
+    padding: 20px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 16px;
+
+    background-color:
+        var(--color-bg-surface);
+}
+
+.barber-dashboard__section-header {
+    margin-bottom: 12px;
+}
+
+.barber-dashboard__section-header h2 {
+    margin: 0 0 4px;
+
+    color: var(--color-text-primary);
+
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.barber-dashboard__section-header p {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+}
+
+.barber-dashboard__appointment-list {
+    margin-top: 8px;
+}
+
+.barber-dashboard__appointment {
+    display: grid;
+    min-height: 68px;
+    grid-template-columns:
+        110px minmax(180px, 1fr) auto;
+    align-items: center;
+    gap: 18px;
+
+    padding: 10px 18px;
+
+    border-bottom: 1px solid var(--color-border-default);
+}
+
+.barber-dashboard__appointment:last-child {
+    border-bottom: 0;
+}
+
+.barber-dashboard__appointment-time {
+    display: grid;
+    gap: 3px;
+}
+
+.barber-dashboard__appointment-time strong {
+    color: var(--color-text-primary);
+
+    font-size: 0.875rem;
+}
+
+.barber-dashboard__appointment-time span {
+    color: var(--color-text-secondary);
+
+    font-size: 0.6875rem;
+}
+
+.barber-dashboard__appointment-info {
+    display: grid;
+    gap: 4px;
+}
+
+.barber-dashboard__appointment-info strong {
+    color: var(--color-text-primary);
+
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.barber-dashboard__appointment-info span {
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+}
+
+.barber-dashboard__status {
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    background-color:
+        var(--color-cream-100);
+    color: var(--color-text-primary);
+
+    font-size: 0.6875rem;
+    font-weight: 600;
+}
+
+.barber-dashboard__empty {
+    display: grid;
+    gap: 6px;
+
+    padding: 26px 18px;
+
+    border-top: 1px solid var(--color-border-default);
+}
+
+.barber-dashboard__empty strong {
+    color: var(--color-text-primary);
+
+    font-size: 0.8125rem;
+}
+
+.barber-dashboard__empty span {
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+}
+
+.barber-dashboard__message {
+    margin: 0;
 
     color: var(--color-text-secondary);
 }
 
+.barber-dashboard__message--error {
+    margin-top: 20px;
+
+    color: #a33b34;
+}
+
+@media (max-width: 1250px) and (min-width: 768px) {
+    .barber-dashboard__stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 250px));
+    }
+
+    .barber-dashboard__appointments {
+        max-width: 700px;
+    }
+}
+
 @media (max-width: 767px) {
-    .barbeiro-dashboard {
-        padding: 24px;
+    .barber-dashboard {
+        padding: 24px 24px 32px;
+    }
+
+    .barber-dashboard__header {
+        display: block;
+        min-height: 0;
+    }
+
+    .barber-dashboard__header h1 {
+        margin-bottom: 12px;
+
+        font-size: 1.75rem;
+        line-height: 34px;
+    }
+
+    .barber-dashboard__header p {
+        font-size: 0.75rem;
+        line-height: 18px;
+    }
+
+    .barber-dashboard__stats {
+        grid-template-columns: 1fr;
+        gap: 18px;
+
+        margin-top: 22px;
+    }
+
+    .barber-dashboard__appointments {
+        margin-top: 22px;
+        padding: 0;
+
+        border: 0;
+
+        background-color: transparent;
+    }
+
+    .barber-dashboard__section-header {
+        margin-bottom: 12px;
+    }
+
+    .barber-dashboard__section-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .barber-dashboard__appointment-list {
+        display: grid;
+        gap: 10px;
+
+        margin-top: 0;
+    }
+
+    .barber-dashboard__appointment {
+        display: grid;
+        grid-template-columns:
+            70px minmax(0, 1fr);
+        gap: 14px;
+
+        padding: 18px;
+
+        border: 1px solid var(--color-border-default);
+        border-radius: 16px;
+
+        background-color:
+            var(--color-bg-surface);
+    }
+
+    .barber-dashboard__appointment:last-child {
+        border-bottom: 1px solid var(--color-border-default);
+    }
+
+    .barber-dashboard__status {
+        grid-column: 1 / -1;
+
+        width: fit-content;
+    }
+
+    .barber-dashboard__empty {
+        padding: 20px 0;
+
+        border-top: 0;
     }
 }
