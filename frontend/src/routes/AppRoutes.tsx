@@ -36,6 +36,8 @@ import AgendaBarbeiro from '../pages/barbeiro/AgendaBarbeiro'
 
 import AgendamentosBarbeiro from '../pages/barbeiro/AgendamentosBarbeiro'
 
+import ServicosBarbeiro from '../pages/barbeiro/ServicosBarbeiro'
+
 import Barbearias from '../pages/publico/Barbearias'
 import DetalhesBarbearia from '../pages/publico/DetalhesBarbearia'
 import Home from '../pages/publico/Home'
@@ -140,6 +142,10 @@ function AppRoutes() {
         <Route
           path="agendamentos"
           element={<AgendamentosBarbeiro />}
+        />
+        <Route
+          path="servicos"
+          element={<ServicosBarbeiro />}
         />
       </Route>
     </Routes>

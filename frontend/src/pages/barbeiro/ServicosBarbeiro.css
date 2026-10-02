@@ -1,0 +1,273 @@
+.barber-services {
+    min-height: 100vh;
+
+    padding: 32px 36px;
+
+    background-color: var(--color-bg-page);
+}
+
+.barber-services__top {
+    max-width: 1120px;
+}
+
+.barber-services__top h1 {
+    margin: 0 0 6px;
+
+    color: var(--color-text-primary);
+
+    font-size: 1.875rem;
+    line-height: 1.1;
+}
+
+.barber-services__top p {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.8125rem;
+}
+
+.barber-services__content {
+    width: min(1080px, 100%);
+
+    margin-top: 26px;
+    padding: 20px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 16px;
+
+    background-color:
+        var(--color-bg-surface);
+}
+
+.barber-services__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 18px;
+}
+
+.barber-services__heading h2 {
+    margin: 0 0 4px;
+
+    color: var(--color-text-primary);
+
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.barber-services__heading p {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+}
+
+.barber-services__grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.barber-services__card {
+    display: grid;
+    gap: 16px;
+
+    padding: 18px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 14px;
+
+    background-color:
+        var(--color-bg-page);
+}
+
+.barber-services__card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.barber-services__card-top>div {
+    display: grid;
+    gap: 8px;
+}
+
+.barber-services__card h3 {
+    margin: 0;
+
+    color: var(--color-text-primary);
+
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.barber-services__status {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    background-color: #f3e8d6;
+    color: var(--color-text-accent);
+
+    font-size: 0.625rem;
+    font-weight: 600;
+}
+
+.barber-services__price {
+    flex: 0 0 auto;
+
+    color: var(--color-text-primary);
+
+    font-size: 0.9375rem;
+}
+
+.barber-services__description {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+    line-height: 18px;
+}
+
+.barber-services__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding-top: 12px;
+
+    border-top: 1px solid var(--color-border-default);
+}
+
+.barber-services__footer span {
+    color: var(--color-text-secondary);
+
+    font-size: 0.6875rem;
+}
+
+.barber-services__footer strong {
+    color: var(--color-text-primary);
+
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.barber-services__message {
+    width: min(1080px, 100%);
+
+    margin-top: 26px;
+    padding: 18px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 16px;
+
+    background-color:
+        var(--color-bg-surface);
+    color: var(--color-text-secondary);
+
+    font-size: 0.8rem;
+}
+
+.barber-services__message--error {
+    color: #a33b34;
+}
+
+.barber-services__empty {
+    display: grid;
+    gap: 6px;
+
+    padding: 24px 4px;
+}
+
+.barber-services__empty strong {
+    color: var(--color-text-primary);
+
+    font-size: 0.8125rem;
+}
+
+.barber-services__empty span {
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+}
+
+@media (max-width: 900px) and (min-width: 768px) {
+    .barber-services__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .barber-services {
+        padding: 24px 24px 32px;
+    }
+
+    .barber-services__top h1 {
+        font-size: 1.75rem;
+        line-height: 34px;
+    }
+
+    .barber-services__top p {
+        font-size: 0.75rem;
+        line-height: 18px;
+    }
+
+    .barber-services__content {
+        margin-top: 22px;
+        padding: 0;
+
+        border: 0;
+
+        background-color: transparent;
+    }
+
+    .barber-services__heading {
+        margin-bottom: 12px;
+    }
+
+    .barber-services__heading h2 {
+        font-size: 1.25rem;
+    }
+
+    .barber-services__grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .barber-services__card {
+        padding: 18px;
+
+        background-color:
+            var(--color-bg-surface);
+    }
+
+    .barber-services__card-top {
+        gap: 12px;
+    }
+
+    .barber-services__price {
+        font-size: 0.875rem;
+    }
+
+    .barber-services__empty {
+        padding: 18px;
+
+        border: 1px solid var(--color-border-default);
+        border-radius: 16px;
+
+        background-color:
+            var(--color-bg-surface);
+    }
+}
