@@ -1,0 +1,23 @@
+.barbeiro-dashboard {
+    padding: 32px 36px;
+}
+
+.barbeiro-dashboard h1 {
+    margin: 0;
+
+    color: var(--color-text-primary);
+
+    font-size: 1.75rem;
+}
+
+.barbeiro-dashboard p {
+    margin: 8px 0 0;
+
+    color: var(--color-text-secondary);
+}
+
+@media (max-width: 767px) {
+    .barbeiro-dashboard {
+        padding: 24px;
+    }
+}

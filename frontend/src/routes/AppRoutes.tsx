@@ -29,6 +29,9 @@ import ConfiguracoesProprietario from '../pages/proprietario/ConfiguracoesPropri
 import AdminLayout from '../layouts/AdminLayout/AdminLayout'
 import DashboardProprietario from '../pages/proprietario/DashboardProprietario'
 
+import BarbeiroLayout from '../layouts/BarbeiroLayout/BarbeiroLayout'
+import DashboardBarbeiro from '../pages/barbeiro/DashboardBarbeiro'
+
 import Barbearias from '../pages/publico/Barbearias'
 import DetalhesBarbearia from '../pages/publico/DetalhesBarbearia'
 import Home from '../pages/publico/Home'
@@ -106,13 +109,25 @@ function AppRoutes() {
           path="dados"
           element={<DadosBarbeariaProprietario />}
         />
+
         <Route
           path="fotos"
           element={<FotosProprietario />}
         />
+
         <Route
           path="configuracoes"
           element={<ConfiguracoesProprietario />}
+        />
+      </Route>
+
+      <Route
+        path="/barbeiro"
+        element={<BarbeiroLayout />}
+      >
+        <Route
+          index
+          element={<DashboardBarbeiro />}
         />
       </Route>
     </Routes>

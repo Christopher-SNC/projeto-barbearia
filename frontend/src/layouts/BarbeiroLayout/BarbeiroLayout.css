@@ -1,0 +1,16 @@
+.barbeiro-layout {
+    min-height: 100vh;
+
+    background-color: var(--color-bg-page);
+}
+
+.barbeiro-layout__content {
+    min-height: 100vh;
+    margin-left: 248px;
+}
+
+@media (max-width: 767px) {
+    .barbeiro-layout__content {
+        margin-left: 0;
+    }
+}
