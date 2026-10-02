@@ -10,9 +10,13 @@ import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarAvaliacoes } from '../../services/avaliacaoService'
 import { listarUsuarios } from '../../services/usuarioService'
 
+import { listarBarbeiros } from '../../services/barbeiroService'
+
 import type { Agendamento } from '../../types/Agendamento'
 import type { Avaliacao } from '../../types/Avaliacao'
 import type { Usuario } from '../../types/Usuario'
+
+import type { Barbeiro } from '../../types/Barbeiro'
 
 import './AvaliacoesProprietario.css'
 
@@ -71,6 +75,9 @@ function AvaliacoesProprietario() {
         setAgendamentos,
     ] = useState<Agendamento[]>([])
 
+    const [barbeiros, setBarbeiros] =
+        useState<Barbeiro[]>([])
+
     const [usuarios, setUsuarios] =
         useState<Usuario[]>([])
 
@@ -86,10 +93,12 @@ function AvaliacoesProprietario() {
                 const [
                     dadosAvaliacoes,
                     dadosAgendamentos,
+                    dadosBarbeiros,
                     dadosUsuarios,
                 ] = await Promise.all([
                     listarAvaliacoes(),
                     listarAgendamentos(),
+                    listarBarbeiros(),
                     listarUsuarios(),
                 ])
 
@@ -99,6 +108,10 @@ function AvaliacoesProprietario() {
 
                 setAgendamentos(
                     dadosAgendamentos,
+                )
+
+                setBarbeiros(
+                    dadosBarbeiros,
                 )
 
                 setUsuarios(
@@ -247,7 +260,44 @@ function AvaliacoesProprietario() {
             'Cliente'
         )
     }
+    function nomeBarbeiro(
+        avaliacao: Avaliacao,
+    ) {
+        const agendamento =
+            buscarAgendamento(
+                avaliacao.idAgendamento,
+            )
 
+        if (!agendamento) {
+            return 'Barbeiro'
+        }
+
+        const barbeiro = barbeiros.find(
+            (item) =>
+                item.idBarbeiro ===
+                agendamento.idBarbeiro,
+        )
+
+        if (!barbeiro) {
+            return 'Barbeiro'
+        }
+
+        return (
+            usuarios.find(
+                (usuario) =>
+                    usuario.idUsuario ===
+                    barbeiro.idUsuario,
+            )?.nome ?? 'Barbeiro'
+        )
+    }
+
+    function formatarDataAvaliacao(
+        data: string,
+    ) {
+        return new Intl.DateTimeFormat(
+            'pt-BR',
+        ).format(new Date(data))
+    }
     return (
         <section className="admin-reviews">
             <div className="admin-reviews__top">
@@ -281,9 +331,9 @@ function AvaliacoesProprietario() {
                                 mediaBarbearia,
                             )}
                             hint={`${avaliacoesBarbearia.length} ${avaliacoesBarbearia.length ===
-                                    1
-                                    ? 'avaliação'
-                                    : 'avaliações'
+                                1
+                                ? 'avaliação'
+                                : 'avaliações'
                                 }`}
                         />
 
@@ -325,23 +375,49 @@ function AvaliacoesProprietario() {
                                     (avaliacao) => (
                                         <article
                                             className="admin-reviews__review"
-                                            key={
-                                                avaliacao.idAvaliacao
-                                            }
+                                            key={avaliacao.idAvaliacao}
                                         >
-                                            <strong>
-                                                {nomeCliente(
-                                                    avaliacao,
-                                                )}
-                                            </strong>
+                                            <div className="admin-reviews__review-top">
+                                                <strong>
+                                                    {nomeCliente(avaliacao)}
+                                                </strong>
 
-                                            <span className="admin-reviews__stars">
-                                                {estrelas(
-                                                    avaliacao.notaBarbearia,
-                                                )}
-                                            </span>
+                                                <span className="admin-reviews__date">
+                                                    {formatarDataAvaliacao(
+                                                        avaliacao.dataAvaliacao,
+                                                    )}
+                                                </span>
+                                            </div>
 
-                                            <p>
+                                            <p className="admin-reviews__barber">
+                                                Barbeiro: {nomeBarbeiro(avaliacao)}
+                                            </p>
+
+                                            <div className="admin-reviews__ratings">
+                                                <div className="admin-reviews__rating-row">
+                                                    <strong>Barbearia</strong>
+
+                                                    <span className="admin-reviews__stars">
+                                                        {estrelas(
+                                                            avaliacao.notaBarbearia,
+                                                        )}
+                                                    </span>
+                                                </div>
+
+                                                {avaliacao.notaBarbeiro !== null && (
+                                                    <div className="admin-reviews__rating-row">
+                                                        <strong>Barbeiro</strong>
+
+                                                        <span className="admin-reviews__stars">
+                                                            {estrelas(
+                                                                avaliacao.notaBarbeiro,
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <p className="admin-reviews__comment">
                                                 {avaliacao.comentario ??
                                                     'Avaliação sem comentário.'}
                                             </p>
