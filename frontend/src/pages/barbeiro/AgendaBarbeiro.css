@@ -1,0 +1,310 @@
+.barber-agenda {
+    min-height: 100vh;
+
+    padding: 32px 36px;
+
+    background-color: var(--color-bg-page);
+}
+
+.barber-agenda__top {
+    display: flex;
+    min-height: 116px;
+    align-items: center;
+
+    max-width: 1120px;
+}
+
+.barber-agenda__heading {
+    display: grid;
+    gap: 6px;
+}
+
+.barber-agenda__heading h1 {
+    margin: 0;
+
+    color: var(--color-text-primary);
+
+    font-size: 1.875rem;
+    line-height: 1.1;
+}
+
+.barber-agenda__heading > p {
+    margin: 0 0 10px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.8125rem;
+}
+
+.barber-agenda__heading .date-input {
+    width: 392px;
+}
+
+.barber-agenda__card {
+    width: min(850px, 100%);
+
+    margin-top: 26px;
+    padding: 20px;
+
+    border: 1px solid
+        var(--color-border-default);
+    border-radius: 16px;
+
+    background-color:
+        var(--color-bg-surface);
+}
+
+.barber-agenda__card-header {
+    margin-bottom: 16px;
+}
+
+.barber-agenda__card-header h2 {
+    margin: 0 0 6px;
+
+    color: var(--color-text-primary);
+
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.barber-agenda__card-header p {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+}
+
+.barber-agenda__schedule {
+    display: grid;
+}
+
+.barber-agenda__schedule-header,
+.barber-agenda__row {
+    display: grid;
+    grid-template-columns:
+        90px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+}
+
+.barber-agenda__schedule-header {
+    min-height: 34px;
+    padding-inline: 8px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.barber-agenda__row {
+    min-height: 70px;
+    padding: 10px 8px;
+
+    border-top: 1px solid
+        var(--color-border-default);
+}
+
+.barber-agenda__time {
+    color: var(--color-text-secondary);
+
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.barber-agenda__slot {
+    display: grid;
+    gap: 4px;
+
+    min-height: 50px;
+    justify-content: stretch;
+
+    padding: 10px 14px;
+
+    border-radius: 10px;
+
+    background-color:
+        var(--color-bg-page);
+    color: var(--color-text-secondary);
+}
+
+.barber-agenda__slot strong {
+    color: var(--color-text-primary);
+
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.barber-agenda__slot > span {
+    font-size: 0.6875rem;
+}
+
+.barber-agenda__slot--booked {
+    background-color: #f3e8d6;
+    color: var(--color-text-accent);
+}
+
+.barber-agenda__slot--unavailable {
+    opacity: 0.5;
+}
+
+.barber-agenda__slot-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.barber-agenda__pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    background-color:
+        var(--color-bg-inverse);
+    color: var(--color-text-inverse);
+
+    font-size: 0.625rem;
+    font-weight: 600;
+}
+
+.barber-agenda__empty {
+    display: grid;
+    gap: 6px;
+
+    padding: 24px 8px 10px;
+
+    border-top: 1px solid
+        var(--color-border-default);
+}
+
+.barber-agenda__empty strong {
+    color: var(--color-text-primary);
+
+    font-size: 0.8125rem;
+}
+
+.barber-agenda__empty span {
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+}
+
+.barber-agenda__message {
+    margin-top: 20px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.8rem;
+}
+
+.barber-agenda__message--error {
+    color: #a33b34;
+}
+
+@media (max-width: 767px) {
+    .barber-agenda {
+        padding: 24px 24px 32px;
+    }
+
+    .barber-agenda__top {
+        display: block;
+        min-height: 0;
+    }
+
+    .barber-agenda__heading {
+        gap: 12px;
+    }
+
+    .barber-agenda__heading h1 {
+        font-size: 1.75rem;
+        line-height: 34px;
+    }
+
+    .barber-agenda__heading > p {
+        margin: 0;
+
+        font-size: 0.75rem;
+        line-height: 18px;
+    }
+
+    .barber-agenda__heading .date-input {
+        width: 100%;
+    }
+
+    .barber-agenda__card {
+        margin-top: 22px;
+        padding: 0;
+
+        border: 0;
+
+        background-color: transparent;
+    }
+
+    .barber-agenda__card-header {
+        margin-bottom: 12px;
+    }
+
+    .barber-agenda__card-header h2 {
+        font-size: 1.25rem;
+        line-height: 28px;
+    }
+
+    .barber-agenda__schedule {
+        gap: 10px;
+    }
+
+    .barber-agenda__schedule-header {
+        display: none;
+    }
+
+    .barber-agenda__row {
+        grid-template-columns:
+            58px minmax(0, 1fr);
+        gap: 10px;
+
+        min-height: 0;
+        padding: 0;
+
+        border-top: 0;
+    }
+
+    .barber-agenda__time {
+        align-self: center;
+
+        font-size: 0.75rem;
+    }
+
+    .barber-agenda__slot {
+        min-height: 70px;
+
+        padding: 14px;
+
+        border: 1px solid
+            var(--color-border-default);
+        border-radius: 14px;
+
+        background-color:
+            var(--color-bg-surface);
+    }
+
+    .barber-agenda__slot--booked {
+        background-color: #f3e8d6;
+    }
+
+    .barber-agenda__slot--unavailable {
+        background-color:
+            var(--color-bg-surface);
+    }
+
+    .barber-agenda__empty {
+        padding: 18px 0;
+
+        border-top: 0;
+    }
+}

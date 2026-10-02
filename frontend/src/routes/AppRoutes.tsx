@@ -32,6 +32,8 @@ import DashboardProprietario from '../pages/proprietario/DashboardProprietario'
 import BarbeiroLayout from '../layouts/BarbeiroLayout/BarbeiroLayout'
 import DashboardBarbeiro from '../pages/barbeiro/DashboardBarbeiro'
 
+import AgendaBarbeiro from '../pages/barbeiro/AgendaBarbeiro'
+
 import Barbearias from '../pages/publico/Barbearias'
 import DetalhesBarbearia from '../pages/publico/DetalhesBarbearia'
 import Home from '../pages/publico/Home'
@@ -128,6 +130,10 @@ function AppRoutes() {
         <Route
           index
           element={<DashboardBarbeiro />}
+        />
+        <Route
+          path="agenda"
+          element={<AgendaBarbeiro />}
         />
       </Route>
     </Routes>
