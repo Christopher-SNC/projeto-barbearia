@@ -42,6 +42,8 @@ import DisponibilidadeBarbeiro from '../pages/barbeiro/DisponibilidadeBarbeiro'
 
 import AvaliacoesBarbeiro from '../pages/barbeiro/AvaliacoesBarbeiro'
 
+import ConfiguracoesBarbeiro from '../pages/barbeiro/ConfiguracoesBarbeiro'
+
 import Barbearias from '../pages/publico/Barbearias'
 import DetalhesBarbearia from '../pages/publico/DetalhesBarbearia'
 import Home from '../pages/publico/Home'
@@ -158,6 +160,10 @@ function AppRoutes() {
         <Route
           path="avaliacoes"
           element={<AvaliacoesBarbeiro />}
+        />
+        <Route
+          path="configuracoes"
+          element={<ConfiguracoesBarbeiro />}
         />
       </Route>
     </Routes>
