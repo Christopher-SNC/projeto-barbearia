@@ -40,6 +40,8 @@ import ServicosBarbeiro from '../pages/barbeiro/ServicosBarbeiro'
 
 import DisponibilidadeBarbeiro from '../pages/barbeiro/DisponibilidadeBarbeiro'
 
+import AvaliacoesBarbeiro from '../pages/barbeiro/AvaliacoesBarbeiro'
+
 import Barbearias from '../pages/publico/Barbearias'
 import DetalhesBarbearia from '../pages/publico/DetalhesBarbearia'
 import Home from '../pages/publico/Home'
@@ -152,6 +154,10 @@ function AppRoutes() {
         <Route
           path="disponibilidade"
           element={<DisponibilidadeBarbeiro />}
+        />
+        <Route
+          path="avaliacoes"
+          element={<AvaliacoesBarbeiro />}
         />
       </Route>
     </Routes>

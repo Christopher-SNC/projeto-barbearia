@@ -1,0 +1,264 @@
+.barber-reviews {
+    min-height: 100vh;
+
+    padding: 32px 36px;
+
+    background-color: var(--color-bg-page);
+}
+
+.barber-reviews__top {
+    max-width: 1120px;
+}
+
+.barber-reviews__top h1 {
+    margin: 0 0 6px;
+
+    color: var(--color-text-primary);
+
+    font-size: 1.875rem;
+    line-height: 1.1;
+}
+
+.barber-reviews__top p {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.8125rem;
+}
+
+.barber-reviews__stats {
+    display: grid;
+    grid-template-columns:
+        repeat(3, minmax(0, 250px));
+    gap: 16px;
+
+    margin-top: 26px;
+}
+
+.barber-reviews__recent {
+    width: min(900px, 100%);
+
+    margin-top: 26px;
+    padding: 20px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 16px;
+
+    background-color:
+        var(--color-bg-surface);
+}
+
+.barber-reviews__heading {
+    margin-bottom: 16px;
+}
+
+.barber-reviews__heading h2 {
+    margin: 0 0 4px;
+
+    color: var(--color-text-primary);
+
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.barber-reviews__heading p {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+}
+
+.barber-reviews__list {
+    display: grid;
+    gap: 12px;
+}
+
+.barber-reviews__review {
+    display: grid;
+    gap: 12px;
+
+    padding: 18px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 14px;
+
+    background-color:
+        var(--color-bg-page);
+}
+
+.barber-reviews__review-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.barber-reviews__review-top>div:first-child {
+    display: grid;
+    gap: 4px;
+}
+
+.barber-reviews__review-top>div:first-child strong {
+    color: var(--color-text-primary);
+
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.barber-reviews__review-top>div:first-child span {
+    color: var(--color-text-secondary);
+
+    font-size: 0.6875rem;
+}
+
+.barber-reviews__rating {
+    display: grid;
+    justify-items: end;
+    gap: 2px;
+}
+
+.barber-reviews__rating strong {
+    color: var(--color-text-primary);
+
+    font-size: 0.8125rem;
+}
+
+.barber-reviews__rating span {
+    color: var(--color-text-accent);
+
+    font-size: 0.8125rem;
+    letter-spacing: 1px;
+}
+
+.barber-reviews__service {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.6875rem;
+}
+
+.barber-reviews__comment {
+    margin: 0;
+    padding-top: 12px;
+
+    border-top: 1px solid var(--color-border-default);
+
+    color: var(--color-text-primary);
+
+    font-size: 0.75rem;
+    line-height: 19px;
+}
+
+.barber-reviews__empty {
+    display: grid;
+    gap: 6px;
+
+    padding: 22px 4px;
+}
+
+.barber-reviews__empty strong {
+    color: var(--color-text-primary);
+
+    font-size: 0.8125rem;
+}
+
+.barber-reviews__empty span {
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+}
+
+.barber-reviews__message {
+    width: min(900px, 100%);
+
+    margin-top: 26px;
+    padding: 18px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 16px;
+
+    background-color:
+        var(--color-bg-surface);
+    color: var(--color-text-secondary);
+
+    font-size: 0.8rem;
+}
+
+.barber-reviews__message--error {
+    color: #a33b34;
+}
+
+@media (max-width: 1000px) and (min-width: 768px) {
+    .barber-reviews__stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 250px));
+    }
+}
+
+@media (max-width: 767px) {
+    .barber-reviews {
+        padding: 24px 24px 32px;
+    }
+
+    .barber-reviews__top h1 {
+        font-size: 1.75rem;
+        line-height: 34px;
+    }
+
+    .barber-reviews__top p {
+        font-size: 0.75rem;
+        line-height: 18px;
+    }
+
+    .barber-reviews__stats {
+        grid-template-columns: 1fr;
+        gap: 18px;
+
+        margin-top: 22px;
+    }
+
+    .barber-reviews__recent {
+        margin-top: 22px;
+        padding: 0;
+
+        border: 0;
+
+        background-color: transparent;
+    }
+
+    .barber-reviews__heading {
+        margin-bottom: 12px;
+    }
+
+    .barber-reviews__heading h2 {
+        font-size: 1.25rem;
+    }
+
+    .barber-reviews__review {
+        padding: 18px;
+
+        background-color:
+            var(--color-bg-surface);
+    }
+
+    .barber-reviews__review-top {
+        gap: 12px;
+    }
+
+    .barber-reviews__rating span {
+        font-size: 0.75rem;
+    }
+
+    .barber-reviews__empty {
+        padding: 18px;
+
+        border: 1px solid var(--color-border-default);
+        border-radius: 16px;
+
+        background-color:
+            var(--color-bg-surface);
+    }
+}
