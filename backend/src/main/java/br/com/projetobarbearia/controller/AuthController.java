@@ -1,6 +1,11 @@
 package br.com.projetobarbearia.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,26 +13,51 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.projetobarbearia.dto.LoginRequest;
 import br.com.projetobarbearia.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
+    private final SecurityContextRepository securityContextRepository;
+    private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
 
     public AuthController(
-            AuthService authService) {
+            AuthService authService,
+            SecurityContextRepository securityContextRepository,
+            SessionAuthenticationStrategy sessionAuthenticationStrategy) {
 
         this.authService = authService;
+        this.securityContextRepository = securityContextRepository;
+        this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(
-            @RequestBody LoginRequest request) {
+            @RequestBody LoginRequest request,
+            HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
 
-        authService.autenticar(
+        Authentication authentication = authService.autenticar(
                 request.getEmail(),
                 request.getSenha());
+
+        sessionAuthenticationStrategy.onAuthentication(
+                authentication,
+                httpRequest,
+                httpResponse);
+
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        securityContextRepository.saveContext(
+                securityContext,
+                httpRequest,
+                httpResponse);
 
         return ResponseEntity.ok().build();
     }
