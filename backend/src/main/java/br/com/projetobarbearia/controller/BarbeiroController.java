@@ -116,6 +116,7 @@ public class BarbeiroController {
         return new BarbeiroResponse(
                 barbeiro.getIdBarbeiro(),
                 barbeiro.getUsuario().getIdUsuario(),
+                barbeiro.getUsuario().getNome(),
                 barbeiro.getBarbearia().getIdBarbearia(),
                 barbeiro.getDescricao(),
                 barbeiro.isAtivo());
