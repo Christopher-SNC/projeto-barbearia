@@ -4,7 +4,7 @@ import {
     useState,
 } from 'react'
 
-import { DEMO_IDS } from '../../config/demo'
+import useAuth from '../../hooks/useAuth'
 
 import { listarBarbeirosServicos } from '../../services/barbeiroServicoService'
 import { listarServicos } from '../../services/servicoService'
@@ -22,6 +22,10 @@ function formatarPreco(valor: number) {
 }
 
 function ServicosBarbeiro() {
+    const { usuario } = useAuth()
+
+    const idBarbeiro = usuario?.idBarbeiro
+    const idBarbearia = usuario?.idBarbeariaBarbeiro
     const [servicos, setServicos] =
         useState<Servico[]>([])
 
@@ -66,8 +70,7 @@ function ServicosBarbeiro() {
                 vinculos
                     .filter(
                         (vinculo) =>
-                            vinculo.idBarbeiro ===
-                            DEMO_IDS.barbeiro &&
+                            vinculo.idBarbeiro === idBarbeiro &&
                             vinculo.ativo,
                     )
                     .map(
@@ -80,7 +83,7 @@ function ServicosBarbeiro() {
             .filter(
                 (servico) =>
                     servico.idBarbearia ===
-                    DEMO_IDS.barbearia &&
+                    idBarbearia &&
                     servico.ativo &&
                     idsServicos.has(
                         servico.idServico,
@@ -92,7 +95,9 @@ function ServicosBarbeiro() {
                     'pt-BR',
                 ),
             )
-    }, [servicos, vinculos])
+    }, [servicos, vinculos,
+        idBarbeiro,
+        idBarbearia,])
 
     return (
         <section className="barber-services">

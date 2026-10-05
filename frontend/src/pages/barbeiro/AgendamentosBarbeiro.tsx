@@ -6,7 +6,7 @@ import {
 
 import StatusBadge from '../../components/StatusBadge/StatusBadge'
 
-import { DEMO_IDS } from '../../config/demo'
+import useAuth from '../../hooks/useAuth'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarUsuarios } from '../../services/usuarioService'
@@ -96,6 +96,10 @@ function obterStatusLabel(
 }
 
 function AgendamentosBarbeiro() {
+    const { usuario } = useAuth()
+
+    const idBarbeiro = usuario?.idBarbeiro
+    const idBarbearia = usuario?.idBarbeariaBarbeiro
     const [filtro, setFiltro] =
         useState<FiltroAgendamento>('hoje')
 
@@ -125,9 +129,9 @@ function AgendamentosBarbeiro() {
                     dadosAgendamentos.filter(
                         (agendamento) =>
                             agendamento.idBarbearia ===
-                            DEMO_IDS.barbearia &&
+                            idBarbearia &&
                             agendamento.idBarbeiro ===
-                            DEMO_IDS.barbeiro,
+                            idBarbeiro,
                     ),
                 )
 
@@ -144,7 +148,7 @@ function AgendamentosBarbeiro() {
         }
 
         carregarDados()
-    }, [])
+    }, [idBarbearia, idBarbeiro])
 
     const agendamentosFiltrados =
         useMemo(() => {

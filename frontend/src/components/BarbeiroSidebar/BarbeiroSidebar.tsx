@@ -6,7 +6,6 @@ import {
 
 import useAuth from '../../hooks/useAuth'
 
-import { DEMO_IDS } from '../../config/demo'
 import { buscarBarbeariaPorId } from '../../services/barbeariaService'
 
 import '../AdminSidebar/AdminSidebar.css'
@@ -51,14 +50,27 @@ function BarbeiroSidebar() {
         useState('Barbearia')
 
     const navigate = useNavigate()
-    const { sair } = useAuth()
+    const { usuario, sair } = useAuth()
+
+    const idBarbearia =
+        usuario?.idBarbeariaBarbeiro
 
     useEffect(() => {
+        if (
+            idBarbearia === null ||
+            idBarbearia === undefined
+        ) {
+            return
+        }
+
+        const idBarbeariaAtual = idBarbearia
+
         async function carregarBarbearia() {
             try {
-                const barbearia = await buscarBarbeariaPorId(
-                    DEMO_IDS.barbearia,
-                )
+                const barbearia =
+                    await buscarBarbeariaPorId(
+                        idBarbeariaAtual,
+                    )
 
                 setNomeBarbearia(barbearia.nome)
             } catch (error) {
@@ -67,7 +79,7 @@ function BarbeiroSidebar() {
         }
 
         carregarBarbearia()
-    }, [])
+    }, [idBarbearia])
 
     function fecharMenu() {
         setMenuAberto(false)

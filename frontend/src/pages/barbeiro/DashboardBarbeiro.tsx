@@ -6,7 +6,7 @@ import {
 
 import AdminStatCard from '../../components/AdminStatCard/AdminStatCard'
 
-import { DEMO_IDS } from '../../config/demo'
+import useAuth from '../../hooks/useAuth'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarAvaliacoes } from '../../services/avaliacaoService'
@@ -57,6 +57,11 @@ function formatarMedia(valor: number | null) {
 }
 
 function DashboardBarbeiro() {
+    const { usuario } = useAuth()
+
+    const idUsuario = usuario?.idUsuario
+    const idBarbeiro = usuario?.idBarbeiro
+    const idBarbearia = usuario?.idBarbeariaBarbeiro
     const [agendamentos, setAgendamentos] =
         useState<Agendamento[]>([])
 
@@ -112,21 +117,22 @@ function DashboardBarbeiro() {
     const usuarioBarbeiro = useMemo(() => {
         return usuarios.find(
             (usuario) =>
-                usuario.idUsuario ===
-                DEMO_IDS.usuarioBarbeiro,
+                usuario.idUsuario === idUsuario,
         )
-    }, [usuarios])
+    }, [usuarios, idUsuario])
 
     const agendamentosBarbeiro =
         useMemo(() => {
             return agendamentos.filter(
                 (agendamento) =>
                     agendamento.idBarbeiro ===
-                    DEMO_IDS.barbeiro &&
+                    idBarbeiro &&
                     agendamento.idBarbearia ===
-                    DEMO_IDS.barbearia,
+                    idBarbearia,
             )
-        }, [agendamentos])
+        }, [agendamentos,
+            idBarbeiro,
+            idBarbearia,])
 
     const atendimentosHoje =
         useMemo(() => {
