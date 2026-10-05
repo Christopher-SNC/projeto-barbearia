@@ -19,6 +19,11 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
+import jakarta.servlet.DispatcherType;
+
+import org.springframework.http.HttpMethod;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+
 @Configuration
 public class SecurityConfig {
 
@@ -33,7 +38,28 @@ public class SecurityConfig {
                 .securityContext(securityContext -> securityContext
                         .securityContextRepository(securityContextRepository))
                 .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll())
+                        .dispatcherTypeMatchers(
+                                DispatcherType.ERROR,
+                                DispatcherType.FORWARD)
+                        .permitAll()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/auth/login",
+                                "/api/usuarios")
+                        .permitAll()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/barbearias/**",
+                                "/api/enderecos/**",
+                                "/api/horarios-funcionamento/**",
+                                "/api/servicos/**",
+                                "/api/barbeiros/**")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(
+                                new HttpStatusEntryPoint(
+                                        HttpStatus.UNAUTHORIZED)))
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .logout(logout -> logout
