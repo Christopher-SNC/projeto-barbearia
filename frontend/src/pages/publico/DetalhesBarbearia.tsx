@@ -12,14 +12,12 @@ import { listarBarbeiros } from '../../services/barbeiroService'
 import { listarEnderecos } from '../../services/enderecoService'
 import { listarHorariosFuncionamento } from '../../services/horarioFuncionamentoService'
 import { listarServicos } from '../../services/servicoService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type { Barbearia } from '../../types/Barbearia'
 import type { Barbeiro } from '../../types/Barbeiro'
 import type { Endereco } from '../../types/Endereco'
 import type { HorarioFuncionamento } from '../../types/HorarioFuncionamento'
 import type { Servico } from '../../types/Servico'
-import type { Usuario } from '../../types/Usuario'
 
 import './DetalhesBarbearia.css'
 
@@ -64,8 +62,6 @@ function DetalhesBarbearia() {
     Barbeiro[]
   >([])
 
-  const [usuarios, setUsuarios] = useState<Usuario[]>([])
-
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
 
@@ -86,14 +82,12 @@ function DetalhesBarbearia() {
           dadosHorarios,
           dadosServicos,
           dadosBarbeiros,
-          dadosUsuarios,
         ] = await Promise.all([
           buscarBarbeariaPorId(idBarbearia),
           listarEnderecos(),
           listarHorariosFuncionamento(),
           listarServicos(),
           listarBarbeiros(),
-          listarUsuarios(),
         ])
 
         setBarbearia(dadosBarbearia)
@@ -128,7 +122,6 @@ function DetalhesBarbearia() {
           ),
         )
 
-        setUsuarios(dadosUsuarios)
       } catch (error) {
         console.error(error)
 
@@ -142,14 +135,6 @@ function DetalhesBarbearia() {
 
     carregarDados()
   }, [id])
-
-  function buscarNomeBarbeiro(idUsuario: number) {
-    const usuario = usuarios.find(
-      (item) => item.idUsuario === idUsuario,
-    )
-
-    return usuario?.nome ?? 'Barbeiro'
-  }
 
   function irParaAgendamento() {
     if (!barbearia) {
@@ -290,9 +275,7 @@ function DetalhesBarbearia() {
 
                       <div className="barbershop-professional__info">
                         <h3>
-                          {buscarNomeBarbeiro(
-                            barbeiro.idUsuario,
-                          )}
+                          {barbeiro.nomeUsuario}
                         </h3>
 
                         {barbeiro.descricao && (
