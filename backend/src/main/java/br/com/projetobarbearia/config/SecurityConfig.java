@@ -16,6 +16,9 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+
 @Configuration
 public class SecurityConfig {
 
@@ -32,7 +35,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().permitAll())
                 .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable());
+                .httpBasic(basic -> basic.disable())
+                .logout(logout -> logout
+                        .logoutUrl("/api/auth/logout")
+                        .logoutSuccessHandler(
+                                new HttpStatusReturningLogoutSuccessHandler(
+                                        HttpStatus.NO_CONTENT))
+                        .permitAll());
 
         return http.build();
     }
