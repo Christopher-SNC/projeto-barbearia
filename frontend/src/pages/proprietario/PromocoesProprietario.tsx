@@ -35,7 +35,7 @@ import type { Servico } from '../../types/Servico'
 
 import './PromocoesProprietario.css'
 
-import { DEMO_IDS } from '../../config/demo'
+import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
 
 function formatarPercentual(valor: number) {
     return new Intl.NumberFormat('pt-BR', {
@@ -53,6 +53,8 @@ function formatarData(data: string) {
 }
 
 function PromocoesProprietario() {
+    const idBarbearia =
+        useBarbeariaProprietario()
     const [promocoes, setPromocoes] =
         useState<Promocao[]>([])
 
@@ -126,7 +128,7 @@ function PromocoesProprietario() {
                     dadosPromocoes.filter(
                         (promocao) =>
                             promocao.idBarbearia ===
-                            DEMO_IDS.barbearia,
+                            idBarbearia,
                     ),
                 )
 
@@ -137,7 +139,7 @@ function PromocoesProprietario() {
                         .filter(
                             (servico) =>
                                 servico.idBarbearia ===
-                                DEMO_IDS.barbearia,
+                                idBarbearia,
                         )
                         .sort((a, b) =>
                             a.nome.localeCompare(b.nome),
@@ -155,7 +157,7 @@ function PromocoesProprietario() {
         }
 
         carregarDados()
-    }, [])
+    }, [idBarbearia])
 
     const promocoesAtivas = useMemo(() => {
         return promocoes
@@ -343,7 +345,7 @@ function PromocoesProprietario() {
 
         const dados: PromocaoRequest = {
             idBarbearia:
-                DEMO_IDS.barbearia,
+                idBarbearia,
 
             titulo:
                 tituloLimpo,

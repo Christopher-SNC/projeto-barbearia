@@ -7,6 +7,8 @@ import type { FormEvent } from 'react'
 
 import Button from '../../components/Button/Button'
 
+import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
+
 import {
     ativarServico,
     atualizarServico,
@@ -22,56 +24,78 @@ import type {
 
 import './ServicosProprietario.css'
 
-import { DEMO_IDS } from '../../config/demo'
-
 function formatarPreco(valor: number) {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(valor)
+    return new Intl.NumberFormat(
+        'pt-BR',
+        {
+            style: 'currency',
+            currency: 'BRL',
+        },
+    ).format(valor)
 }
 
 function ServicosProprietario() {
-    const [servicos, setServicos] = useState<
-        Servico[]
-    >([])
+    const idBarbearia =
+        useBarbeariaProprietario()
+
+    const [servicos, setServicos] =
+        useState<Servico[]>([])
 
     const [carregando, setCarregando] =
         useState(true)
 
-    const [erro, setErro] = useState('')
-    const [sucesso, setSucesso] = useState('')
-
-    const [formularioAberto, setFormularioAberto] =
-        useState(false)
-
-    const [servicoEditando, setServicoEditando] =
-        useState<Servico | null>(null)
-
-    const [nome, setNome] = useState('')
-    const [descricao, setDescricao] = useState('')
-    const [preco, setPreco] = useState('')
-    const [duracao, setDuracao] = useState('')
-
-    const [erroFormulario, setErroFormulario] =
+    const [erro, setErro] =
         useState('')
+
+    const [sucesso, setSucesso] =
+        useState('')
+
+    const [
+        formularioAberto,
+        setFormularioAberto,
+    ] = useState(false)
+
+    const [
+        servicoEditando,
+        setServicoEditando,
+    ] = useState<Servico | null>(null)
+
+    const [nome, setNome] =
+        useState('')
+
+    const [descricao, setDescricao] =
+        useState('')
+
+    const [preco, setPreco] =
+        useState('')
+
+    const [duracao, setDuracao] =
+        useState('')
+
+    const [
+        erroFormulario,
+        setErroFormulario,
+    ] = useState('')
 
     const [salvando, setSalvando] =
         useState(false)
 
-    const [idProcessando, setIdProcessando] =
-        useState<number | null>(null)
+    const [
+        idProcessando,
+        setIdProcessando,
+    ] = useState<number | null>(null)
 
     useEffect(() => {
         async function carregarServicos() {
             try {
-                const dados = await listarServicos()
+                const dados =
+                    await listarServicos()
 
                 setServicos(
                     dados.filter(
                         (servico) =>
                             servico.idBarbearia ===
-                            DEMO_IDS.barbearia,
+                            idBarbearia,
                     ),
                 )
             } catch (error) {
@@ -86,23 +110,37 @@ function ServicosProprietario() {
         }
 
         carregarServicos()
-    }, [])
+    }, [idBarbearia])
 
-    const servicosAtivos = useMemo(() => {
-        return servicos
-            .filter((servico) => servico.ativo)
-            .sort((a, b) =>
-                a.nome.localeCompare(b.nome),
-            )
-    }, [servicos])
+    const servicosAtivos =
+        useMemo(() => {
+            return servicos
+                .filter(
+                    (servico) =>
+                        servico.ativo,
+                )
+                .sort(
+                    (a, b) =>
+                        a.nome.localeCompare(
+                            b.nome,
+                        ),
+                )
+        }, [servicos])
 
-    const servicosInativos = useMemo(() => {
-        return servicos
-            .filter((servico) => !servico.ativo)
-            .sort((a, b) =>
-                a.nome.localeCompare(b.nome),
-            )
-    }, [servicos])
+    const servicosInativos =
+        useMemo(() => {
+            return servicos
+                .filter(
+                    (servico) =>
+                        !servico.ativo,
+                )
+                .sort(
+                    (a, b) =>
+                        a.nome.localeCompare(
+                            b.nome,
+                        ),
+                )
+        }, [servicos])
 
     function limparFormulario() {
         setNome('')
@@ -119,12 +157,26 @@ function ServicosProprietario() {
         setFormularioAberto(true)
     }
 
-    function abrirEdicao(servico: Servico) {
+    function abrirEdicao(
+        servico: Servico,
+    ) {
         setServicoEditando(servico)
         setNome(servico.nome)
-        setDescricao(servico.descricao ?? '')
-        setPreco(String(servico.preco))
-        setDuracao(String(servico.duracaoMinutos))
+
+        setDescricao(
+            servico.descricao ?? '',
+        )
+
+        setPreco(
+            String(servico.preco),
+        )
+
+        setDuracao(
+            String(
+                servico.duracaoMinutos,
+            ),
+        )
+
         setErroFormulario('')
         setSucesso('')
         setFormularioAberto(true)
@@ -144,15 +196,19 @@ function ServicosProprietario() {
         setErro('')
         setSucesso('')
 
-        const nomeLimpo = nome.trim()
-        const precoNumero = Number(preco)
-        const duracaoNumero = Number(duracao)
+        const nomeLimpo =
+            nome.trim()
+
+        const precoNumero =
+            Number(preco)
+
+        const duracaoNumero =
+            Number(duracao)
 
         if (!nomeLimpo) {
             setErroFormulario(
                 'Informe o nome do serviço.',
             )
-
             return
         }
 
@@ -163,29 +219,29 @@ function ServicosProprietario() {
             setErroFormulario(
                 'Informe um preço válido.',
             )
-
             return
         }
 
         if (
-            Number.isNaN(duracaoNumero) ||
+            Number.isNaN(
+                duracaoNumero,
+            ) ||
             duracaoNumero <= 0
         ) {
             setErroFormulario(
                 'Informe uma duração válida.',
             )
-
             return
         }
 
         const dados: ServicoRequest = {
-            idBarbearia:
-                DEMO_IDS.barbearia,
+            idBarbearia,
             nome: nomeLimpo,
             descricao:
                 descricao.trim() || null,
             preco: precoNumero,
-            duracaoMinutos: duracaoNumero,
+            duracaoMinutos:
+                duracaoNumero,
         }
 
         try {
@@ -198,13 +254,15 @@ function ServicosProprietario() {
                         dados,
                     )
 
-                setServicos((atuais) =>
-                    atuais.map((servico) =>
-                        servico.idServico ===
-                            atualizado.idServico
-                            ? atualizado
-                            : servico,
-                    ),
+                setServicos(
+                    (atuais) =>
+                        atuais.map(
+                            (servico) =>
+                                servico.idServico ===
+                                atualizado.idServico
+                                    ? atualizado
+                                    : servico,
+                        ),
                 )
 
                 setSucesso(
@@ -212,12 +270,16 @@ function ServicosProprietario() {
                 )
             } else {
                 const cadastrado =
-                    await cadastrarServico(dados)
+                    await cadastrarServico(
+                        dados,
+                    )
 
-                setServicos((atuais) => [
-                    ...atuais,
-                    cadastrado,
-                ])
+                setServicos(
+                    (atuais) => [
+                        ...atuais,
+                        cadastrado,
+                    ],
+                )
 
                 setSucesso(
                     'Serviço cadastrado com sucesso.',
@@ -240,25 +302,31 @@ function ServicosProprietario() {
         servico: Servico,
     ) {
         try {
-            setIdProcessando(servico.idServico)
+            setIdProcessando(
+                servico.idServico,
+            )
+
             setErro('')
             setSucesso('')
 
-            const atualizado = servico.ativo
-                ? await desativarServico(
-                    servico.idServico,
-                )
-                : await ativarServico(
-                    servico.idServico,
-                )
+            const atualizado =
+                servico.ativo
+                    ? await desativarServico(
+                          servico.idServico,
+                      )
+                    : await ativarServico(
+                          servico.idServico,
+                      )
 
-            setServicos((atuais) =>
-                atuais.map((item) =>
-                    item.idServico ===
-                        atualizado.idServico
-                        ? atualizado
-                        : item,
-                ),
+            setServicos(
+                (atuais) =>
+                    atuais.map(
+                        (item) =>
+                            item.idServico ===
+                            atualizado.idServico
+                                ? atualizado
+                                : item,
+                    ),
             )
 
             setSucesso(
@@ -289,14 +357,17 @@ function ServicosProprietario() {
                     </p>
 
                     <p className="admin-services__description admin-services__description--mobile">
-                        Preços, duração e disponibilidade
+                        Preços, duração e
+                        disponibilidade
                     </p>
                 </div>
 
                 <Button
                     variant="accent"
                     type="button"
-                    onClick={abrirNovoServico}
+                    onClick={
+                        abrirNovoServico
+                    }
                 >
                     Novo serviço
                 </Button>
@@ -321,42 +392,59 @@ function ServicosProprietario() {
             ) : (
                 <>
                     <section className="admin-services__section">
-                        <h2>Serviços ativos</h2>
+                        <h2>
+                            Serviços ativos
+                        </h2>
 
                         <p className="admin-services__count">
-                            {servicosAtivos.length}{' '}
-                            {servicosAtivos.length === 1
+                            {
+                                servicosAtivos.length
+                            }{' '}
+                            {servicosAtivos.length ===
+                            1
                                 ? 'serviço ativo'
                                 : 'serviços ativos'}
                         </p>
 
-                        {servicosAtivos.length === 0 ? (
+                        {servicosAtivos.length ===
+                        0 ? (
                             <p className="admin-services__empty">
-                                Nenhum serviço ativo.
+                                Nenhum serviço
+                                ativo.
                             </p>
                         ) : (
                             <>
                                 <div className="admin-services__desktop-list">
                                     {servicosAtivos.map(
-                                        (servico) => (
+                                        (
+                                            servico,
+                                        ) => (
                                             <article
                                                 className="admin-services__row"
-                                                key={servico.idServico}
+                                                key={
+                                                    servico.idServico
+                                                }
                                             >
                                                 <div className="admin-services__service-info">
                                                     <strong>
-                                                        {servico.nome}
+                                                        {
+                                                            servico.nome
+                                                        }
                                                     </strong>
 
                                                     {servico.descricao && (
                                                         <span>
-                                                            {servico.descricao}
+                                                            {
+                                                                servico.descricao
+                                                            }
                                                         </span>
                                                     )}
                                                 </div>
 
                                                 <span>
-                                                    {servico.duracaoMinutos}{' '}
+                                                    {
+                                                        servico.duracaoMinutos
+                                                    }{' '}
                                                     min
                                                 </span>
 
@@ -395,7 +483,7 @@ function ServicosProprietario() {
                                                         }
                                                     >
                                                         {idProcessando ===
-                                                            servico.idServico
+                                                        servico.idServico
                                                             ? 'Aguarde...'
                                                             : 'Desativar'}
                                                     </button>
@@ -407,14 +495,20 @@ function ServicosProprietario() {
 
                                 <div className="admin-services__mobile-list">
                                     {servicosAtivos.map(
-                                        (servico) => (
+                                        (
+                                            servico,
+                                        ) => (
                                             <article
                                                 className="admin-services__card"
-                                                key={servico.idServico}
+                                                key={
+                                                    servico.idServico
+                                                }
                                             >
                                                 <div className="admin-services__card-top">
                                                     <strong>
-                                                        {servico.nome}
+                                                        {
+                                                            servico.nome
+                                                        }
                                                     </strong>
 
                                                     <span className="admin-services__status admin-services__status--active">
@@ -423,7 +517,9 @@ function ServicosProprietario() {
                                                 </div>
 
                                                 <p>
-                                                    {servico.duracaoMinutos}{' '}
+                                                    {
+                                                        servico.duracaoMinutos
+                                                    }{' '}
                                                     min •{' '}
                                                     {formatarPreco(
                                                         servico.preco,
@@ -432,7 +528,9 @@ function ServicosProprietario() {
 
                                                 {servico.descricao && (
                                                     <p>
-                                                        {servico.descricao}
+                                                        {
+                                                            servico.descricao
+                                                        }
                                                     </p>
                                                 )}
 
@@ -472,35 +570,49 @@ function ServicosProprietario() {
                     </section>
 
                     <section className="admin-services__section">
-                        <h2>Serviços inativos</h2>
+                        <h2>
+                            Serviços inativos
+                        </h2>
 
-                        {servicosInativos.length === 0 ? (
+                        {servicosInativos.length ===
+                        0 ? (
                             <p className="admin-services__empty">
-                                Nenhum serviço inativo.
+                                Nenhum serviço
+                                inativo.
                             </p>
                         ) : (
                             <>
                                 <div className="admin-services__desktop-list">
                                     {servicosInativos.map(
-                                        (servico) => (
+                                        (
+                                            servico,
+                                        ) => (
                                             <article
                                                 className="admin-services__row admin-services__row--inactive"
-                                                key={servico.idServico}
+                                                key={
+                                                    servico.idServico
+                                                }
                                             >
                                                 <div className="admin-services__service-info">
                                                     <strong>
-                                                        {servico.nome}
+                                                        {
+                                                            servico.nome
+                                                        }
                                                     </strong>
 
                                                     {servico.descricao && (
                                                         <span>
-                                                            {servico.descricao}
+                                                            {
+                                                                servico.descricao
+                                                            }
                                                         </span>
                                                     )}
                                                 </div>
 
                                                 <span>
-                                                    {servico.duracaoMinutos}{' '}
+                                                    {
+                                                        servico.duracaoMinutos
+                                                    }{' '}
                                                     min
                                                 </span>
 
@@ -539,7 +651,7 @@ function ServicosProprietario() {
                                                         }
                                                     >
                                                         {idProcessando ===
-                                                            servico.idServico
+                                                        servico.idServico
                                                             ? 'Aguarde...'
                                                             : 'Reativar'}
                                                     </button>
@@ -551,14 +663,20 @@ function ServicosProprietario() {
 
                                 <div className="admin-services__mobile-list">
                                     {servicosInativos.map(
-                                        (servico) => (
+                                        (
+                                            servico,
+                                        ) => (
                                             <article
                                                 className="admin-services__card admin-services__card--inactive"
-                                                key={servico.idServico}
+                                                key={
+                                                    servico.idServico
+                                                }
                                             >
                                                 <div className="admin-services__card-top">
                                                     <strong>
-                                                        {servico.nome}
+                                                        {
+                                                            servico.nome
+                                                        }
                                                     </strong>
 
                                                     <span className="admin-services__status admin-services__status--inactive">
@@ -567,7 +685,9 @@ function ServicosProprietario() {
                                                 </div>
 
                                                 <p>
-                                                    {servico.duracaoMinutos}{' '}
+                                                    {
+                                                        servico.duracaoMinutos
+                                                    }{' '}
                                                     min •{' '}
                                                     {formatarPreco(
                                                         servico.preco,
@@ -614,7 +734,9 @@ function ServicosProprietario() {
                             variant="accent"
                             fullWidth
                             type="button"
-                            onClick={abrirNovoServico}
+                            onClick={
+                                abrirNovoServico
+                            }
                         >
                             Novo serviço
                         </Button>
@@ -626,14 +748,18 @@ function ServicosProprietario() {
                 <div
                     className="admin-services__modal"
                     role="presentation"
-                    onMouseDown={fecharFormulario}
+                    onMouseDown={
+                        fecharFormulario
+                    }
                 >
                     <div
                         className="admin-services__modal-card"
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="service-form-title"
-                        onMouseDown={(event) =>
+                        onMouseDown={(
+                            event,
+                        ) =>
                             event.stopPropagation()
                         }
                     >
@@ -646,7 +772,9 @@ function ServicosProprietario() {
                                 </h2>
 
                                 <p>
-                                    Informe os dados do serviço.
+                                    Informe os
+                                    dados do
+                                    serviço.
                                 </p>
                             </div>
 
@@ -654,7 +782,9 @@ function ServicosProprietario() {
                                 className="admin-services__close"
                                 type="button"
                                 aria-label="Fechar"
-                                onClick={fecharFormulario}
+                                onClick={
+                                    fecharFormulario
+                                }
                             >
                                 ×
                             </button>
@@ -662,16 +792,23 @@ function ServicosProprietario() {
 
                         <form
                             className="admin-services__form"
-                            onSubmit={salvarServico}
+                            onSubmit={
+                                salvarServico
+                            }
                         >
                             <label>
                                 Nome
+
                                 <input
                                     type="text"
                                     value={nome}
-                                    onChange={(event) =>
+                                    onChange={(
+                                        event,
+                                    ) =>
                                         setNome(
-                                            event.target.value,
+                                            event
+                                                .target
+                                                .value,
                                         )
                                     }
                                     placeholder="Ex.: Corte tradicional"
@@ -680,11 +817,18 @@ function ServicosProprietario() {
 
                             <label>
                                 Descrição
+
                                 <textarea
-                                    value={descricao}
-                                    onChange={(event) =>
+                                    value={
+                                        descricao
+                                    }
+                                    onChange={(
+                                        event,
+                                    ) =>
                                         setDescricao(
-                                            event.target.value,
+                                            event
+                                                .target
+                                                .value,
                                         )
                                     }
                                     placeholder="Descrição opcional"
@@ -694,14 +838,21 @@ function ServicosProprietario() {
                             <div className="admin-services__form-grid">
                                 <label>
                                     Preço
+
                                     <input
                                         type="number"
                                         min="0"
                                         step="0.01"
-                                        value={preco}
-                                        onChange={(event) =>
+                                        value={
+                                            preco
+                                        }
+                                        onChange={(
+                                            event,
+                                        ) =>
                                             setPreco(
-                                                event.target.value,
+                                                event
+                                                    .target
+                                                    .value,
                                             )
                                         }
                                         placeholder="35,00"
@@ -710,14 +861,21 @@ function ServicosProprietario() {
 
                                 <label>
                                     Duração
+
                                     <input
                                         type="number"
                                         min="1"
                                         step="1"
-                                        value={duracao}
-                                        onChange={(event) =>
+                                        value={
+                                            duracao
+                                        }
+                                        onChange={(
+                                            event,
+                                        ) =>
                                             setDuracao(
-                                                event.target.value,
+                                                event
+                                                    .target
+                                                    .value,
                                             )
                                         }
                                         placeholder="30"
@@ -727,7 +885,9 @@ function ServicosProprietario() {
 
                             {erroFormulario && (
                                 <p className="admin-services__form-error">
-                                    {erroFormulario}
+                                    {
+                                        erroFormulario
+                                    }
                                 </p>
                             )}
 
@@ -735,7 +895,9 @@ function ServicosProprietario() {
                                 <Button
                                     variant="secondary"
                                     type="button"
-                                    onClick={fecharFormulario}
+                                    onClick={
+                                        fecharFormulario
+                                    }
                                 >
                                     Cancelar
                                 </Button>
@@ -743,13 +905,15 @@ function ServicosProprietario() {
                                 <Button
                                     variant="accent"
                                     type="submit"
-                                    disabled={salvando}
+                                    disabled={
+                                        salvando
+                                    }
                                 >
                                     {salvando
                                         ? 'Salvando...'
                                         : servicoEditando
-                                            ? 'Salvar alterações'
-                                            : 'Cadastrar serviço'}
+                                          ? 'Salvar alterações'
+                                          : 'Cadastrar serviço'}
                                 </Button>
                             </div>
                         </form>

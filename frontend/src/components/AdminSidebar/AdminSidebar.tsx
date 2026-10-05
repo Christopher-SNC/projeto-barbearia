@@ -6,7 +6,7 @@ import {
 
 import useAuth from '../../hooks/useAuth'
 
-import { DEMO_IDS } from '../../config/demo'
+import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
 import { buscarBarbeariaPorId } from '../../services/barbeariaService'
 
 import './AdminSidebar.css'
@@ -60,6 +60,8 @@ const links = [
 ]
 
 function AdminSidebar() {
+    const idBarbearia = useBarbeariaProprietario()
+
     const [menuAberto, setMenuAberto] = useState(false)
 
     const [nomeBarbearia, setNomeBarbearia] =
@@ -71,7 +73,7 @@ function AdminSidebar() {
     useEffect(() => {
         let componenteAtivo = true
 
-        buscarBarbeariaPorId(DEMO_IDS.barbearia)
+        buscarBarbeariaPorId(idBarbearia)
             .then((barbearia) => {
                 if (componenteAtivo) {
                     setNomeBarbearia(barbearia.nome)
@@ -87,7 +89,7 @@ function AdminSidebar() {
         return () => {
             componenteAtivo = false
         }
-    }, [])
+    }, [idBarbearia])
 
     function fecharMenu() {
         setMenuAberto(false)

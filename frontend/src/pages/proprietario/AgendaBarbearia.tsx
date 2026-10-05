@@ -4,8 +4,9 @@ import {
     useState,
 } from 'react'
 
-
 import DateInput from '../../components/DateInput/DateInput'
+
+import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarBarbeiros } from '../../services/barbeiroService'
@@ -20,8 +21,6 @@ import type { HorarioFuncionamento } from '../../types/HorarioFuncionamento'
 import type { Usuario } from '../../types/Usuario'
 
 import './AgendaBarbearia.css'
-
-import { DEMO_IDS } from '../../config/demo'
 
 const INTERVALO_GRADE = 30
 
@@ -39,11 +38,17 @@ function dataAtualISO() {
     const data = new Date()
 
     const ano = data.getFullYear()
-    const mes = String(data.getMonth() + 1).padStart(
+
+    const mes = String(
+        data.getMonth() + 1,
+    ).padStart(
         2,
         '0',
     )
-    const dia = String(data.getDate()).padStart(
+
+    const dia = String(
+        data.getDate(),
+    ).padStart(
         2,
         '0',
     )
@@ -77,16 +82,19 @@ function obterDiaSemana(data: string) {
 }
 
 function formatarDataTitulo(data: string) {
-    const dataLocal = new Date(`${data}T12:00:00`)
+    const dataLocal = new Date(
+        `${data}T12:00:00`,
+    )
 
-    const texto = new Intl.DateTimeFormat(
-        'pt-BR',
-        {
-            weekday: 'long',
-            day: '2-digit',
-            month: 'long',
-        },
-    ).format(dataLocal)
+    const texto =
+        new Intl.DateTimeFormat(
+            'pt-BR',
+            {
+                weekday: 'long',
+                day: '2-digit',
+                month: 'long',
+            },
+        ).format(dataLocal)
 
     return (
         texto.charAt(0).toUpperCase() +
@@ -95,6 +103,9 @@ function formatarDataTitulo(data: string) {
 }
 
 function AgendaBarbearia() {
+    const idBarbearia =
+        useBarbeariaProprietario()
+
     const [data, setData] = useState(
         dataAtualISO(),
     )
@@ -146,21 +157,27 @@ function AgendaBarbearia() {
                     listarHorariosFuncionamento(),
                 ])
 
-                setAgendamentos(dadosAgendamentos)
+                setAgendamentos(
+                    dadosAgendamentos,
+                )
 
                 setBarbeiros(
                     dadosBarbeiros.filter(
                         (barbeiro) =>
                             barbeiro.idBarbearia ===
-                            DEMO_IDS.barbearia &&
+                            idBarbearia &&
                             barbeiro.ativo,
                     ),
                 )
 
-                setUsuarios(dadosUsuarios)
+                setUsuarios(
+                    dadosUsuarios,
+                )
+
                 setDisponibilidades(
                     dadosDisponibilidades,
                 )
+
                 setHorariosFuncionamento(
                     dadosHorarios,
                 )
@@ -176,33 +193,41 @@ function AgendaBarbearia() {
         }
 
         carregarDados()
-    }, [])
+    }, [idBarbearia])
 
-    const diaSemana = obterDiaSemana(data)
+    const diaSemana =
+        obterDiaSemana(data)
 
     const horarioBarbearia = useMemo(() => {
         return horariosFuncionamento.find(
             (horario) =>
                 horario.idBarbearia ===
-                DEMO_IDS.barbearia &&
-                horario.diaSemana === diaSemana,
+                idBarbearia &&
+                horario.diaSemana ===
+                diaSemana,
         )
     }, [
         horariosFuncionamento,
         diaSemana,
+        idBarbearia,
     ])
 
     const agendamentosDoDia = useMemo(() => {
         return agendamentos.filter(
             (agendamento) =>
                 agendamento.idBarbearia ===
-                DEMO_IDS.barbearia &&
-                agendamento.status === 'CONFIRMADO' &&
+                idBarbearia &&
+                agendamento.status ===
+                'CONFIRMADO' &&
                 agendamento.dataHoraInicio.startsWith(
                     data,
                 ),
         )
-    }, [agendamentos, data])
+    }, [
+        agendamentos,
+        data,
+        idBarbearia,
+    ])
 
     const horariosGrade = useMemo(() => {
         if (
@@ -214,15 +239,18 @@ function AgendaBarbearia() {
             return []
         }
 
-        const inicio = horaParaMinutos(
-            horarioBarbearia.horaAbertura,
-        )
+        const inicio =
+            horaParaMinutos(
+                horarioBarbearia.horaAbertura,
+            )
 
-        const fim = horaParaMinutos(
-            horarioBarbearia.horaFechamento,
-        )
+        const fim =
+            horaParaMinutos(
+                horarioBarbearia.horaFechamento,
+            )
 
-        const horarios = new Set<number>()
+        const horarios =
+            new Set<number>()
 
         for (
             let atual = inicio;
@@ -239,23 +267,30 @@ function AgendaBarbearia() {
                         'T',
                     )[1]
 
-                horarios.add(horaParaMinutos(hora))
+                horarios.add(
+                    horaParaMinutos(hora),
+                )
             },
         )
 
         return Array.from(horarios)
-            .sort((a, b) => a - b)
+            .sort(
+                (a, b) => a - b,
+            )
             .map(minutosParaHora)
     }, [
         horarioBarbearia,
         agendamentosDoDia,
     ])
 
-    function nomeUsuario(idUsuario: number) {
+    function nomeUsuario(
+        idUsuario: number,
+    ) {
         return (
             usuarios.find(
                 (usuario) =>
-                    usuario.idUsuario === idUsuario,
+                    usuario.idUsuario ===
+                    idUsuario,
             )?.nome ?? 'Usuário'
         )
     }
@@ -263,7 +298,9 @@ function AgendaBarbearia() {
     function nomeBarbeiro(
         barbeiro: Barbeiro,
     ) {
-        return nomeUsuario(barbeiro.idUsuario)
+        return nomeUsuario(
+            barbeiro.idUsuario,
+        )
     }
 
     function barbeiroEstaDisponivel(
@@ -273,8 +310,10 @@ function AgendaBarbearia() {
         const disponibilidade =
             disponibilidades.find(
                 (item) =>
-                    item.idBarbeiro === idBarbeiro &&
-                    item.diaSemana === diaSemana &&
+                    item.idBarbeiro ===
+                    idBarbeiro &&
+                    item.diaSemana ===
+                    diaSemana &&
                     item.ativo,
             )
 
@@ -289,7 +328,9 @@ function AgendaBarbearia() {
         }
 
         const minutos =
-            horaParaMinutos(horario)
+            horaParaMinutos(
+                horario,
+            )
 
         const inicio = Math.max(
             horaParaMinutos(
@@ -309,7 +350,10 @@ function AgendaBarbearia() {
             ),
         )
 
-        return minutos >= inicio && minutos < fim
+        return (
+            minutos >= inicio &&
+            minutos < fim
+        )
     }
 
     function buscarAgendamento(
@@ -330,7 +374,10 @@ function AgendaBarbearia() {
                         .split('T')[1]
                         .substring(0, 5)
 
-                return horaAgendamento === horario
+                return (
+                    horaAgendamento ===
+                    horario
+                )
             },
         )
     }
@@ -339,63 +386,81 @@ function AgendaBarbearia() {
         agendamento: Agendamento,
     ) {
         return agendamento.itens
-            .map((item) => item.nomeServico)
+            .map(
+                (item) =>
+                    item.nomeServico,
+            )
             .join(' + ')
     }
 
-    const barbeirosMobile = useMemo(() => {
-        if (filtroBarbeiro === 'todos') {
-            return barbeiros
-        }
-
-        return barbeiros.filter(
-            (barbeiro) =>
-                barbeiro.idBarbeiro ===
-                Number(filtroBarbeiro),
-        )
-    }, [barbeiros, filtroBarbeiro])
-
-    const agendaMobile = horariosGrade
-        .map((horario) => {
-            const candidatos =
-                barbeirosMobile.map((barbeiro) => {
-                    const agendamento =
-                        buscarAgendamento(
-                            barbeiro.idBarbeiro,
-                            horario,
-                        )
-
-                    return {
-                        horario,
-                        barbeiro,
-                        agendamento,
-                        disponivel:
-                            barbeiroEstaDisponivel(
-                                barbeiro.idBarbeiro,
-                                horario,
-                            ),
-                    }
-                })
-
-            const agendado = candidatos.find(
-                (item) => item.agendamento,
-            )
-
-            if (agendado) {
-                return agendado
+    const barbeirosMobile =
+        useMemo(() => {
+            if (
+                filtroBarbeiro ===
+                'todos'
+            ) {
+                return barbeiros
             }
 
-            return candidatos.find(
-                (item) => item.disponivel,
+            return barbeiros.filter(
+                (barbeiro) =>
+                    barbeiro.idBarbeiro ===
+                    Number(
+                        filtroBarbeiro,
+                    ),
             )
-        })
-        .filter(
-            (
-                item,
-            ): item is NonNullable<
-                typeof item
-            > => Boolean(item),
-        )
+        }, [
+            barbeiros,
+            filtroBarbeiro,
+        ])
+
+    const agendaMobile =
+        horariosGrade
+            .map((horario) => {
+                const candidatos =
+                    barbeirosMobile.map(
+                        (barbeiro) => {
+                            const agendamento =
+                                buscarAgendamento(
+                                    barbeiro.idBarbeiro,
+                                    horario,
+                                )
+
+                            return {
+                                horario,
+                                barbeiro,
+                                agendamento,
+                                disponivel:
+                                    barbeiroEstaDisponivel(
+                                        barbeiro.idBarbeiro,
+                                        horario,
+                                    ),
+                            }
+                        },
+                    )
+
+                const agendado =
+                    candidatos.find(
+                        (item) =>
+                            item.agendamento,
+                    )
+
+                if (agendado) {
+                    return agendado
+                }
+
+                return candidatos.find(
+                    (item) =>
+                        item.disponivel,
+                )
+            })
+            .filter(
+                (
+                    item,
+                ): item is NonNullable<
+                    typeof item
+                > => Boolean(item),
+            )
 
     return (
         <section className="admin-agenda">
@@ -411,11 +476,12 @@ function AgendaBarbearia() {
                     <DateInput
                         value={data}
                         onChange={(event) =>
-                            setData(event.target.value)
+                            setData(
+                                event.target.value,
+                            )
                         }
                     />
                 </div>
-
             </div>
 
             <div className="admin-agenda__mobile-filter">
@@ -431,14 +497,22 @@ function AgendaBarbearia() {
                         Todos os barbeiros
                     </option>
 
-                    {barbeiros.map((barbeiro) => (
-                        <option
-                            key={barbeiro.idBarbeiro}
-                            value={barbeiro.idBarbeiro}
-                        >
-                            {nomeBarbeiro(barbeiro)}
-                        </option>
-                    ))}
+                    {barbeiros.map(
+                        (barbeiro) => (
+                            <option
+                                key={
+                                    barbeiro.idBarbeiro
+                                }
+                                value={
+                                    barbeiro.idBarbeiro
+                                }
+                            >
+                                {nomeBarbeiro(
+                                    barbeiro,
+                                )}
+                            </option>
+                        ),
+                    )}
                 </select>
             </div>
 
@@ -457,12 +531,15 @@ function AgendaBarbearia() {
                     <div className="admin-agenda__desktop">
                         <div className="admin-agenda__grid-card">
                             <h2>
-                                {formatarDataTitulo(data)}
+                                {formatarDataTitulo(
+                                    data,
+                                )}
                             </h2>
 
                             <p className="admin-agenda__subtitle">
                                 {barbeiros.length}{' '}
-                                {barbeiros.length === 1
+                                {barbeiros.length ===
+                                    1
                                     ? 'barbeiro ativo'
                                     : 'barbeiros ativos'}
                             </p>
@@ -470,8 +547,8 @@ function AgendaBarbearia() {
                             {!horarioBarbearia ||
                                 horarioBarbearia.fechado ? (
                                 <p className="admin-agenda__empty">
-                                    A barbearia está fechada nesta
-                                    data.
+                                    A barbearia está
+                                    fechada nesta data.
                                 </p>
                             ) : (
                                 <div className="admin-agenda__table-scroll">
@@ -488,7 +565,9 @@ function AgendaBarbearia() {
                                         </div>
 
                                         {barbeiros.map(
-                                            (barbeiro) => (
+                                            (
+                                                barbeiro,
+                                            ) => (
                                                 <div
                                                     className="admin-agenda__table-header admin-agenda__table-header--barber"
                                                     key={
@@ -503,23 +582,32 @@ function AgendaBarbearia() {
                                         )}
 
                                         {horariosGrade.map(
-                                            (horario) => (
+                                            (
+                                                horario,
+                                            ) => (
                                                 <div
                                                     className="admin-agenda__row"
-                                                    key={horario}
+                                                    key={
+                                                        horario
+                                                    }
                                                     style={{
                                                         gridColumn:
                                                             '1 / -1',
-                                                        display: 'grid',
+                                                        display:
+                                                            'grid',
                                                         gridTemplateColumns: `90px repeat(${barbeiros.length}, minmax(190px, 1fr))`,
                                                     }}
                                                 >
                                                     <div className="admin-agenda__time">
-                                                        {horario}
+                                                        {
+                                                            horario
+                                                        }
                                                     </div>
 
                                                     {barbeiros.map(
-                                                        (barbeiro) => {
+                                                        (
+                                                            barbeiro,
+                                                        ) => {
                                                             const agendamento =
                                                                 buscarAgendamento(
                                                                     barbeiro.idBarbeiro,
@@ -547,7 +635,9 @@ function AgendaBarbearia() {
                                                                         .filter(
                                                                             Boolean,
                                                                         )
-                                                                        .join(' ')}
+                                                                        .join(
+                                                                            ' ',
+                                                                        )}
                                                                     key={
                                                                         barbeiro.idBarbeiro
                                                                     }
@@ -593,7 +683,11 @@ function AgendaBarbearia() {
                     </div>
 
                     <div className="admin-agenda__mobile">
-                        <h2>{formatarDataTitulo(data)}</h2>
+                        <h2>
+                            {formatarDataTitulo(
+                                data,
+                            )}
+                        </h2>
 
                         <p className="admin-agenda__subtitle">
                             {barbeiros.length}{' '}
@@ -605,55 +699,60 @@ function AgendaBarbearia() {
                         {!horarioBarbearia ||
                             horarioBarbearia.fechado ? (
                             <p className="admin-agenda__empty">
-                                A barbearia está fechada nesta
-                                data.
+                                A barbearia está
+                                fechada nesta data.
                             </p>
-                        ) : agendaMobile.length === 0 ? (
+                        ) : agendaMobile.length ===
+                            0 ? (
                             <p className="admin-agenda__empty">
-                                Nenhum horário disponível nesta
-                                data.
+                                Nenhum horário
+                                disponível nesta data.
                             </p>
                         ) : (
                             <div className="admin-agenda__mobile-list">
-                                {agendaMobile.map((item) => (
-                                    <article
-                                        className="admin-agenda__mobile-item"
-                                        key={`${item.horario}-${item.barbeiro.idBarbeiro}`}
-                                    >
-                                        <div className="admin-agenda__mobile-item-top">
-                                            <strong>
-                                                {item.horario} •{' '}
-                                                {item.agendamento
-                                                    ? nomeUsuario(
-                                                        item.agendamento
-                                                            .idCliente,
-                                                    )
-                                                    : 'Livre'}
-                                            </strong>
+                                {agendaMobile.map(
+                                    (item) => (
+                                        <article
+                                            className="admin-agenda__mobile-item"
+                                            key={`${item.horario}-${item.barbeiro.idBarbeiro}`}
+                                        >
+                                            <div className="admin-agenda__mobile-item-top">
+                                                <strong>
+                                                    {
+                                                        item.horario
+                                                    }{' '}
+                                                    •{' '}
+                                                    {item.agendamento
+                                                        ? nomeUsuario(
+                                                            item
+                                                                .agendamento
+                                                                .idCliente,
+                                                        )
+                                                        : 'Livre'}
+                                                </strong>
 
-                                            {item.agendamento && (
-                                                <span className="admin-agenda__pill">
-                                                    Agendado
-                                                </span>
-                                            )}
-                                        </div>
+                                                {item.agendamento && (
+                                                    <span className="admin-agenda__pill">
+                                                        Agendado
+                                                    </span>
+                                                )}
+                                            </div>
 
-                                        <p>
-                                            {nomeBarbeiro(
-                                                item.barbeiro,
-                                            )}
+                                            <p>
+                                                {nomeBarbeiro(
+                                                    item.barbeiro,
+                                                )}
 
-                                            {item.agendamento &&
-                                                ` • ${nomeServicos(
-                                                    item.agendamento,
-                                                )}`}
-                                        </p>
-                                    </article>
-                                ))}
+                                                {item.agendamento &&
+                                                    ` • ${nomeServicos(
+                                                        item.agendamento,
+                                                    )}`}
+                                            </p>
+                                        </article>
+                                    ),
+                                )}
                             </div>
                         )}
-
-
                     </div>
                 </>
             )}

@@ -21,7 +21,7 @@ import type {
 
 import './HorariosProprietario.css'
 
-import { DEMO_IDS } from '../../config/demo'
+import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
 
 const DIAS: {
     valor: DiaSemana
@@ -125,6 +125,7 @@ function criarFormularioInicial(): HorariosFormulario {
 
 function montarFormulario(
     horarios: HorarioFuncionamento[],
+    idBarbearia: number,
 ): HorariosFormulario {
     const formulario =
         criarFormularioInicial()
@@ -132,7 +133,7 @@ function montarFormulario(
     for (const horario of horarios) {
         if (
             horario.idBarbearia !==
-            DEMO_IDS.barbearia
+            idBarbearia
         ) {
             continue
         }
@@ -163,6 +164,8 @@ function montarFormulario(
 }
 
 function HorariosProprietario() {
+    const idBarbearia =
+        useBarbeariaProprietario()
     const [
         horarios,
         setHorarios,
@@ -192,7 +195,10 @@ function HorariosProprietario() {
                 }
 
                 setHorarios(
-                    montarFormulario(dados),
+                    montarFormulario(
+                        dados,
+                        idBarbearia,
+                    ),
                 )
             })
             .catch((error) => {
@@ -215,7 +221,7 @@ function HorariosProprietario() {
         return () => {
             componenteAtivo = false
         }
-    }, [])
+    }, [idBarbearia])
 
     const diasAbertos = useMemo(() => {
         return DIAS.filter(
@@ -312,7 +318,7 @@ function HorariosProprietario() {
                 const dados: HorarioFuncionamentoRequest =
                 {
                     idBarbearia:
-                        DEMO_IDS.barbearia,
+                        idBarbearia,
 
                     diaSemana:
                         horario.diaSemana,
@@ -354,7 +360,10 @@ function HorariosProprietario() {
             }
 
             setHorarios(
-                montarFormulario(resultados),
+                montarFormulario(
+                    resultados,
+                    idBarbearia,
+                ),
             )
 
             setSucesso(

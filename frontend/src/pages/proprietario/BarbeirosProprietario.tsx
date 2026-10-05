@@ -56,7 +56,7 @@ import type { Usuario } from '../../types/Usuario'
 
 import './BarbeirosProprietario.css'
 
-import { DEMO_IDS } from '../../config/demo'
+import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
 
 const DIAS: {
     valor: DiaSemana
@@ -144,6 +144,8 @@ function criarDisponibilidadeInicial(): DisponibilidadeSemanal {
 }
 
 function BarbeirosProprietario() {
+    const idBarbearia =
+        useBarbeariaProprietario()
     const [barbeiros, setBarbeiros] = useState<
         Barbeiro[]
     >([])
@@ -239,7 +241,7 @@ function BarbeirosProprietario() {
                     dadosBarbeiros.filter(
                         (barbeiro) =>
                             barbeiro.idBarbearia ===
-                            DEMO_IDS.barbearia,
+                            idBarbearia,
                     ),
                 )
 
@@ -249,7 +251,7 @@ function BarbeirosProprietario() {
                     dadosServicos.filter(
                         (servico) =>
                             servico.idBarbearia ===
-                            DEMO_IDS.barbearia &&
+                            idBarbearia &&
                             servico.ativo,
                     ),
                 )
@@ -263,7 +265,7 @@ function BarbeirosProprietario() {
                     dadosAgendamentos.filter(
                         (agendamento) =>
                             agendamento.idBarbearia ===
-                            DEMO_IDS.barbearia,
+                            idBarbearia,
                     ),
                 )
 
@@ -278,7 +280,7 @@ function BarbeirosProprietario() {
                 setCarregando(false)
             }
         },
-        [],
+        [idBarbearia],
     )
 
     useEffect(() => {
@@ -311,7 +313,7 @@ function BarbeirosProprietario() {
                         dadosBarbeiros.filter(
                             (barbeiro) =>
                                 barbeiro.idBarbearia ===
-                                DEMO_IDS.barbearia,
+                                idBarbearia,
                         ),
                     )
 
@@ -321,7 +323,7 @@ function BarbeirosProprietario() {
                         dadosServicos.filter(
                             (servico) =>
                                 servico.idBarbearia ===
-                                DEMO_IDS.barbearia &&
+                                idBarbearia &&
                                 servico.ativo,
                         ),
                     )
@@ -336,7 +338,7 @@ function BarbeirosProprietario() {
                         dadosAgendamentos.filter(
                             (agendamento) =>
                                 agendamento.idBarbearia ===
-                                DEMO_IDS.barbearia,
+                                idBarbearia,
                         ),
                     )
 
@@ -363,7 +365,7 @@ function BarbeirosProprietario() {
         return () => {
             componenteAtivo = false
         }
-    }, [])
+    }, [idBarbearia])
 
     const barbeirosOrdenados = useMemo(() => {
         function obterNome(barbeiro: Barbeiro) {
@@ -812,7 +814,7 @@ function BarbeirosProprietario() {
                                 barbeiroEditando.idUsuario,
 
                             idBarbearia:
-                                DEMO_IDS.barbearia,
+                                idBarbearia,
 
                             descricao:
                                 descricao.trim() || null,
@@ -834,7 +836,7 @@ function BarbeirosProprietario() {
                             usuarioCriado.idUsuario,
 
                         idBarbearia:
-                            DEMO_IDS.barbearia,
+                            idBarbearia,
 
                         descricao:
                             descricao.trim() || null,

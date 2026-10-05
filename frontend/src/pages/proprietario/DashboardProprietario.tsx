@@ -21,7 +21,7 @@ import type { Usuario } from '../../types/Usuario'
 
 import './DashboardProprietario.css'
 
-import { DEMO_IDS } from '../../config/demo'
+import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
 
 import { listarAvaliacoes } from '../../services/avaliacaoService'
 import type { Avaliacao } from '../../types/Avaliacao'
@@ -89,6 +89,9 @@ function formatarDiferenca(
 function DashboardProprietario() {
     const navigate = useNavigate()
 
+    const idBarbearia =
+        useBarbeariaProprietario()
+
     const [agendamentos, setAgendamentos] = useState<
         Agendamento[]
     >([])
@@ -123,7 +126,7 @@ function DashboardProprietario() {
                 ] = await Promise.all([
                     listarAgendamentos(),
                     listarAvaliacoes(),
-                    buscarBarbeariaPorId(DEMO_IDS.barbearia),
+                    buscarBarbeariaPorId(idBarbearia),
                     listarBarbeiros(),
                     listarUsuarios(),
                 ])
@@ -145,7 +148,7 @@ function DashboardProprietario() {
         }
 
         carregarDashboard()
-    }, [])
+    }, [idBarbearia])
 
     const agendamentosBarbearia = useMemo(() => {
         if (!barbeariaAtual) {

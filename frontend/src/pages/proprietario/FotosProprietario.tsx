@@ -23,9 +23,11 @@ import type {
 
 import './FotosProprietario.css'
 
-import { DEMO_IDS } from '../../config/demo'
+import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
 
 function FotosProprietario() {
+    const idBarbearia =
+        useBarbeariaProprietario()
     const [fotos, setFotos] = useState<Foto[]>([])
 
     const [carregando, setCarregando] = useState(true)
@@ -54,7 +56,7 @@ function FotosProprietario() {
                 .filter(
                     (foto) =>
                         foto.idBarbearia ===
-                        DEMO_IDS.barbearia,
+                        idBarbearia,
                 )
                 .sort(
                     (fotoA, fotoB) =>
@@ -69,7 +71,7 @@ function FotosProprietario() {
         } finally {
             setCarregando(false)
         }
-    }, [])
+    }, [idBarbearia])
 
     useEffect(() => {
         let componenteAtivo = true
@@ -84,7 +86,7 @@ function FotosProprietario() {
                     .filter(
                         (foto) =>
                             foto.idBarbearia ===
-                            DEMO_IDS.barbearia,
+                            idBarbearia,
                     )
                     .sort(
                         (fotoA, fotoB) =>
@@ -109,7 +111,7 @@ function FotosProprietario() {
         return () => {
             componenteAtivo = false
         }
-    }, [])
+    }, [idBarbearia])
 
     function abrirCadastro() {
         setFotoEdicao(null)
@@ -166,7 +168,7 @@ function FotosProprietario() {
 
             const dados: FotoRequest = {
                 idBarbearia:
-                    DEMO_IDS.barbearia,
+                    idBarbearia,
                 url: urlLimpa,
                 legenda: legendaLimpa || null,
                 ordem:
@@ -269,7 +271,7 @@ function FotosProprietario() {
             await Promise.all([
                 atualizarFoto(foto.idFoto, {
                     idBarbearia:
-                        DEMO_IDS.barbearia,
+                        idBarbearia,
                     url: foto.url,
                     legenda: foto.legenda,
                     ordem: fotoDestino.ordem,
@@ -277,7 +279,7 @@ function FotosProprietario() {
 
                 atualizarFoto(fotoDestino.idFoto, {
                     idBarbearia:
-                        DEMO_IDS.barbearia,
+                        idBarbearia,
                     url: fotoDestino.url,
                     legenda: fotoDestino.legenda,
                     ordem: foto.ordem,

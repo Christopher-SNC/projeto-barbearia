@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom'
 import Button from '../../components/Button/Button'
 import StatusBadge from '../../components/StatusBadge/StatusBadge'
 
+import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
+
 import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarBarbeiros } from '../../services/barbeiroService'
 import { listarUsuarios } from '../../services/usuarioService'
@@ -20,9 +22,6 @@ import type { Barbeiro } from '../../types/Barbeiro'
 import type { Usuario } from '../../types/Usuario'
 
 import './AgendamentosProprietario.css'
-
-import { DEMO_IDS } from '../../config/demo'
-
 
 type FiltroAgendamento =
   | 'hoje'
@@ -41,11 +40,16 @@ function dataAtualISO() {
   const data = new Date()
 
   const ano = data.getFullYear()
-  const mes = String(data.getMonth() + 1).padStart(
+  const mes = String(
+    data.getMonth() + 1,
+  ).padStart(
     2,
     '0',
   )
-  const dia = String(data.getDate()).padStart(
+
+  const dia = String(
+    data.getDate(),
+  ).padStart(
     2,
     '0',
   )
@@ -54,14 +58,19 @@ function dataAtualISO() {
 }
 
 function formatarHora(dataHora: string) {
-  return new Intl.DateTimeFormat('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(dataHora))
+  return new Intl.DateTimeFormat(
+    'pt-BR',
+    {
+      hour: '2-digit',
+      minute: '2-digit',
+    },
+  ).format(new Date(dataHora))
 }
 
 function formatarData(dataHora: string) {
-  return new Intl.DateTimeFormat('pt-BR').format(
+  return new Intl.DateTimeFormat(
+    'pt-BR',
+  ).format(
     new Date(dataHora),
   )
 }
@@ -105,25 +114,26 @@ function obterStatusLabel(
 function AgendamentosProprietario() {
   const navigate = useNavigate()
 
+  const idBarbearia =
+    useBarbeariaProprietario()
+
   const [filtro, setFiltro] =
     useState<FiltroAgendamento>('hoje')
 
-  const [agendamentos, setAgendamentos] = useState<
-    Agendamento[]
-  >([])
+  const [agendamentos, setAgendamentos] =
+    useState<Agendamento[]>([])
 
-  const [barbeiros, setBarbeiros] = useState<
-    Barbeiro[]
-  >([])
+  const [barbeiros, setBarbeiros] =
+    useState<Barbeiro[]>([])
 
-  const [usuarios, setUsuarios] = useState<Usuario[]>(
-    [],
-  )
+  const [usuarios, setUsuarios] =
+    useState<Usuario[]>([])
 
   const [carregando, setCarregando] =
     useState(true)
 
-  const [erro, setErro] = useState('')
+  const [erro, setErro] =
+    useState('')
 
   useEffect(() => {
     async function carregarDados() {
@@ -142,7 +152,7 @@ function AgendamentosProprietario() {
           dadosAgendamentos.filter(
             (agendamento) =>
               agendamento.idBarbearia ===
-              DEMO_IDS.barbearia,
+              idBarbearia,
           ),
         )
 
@@ -150,11 +160,13 @@ function AgendamentosProprietario() {
           dadosBarbeiros.filter(
             (barbeiro) =>
               barbeiro.idBarbearia ===
-              DEMO_IDS.barbearia,
+              idBarbearia,
           ),
         )
 
-        setUsuarios(dadosUsuarios)
+        setUsuarios(
+          dadosUsuarios,
+        )
       } catch (error) {
         console.error(error)
 
@@ -167,81 +179,99 @@ function AgendamentosProprietario() {
     }
 
     carregarDados()
-  }, [])
+  }, [idBarbearia])
 
-  const agendamentosFiltrados = useMemo(() => {
-    const hoje = dataAtualISO()
+  const agendamentosFiltrados =
+    useMemo(() => {
+      const hoje = dataAtualISO()
 
-    const resultado = agendamentos.filter(
-      (agendamento) => {
-        switch (filtro) {
-          case 'confirmados':
-            return (
-              agendamento.status ===
-              'CONFIRMADO'
-            )
+      const resultado =
+        agendamentos.filter(
+          (agendamento) => {
+            switch (filtro) {
+              case 'confirmados':
+                return (
+                  agendamento.status ===
+                  'CONFIRMADO'
+                )
 
-          case 'concluidos':
-            return (
-              agendamento.status ===
-              'CONCLUIDO'
-            )
+              case 'concluidos':
+                return (
+                  agendamento.status ===
+                  'CONCLUIDO'
+                )
 
-          case 'cancelados':
-            return (
-              agendamento.status ===
-              'CANCELADO'
-            )
+              case 'cancelados':
+                return (
+                  agendamento.status ===
+                  'CANCELADO'
+                )
 
-          case 'nao-compareceu':
-            return (
-              agendamento.status ===
-              'NAO_COMPARECEU'
-            )
+              case 'nao-compareceu':
+                return (
+                  agendamento.status ===
+                  'NAO_COMPARECEU'
+                )
 
-          default:
-            return agendamento.dataHoraInicio.startsWith(
-              hoje,
-            )
-        }
-      },
-    )
+              default:
+                return (
+                  agendamento.dataHoraInicio
+                    .startsWith(hoje)
+                )
+            }
+          },
+        )
 
-    return resultado.sort((a, b) => {
-      const dataA = new Date(
-        a.dataHoraInicio,
-      ).getTime()
+      return resultado.sort(
+        (a, b) => {
+          const dataA =
+            new Date(
+              a.dataHoraInicio,
+            ).getTime()
 
-      const dataB = new Date(
-        b.dataHoraInicio,
-      ).getTime()
+          const dataB =
+            new Date(
+              b.dataHoraInicio,
+            ).getTime()
 
-      if (
-        filtro === 'concluidos' ||
-        filtro === 'cancelados' ||
-        filtro === 'nao-compareceu'
-      ) {
-        return dataB - dataA
-      }
+          if (
+            filtro === 'concluidos' ||
+            filtro === 'cancelados' ||
+            filtro ===
+            'nao-compareceu'
+          ) {
+            return dataB - dataA
+          }
 
-      return dataA - dataB
-    })
-  }, [agendamentos, filtro])
+          return dataA - dataB
+        },
+      )
+    }, [
+      agendamentos,
+      filtro,
+    ])
 
-  function nomeCliente(idCliente: number) {
+  function nomeCliente(
+    idCliente: number,
+  ) {
     return (
       usuarios.find(
         (usuario) =>
-          usuario.idUsuario === idCliente,
+          usuario.idUsuario ===
+          idCliente,
       )?.nome ?? 'Cliente'
     )
   }
 
-  function nomeBarbeiro(idBarbeiro: number) {
-    const barbeiro = barbeiros.find(
-      (item) =>
-        item.idBarbeiro === idBarbeiro,
-    )
+  function nomeBarbeiro(
+    idBarbeiro: number,
+  ) {
+    const barbeiro =
+      barbeiros.find(
+        (item) =>
+          item.idBarbeiro ===
+          idBarbeiro,
+      )
 
     if (!barbeiro) {
       return 'Barbeiro'
@@ -259,12 +289,17 @@ function AgendamentosProprietario() {
   function nomeServicos(
     agendamento: Agendamento,
   ) {
-    if (agendamento.itens.length === 0) {
+    if (
+      agendamento.itens.length === 0
+    ) {
       return 'Serviço'
     }
 
     return agendamento.itens
-      .map((item) => item.nomeServico)
+      .map(
+        (item) =>
+          item.nomeServico,
+      )
       .join(' + ')
   }
 
@@ -289,7 +324,7 @@ function AgendamentosProprietario() {
 
   function novoAgendamento() {
     navigate(
-      `/barbearias/${DEMO_IDS.barbearia}/agendar`,
+      `/barbearias/${idBarbearia}/agendar`,
     )
   }
 
@@ -344,25 +379,29 @@ function AgendamentosProprietario() {
       </div>
 
       <div className="admin-appointments__filters">
-        {filtros.map((item) => (
-          <button
-            className={[
-              'admin-appointments__filter',
-              filtro === item.id
-                ? 'admin-appointments__filter--active'
-                : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
-            key={item.id}
-            type="button"
-            onClick={() =>
-              setFiltro(item.id)
-            }
-          >
-            {item.label}
-          </button>
-        ))}
+        {filtros.map(
+          (item) => (
+            <button
+              className={[
+                'admin-appointments__filter',
+                filtro === item.id
+                  ? 'admin-appointments__filter--active'
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              key={item.id}
+              type="button"
+              onClick={() =>
+                setFiltro(
+                  item.id,
+                )
+              }
+            >
+              {item.label}
+            </button>
+          ),
+        )}
       </div>
 
       {erro && (
@@ -379,10 +418,14 @@ function AgendamentosProprietario() {
         <>
           <div className="admin-appointments__desktop">
             <div className="admin-appointments__table">
-              <h2>{tituloLista()}</h2>
+              <h2>
+                {tituloLista()}
+              </h2>
 
               <p className="admin-appointments__count">
-                {agendamentosFiltrados.length}{' '}
+                {
+                  agendamentosFiltrados.length
+                }{' '}
                 {agendamentosFiltrados.length ===
                   1
                   ? 'registro'
@@ -415,13 +458,14 @@ function AgendamentosProprietario() {
                             )}
                           </strong>
 
-                          {filtro !== 'hoje' && (
-                            <span>
-                              {formatarData(
-                                agendamento.dataHoraInicio,
-                              )}
-                            </span>
-                          )}
+                          {filtro !==
+                            'hoje' && (
+                              <span>
+                                {formatarData(
+                                  agendamento.dataHoraInicio,
+                                )}
+                              </span>
+                            )}
                         </div>
 
                         <span className="admin-appointments__service">
@@ -479,13 +523,14 @@ function AgendamentosProprietario() {
                             )}
                           </strong>
 
-                          {filtro !== 'hoje' && (
-                            <span className="admin-appointments__card-date">
-                              {formatarData(
-                                agendamento.dataHoraInicio,
-                              )}
-                            </span>
-                          )}
+                          {filtro !==
+                            'hoje' && (
+                              <span className="admin-appointments__card-date">
+                                {formatarData(
+                                  agendamento.dataHoraInicio,
+                                )}
+                              </span>
+                            )}
                         </div>
 
                         <StatusBadge
