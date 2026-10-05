@@ -21,7 +21,7 @@ import type { Usuario } from '../../types/Usuario'
 
 import './MeusAgendamentos.css'
 
-import { DEMO_IDS } from '../../config/demo'
+import useAuth from '../../hooks/useAuth'
 
 
 type AbaAgendamentos = 'proximos' | 'historico'
@@ -88,6 +88,8 @@ function obterStatusLabel(
 }
 
 function MeusAgendamentos() {
+    const { usuario } = useAuth()
+
     const [aba, setAba] =
         useState<AbaAgendamentos>('proximos')
 
@@ -128,8 +130,7 @@ function MeusAgendamentos() {
                 setAgendamentos(
                     dadosAgendamentos.filter(
                         (agendamento) =>
-                            agendamento.idCliente ===
-                            DEMO_IDS.cliente,
+                            agendamento.idCliente === usuario?.idUsuario,
                     ),
                 )
 
@@ -148,7 +149,7 @@ function MeusAgendamentos() {
         }
 
         carregarDados()
-    }, [])
+    }, [usuario])
 
     const proximos = useMemo(() => {
         const agora = new Date()

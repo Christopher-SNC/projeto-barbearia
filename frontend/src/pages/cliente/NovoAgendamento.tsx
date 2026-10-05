@@ -29,7 +29,7 @@ import type { Usuario } from '../../types/Usuario'
 
 import './NovoAgendamento.css'
 
-import { DEMO_IDS } from '../../config/demo'
+import useAuth from '../../hooks/useAuth'
 
 const BUFFER_MINUTOS = 15
 
@@ -83,6 +83,8 @@ function formatarData(data: string) {
 }
 
 function NovoAgendamento() {
+  const { usuario } = useAuth()
+
   const { id } = useParams()
 
   const idBarbearia = Number(id)
@@ -408,13 +410,20 @@ function NovoAgendamento() {
       return
     }
 
+    if (!usuario) {
+      setErro(
+        'Sua sessão não está disponível. Entre novamente.',
+      )
+      return
+    }
+
     try {
       setEnviando(true)
       setErro('')
       setSucesso('')
 
       const agendamento = await criarAgendamento({
-        idCliente: DEMO_IDS.cliente,
+        idCliente: usuario.idUsuario,
         idBarbearia,
         idBarbeiro,
         dataHoraInicio: `${data}T${hora}:00`,
