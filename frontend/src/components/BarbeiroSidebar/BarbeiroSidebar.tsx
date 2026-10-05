@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import {
+    NavLink,
+    useNavigate,
+} from 'react-router-dom'
+
+import useAuth from '../../hooks/useAuth'
 
 import { DEMO_IDS } from '../../config/demo'
 import { buscarBarbeariaPorId } from '../../services/barbeariaService'
@@ -41,8 +46,12 @@ const links = [
 
 function BarbeiroSidebar() {
     const [menuAberto, setMenuAberto] = useState(false)
+
     const [nomeBarbearia, setNomeBarbearia] =
         useState('Barbearia')
+
+    const navigate = useNavigate()
+    const { sair } = useAuth()
 
     useEffect(() => {
         async function carregarBarbearia() {
@@ -62,6 +71,16 @@ function BarbeiroSidebar() {
 
     function fecharMenu() {
         setMenuAberto(false)
+    }
+
+    async function sairDaConta() {
+        await sair()
+
+        fecharMenu()
+
+        navigate('/login', {
+            replace: true,
+        })
     }
 
     const navigation = (
@@ -92,6 +111,7 @@ function BarbeiroSidebar() {
             <button
                 className="admin-sidebar__logout"
                 type="button"
+                onClick={sairDaConta}
             >
                 Sair da conta
             </button>

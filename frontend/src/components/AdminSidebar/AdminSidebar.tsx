@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import {
+    NavLink,
+    useNavigate,
+} from 'react-router-dom'
+
+import useAuth from '../../hooks/useAuth'
 
 import { DEMO_IDS } from '../../config/demo'
 import { buscarBarbeariaPorId } from '../../services/barbeariaService'
@@ -60,6 +65,9 @@ function AdminSidebar() {
     const [nomeBarbearia, setNomeBarbearia] =
         useState('Barbearia')
 
+    const navigate = useNavigate()
+    const { sair } = useAuth()
+
     useEffect(() => {
         let componenteAtivo = true
 
@@ -83,6 +91,16 @@ function AdminSidebar() {
 
     function fecharMenu() {
         setMenuAberto(false)
+    }
+
+    async function sairDaConta() {
+        await sair()
+
+        fecharMenu()
+
+        navigate('/login', {
+            replace: true,
+        })
     }
 
     const navigation = (
@@ -113,6 +131,7 @@ function AdminSidebar() {
             <button
                 className="admin-sidebar__logout"
                 type="button"
+                onClick={sairDaConta}
             >
                 Sair da conta
             </button>

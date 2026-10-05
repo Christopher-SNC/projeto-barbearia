@@ -1,13 +1,29 @@
 import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import {
+    Link,
+    NavLink,
+    useNavigate,
+} from 'react-router-dom'
+
+import useAuth from '../../hooks/useAuth'
 
 import './Header.css'
 
 function Header() {
     const [menuAberto, setMenuAberto] = useState(false)
 
+    const navigate = useNavigate()
+    const { usuario, sair } = useAuth()
+
     function fecharMenu() {
         setMenuAberto(false)
+    }
+
+    async function sairDaConta() {
+        await sair()
+
+        fecharMenu()
+        navigate('/')
     }
 
     return (
@@ -68,12 +84,23 @@ function Header() {
                         Como funciona
                     </a>
 
-                    <span
-                        className="site-header__link site-header__link--disabled"
-                        aria-disabled="true"
-                    >
-                        Entrar
-                    </span>
+                    {usuario ? (
+                        <button
+                            className="site-header__link site-header__link--action"
+                            type="button"
+                            onClick={sairDaConta}
+                        >
+                            Sair
+                        </button>
+                    ) : (
+                        <NavLink
+                            className="site-header__link"
+                            to="/login"
+                            onClick={fecharMenu}
+                        >
+                            Entrar
+                        </NavLink>
+                    )}
 
                     <Link
                         className="site-header__cta"
