@@ -24,6 +24,7 @@ import br.com.projetobarbearia.entity.ItemAgendamento;
 import br.com.projetobarbearia.entity.Servico;
 import br.com.projetobarbearia.entity.Usuario;
 import br.com.projetobarbearia.service.AgendamentoService;
+import br.com.projetobarbearia.service.AutorizacaoService;
 import br.com.projetobarbearia.service.ItemAgendamentoService;
 
 @RestController
@@ -32,13 +33,16 @@ public class AgendamentoController {
 
     private final AgendamentoService agendamentoService;
     private final ItemAgendamentoService itemAgendamentoService;
+    private final AutorizacaoService autorizacaoService;
 
     public AgendamentoController(
             AgendamentoService agendamentoService,
-            ItemAgendamentoService itemAgendamentoService) {
+            ItemAgendamentoService itemAgendamentoService,
+            AutorizacaoService autorizacaoService) {
 
         this.agendamentoService = agendamentoService;
         this.itemAgendamentoService = itemAgendamentoService;
+        this.autorizacaoService = autorizacaoService;
     }
 
     @GetMapping
@@ -68,8 +72,13 @@ public class AgendamentoController {
     public ResponseEntity<AgendamentoResponse> criar(
             @RequestBody AgendamentoRequest request) {
 
+        Long idClienteAutenticado =
+                autorizacaoService.obterIdUsuarioAutenticado();
+
         Agendamento agendamento =
-                converterParaAgendamento(request);
+                converterParaAgendamento(
+                        request,
+                        idClienteAutenticado);
 
         List<ItemAgendamento> itens =
                 converterParaItens(request.getItens());
@@ -118,12 +127,13 @@ public class AgendamentoController {
     }
 
     private Agendamento converterParaAgendamento(
-            AgendamentoRequest request) {
+            AgendamentoRequest request,
+            Long idClienteAutenticado) {
 
         Agendamento agendamento = new Agendamento();
 
         Usuario cliente = new Usuario();
-        cliente.setIdUsuario(request.getIdCliente());
+        cliente.setIdUsuario(idClienteAutenticado);
 
         Barbearia barbearia = new Barbearia();
         barbearia.setIdBarbearia(
