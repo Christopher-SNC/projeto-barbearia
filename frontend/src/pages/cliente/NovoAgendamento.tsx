@@ -423,7 +423,6 @@ function NovoAgendamento() {
       setSucesso('')
 
       const agendamento = await criarAgendamento({
-        idCliente: usuario.idUsuario,
         idBarbearia,
         idBarbeiro,
         dataHoraInicio: `${data}T${hora}:00`,
