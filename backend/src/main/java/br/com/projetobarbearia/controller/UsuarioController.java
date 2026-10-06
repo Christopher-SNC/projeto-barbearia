@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,23 +14,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.projetobarbearia.dto.AlterarSenhaRequest;
 import br.com.projetobarbearia.dto.UsuarioRequest;
 import br.com.projetobarbearia.dto.UsuarioResponse;
 import br.com.projetobarbearia.dto.UsuarioUpdateRequest;
 import br.com.projetobarbearia.entity.Usuario;
+import br.com.projetobarbearia.service.AutorizacaoService;
 import br.com.projetobarbearia.service.UsuarioService;
-
-import org.springframework.web.bind.annotation.PatchMapping;
-import br.com.projetobarbearia.dto.AlterarSenhaRequest;
 
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
         private final UsuarioService usuarioService;
+        private final AutorizacaoService autorizacaoService;
 
-        public UsuarioController(UsuarioService usuarioService) {
+        public UsuarioController(
+                        UsuarioService usuarioService,
+                        AutorizacaoService autorizacaoService) {
+
                 this.usuarioService = usuarioService;
+                this.autorizacaoService = autorizacaoService;
         }
 
         @GetMapping
@@ -78,13 +83,17 @@ public class UsuarioController {
                         @PathVariable Long id,
                         @RequestBody UsuarioUpdateRequest request) {
 
+                autorizacaoService.exigirProprioUsuario(id);
+
                 Usuario usuario = new Usuario();
 
                 usuario.setNome(request.getNome());
                 usuario.setEmail(request.getEmail());
                 usuario.setTelefone(request.getTelefone());
 
-                Usuario usuarioAtualizado = usuarioService.atualizar(id, usuario);
+                Usuario usuarioAtualizado = usuarioService.atualizar(
+                                id,
+                                usuario);
 
                 return ResponseEntity.ok(
                                 converterParaResponse(usuarioAtualizado));
@@ -94,6 +103,8 @@ public class UsuarioController {
         public ResponseEntity<Void> alterarSenha(
                         @PathVariable Long id,
                         @RequestBody AlterarSenhaRequest request) {
+
+                autorizacaoService.exigirProprioUsuario(id);
 
                 usuarioService.alterarSenha(
                                 id,
@@ -107,6 +118,8 @@ public class UsuarioController {
         @DeleteMapping("/{id}")
         public ResponseEntity<Void> excluir(
                         @PathVariable Long id) {
+
+                autorizacaoService.exigirProprioUsuario(id);
 
                 usuarioService.excluir(id);
 

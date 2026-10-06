@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,7 +17,8 @@ public class GlobalExceptionHandler {
                         IllegalArgumentException exception) {
 
                 Map<String, String> resposta = Map.of(
-                                "erro", exception.getMessage());
+                                "erro",
+                                exception.getMessage());
 
                 return ResponseEntity
                                 .status(HttpStatus.BAD_REQUEST)
@@ -28,10 +30,24 @@ public class GlobalExceptionHandler {
                         AuthenticationException exception) {
 
                 Map<String, String> resposta = Map.of(
-                                "erro", "E-mail ou senha inválidos.");
+                                "erro",
+                                "E-mail ou senha inválidos.");
 
                 return ResponseEntity
                                 .status(HttpStatus.UNAUTHORIZED)
+                                .body(resposta);
+        }
+
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<Map<String, String>> tratarAccessDeniedException(
+                        AccessDeniedException exception) {
+
+                Map<String, String> resposta = Map.of(
+                                "erro",
+                                "Acesso negado.");
+
+                return ResponseEntity
+                                .status(HttpStatus.FORBIDDEN)
                                 .body(resposta);
         }
 }
