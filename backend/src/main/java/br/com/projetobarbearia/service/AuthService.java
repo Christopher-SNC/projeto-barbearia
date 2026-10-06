@@ -19,82 +19,84 @@ import br.com.projetobarbearia.repository.UsuarioRepository;
 @Service
 public class AuthService {
 
-    private final AuthenticationManager authenticationManager;
-    private final UsuarioRepository usuarioRepository;
-    private final BarbeiroRepository barbeiroRepository;
-    private final ProprietarioBarbeariaRepository proprietarioBarbeariaRepository;
+        private final AuthenticationManager authenticationManager;
+        private final UsuarioRepository usuarioRepository;
+        private final BarbeiroRepository barbeiroRepository;
+        private final ProprietarioBarbeariaRepository proprietarioBarbeariaRepository;
 
-    public AuthService(
-            AuthenticationManager authenticationManager,
-            UsuarioRepository usuarioRepository,
-            BarbeiroRepository barbeiroRepository,
-            ProprietarioBarbeariaRepository proprietarioBarbeariaRepository) {
+        public AuthService(
+                        AuthenticationManager authenticationManager,
+                        UsuarioRepository usuarioRepository,
+                        BarbeiroRepository barbeiroRepository,
+                        ProprietarioBarbeariaRepository proprietarioBarbeariaRepository) {
 
-        this.authenticationManager = authenticationManager;
-        this.usuarioRepository = usuarioRepository;
-        this.barbeiroRepository = barbeiroRepository;
-        this.proprietarioBarbeariaRepository = proprietarioBarbeariaRepository;
-    }
-
-    public Authentication autenticar(
-            String email,
-            String senha) {
-
-        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(
-                email,
-                senha);
-
-        return authenticationManager.authenticate(
-                authenticationRequest);
-    }
-
-    public LoginResponse buscarDadosUsuarioAutenticado(
-            String email) {
-
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Usuário não encontrado."));
-
-        List<String> perfis = new ArrayList<>();
-        perfis.add("CLIENTE");
-
-        Long idBarbeiro = null;
-        Long idBarbeariaBarbeiro = null;
-
-        Barbeiro barbeiro = barbeiroRepository
-                .findByUsuario_IdUsuarioAndAtivoTrue(
-                        usuario.getIdUsuario())
-                .orElse(null);
-
-        if (barbeiro != null) {
-            perfis.add("BARBEIRO");
-            idBarbeiro = barbeiro.getIdBarbeiro();
-            idBarbeariaBarbeiro = barbeiro
-                    .getBarbearia()
-                    .getIdBarbearia();
+                this.authenticationManager = authenticationManager;
+                this.usuarioRepository = usuarioRepository;
+                this.barbeiroRepository = barbeiroRepository;
+                this.proprietarioBarbeariaRepository = proprietarioBarbeariaRepository;
         }
 
-        List<ProprietarioBarbearia> vinculosProprietario = proprietarioBarbeariaRepository
-                .findByUsuario_IdUsuarioAndAtivoTrue(
-                        usuario.getIdUsuario());
+        public Authentication autenticar(
+                        String email,
+                        String senha) {
 
-        List<Long> idsBarbeariasProprietario = vinculosProprietario.stream()
-                .map(vinculo -> vinculo
-                        .getBarbearia()
-                        .getIdBarbearia())
-                .toList();
+                Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(
+                                email,
+                                senha);
 
-        if (!idsBarbeariasProprietario.isEmpty()) {
-            perfis.add("PROPRIETARIO");
+                return authenticationManager.authenticate(
+                                authenticationRequest);
         }
 
-        return new LoginResponse(
-                usuario.getIdUsuario(),
-                usuario.getNome(),
-                usuario.getEmail(),
-                perfis,
-                idBarbeiro,
-                idBarbeariaBarbeiro,
-                idsBarbeariasProprietario);
-    }
+        public LoginResponse buscarDadosUsuarioAutenticado(
+                        Long idUsuario) {
+
+                Usuario usuario = usuarioRepository.findById(idUsuario)
+                                .orElseThrow(() -> new IllegalArgumentException(
+                                                "Usuário não encontrado."));
+
+                List<String> perfis = new ArrayList<>();
+                perfis.add("CLIENTE");
+
+                Long idBarbeiro = null;
+                Long idBarbeariaBarbeiro = null;
+
+                Barbeiro barbeiro = barbeiroRepository
+                                .findByUsuario_IdUsuarioAndAtivoTrue(
+                                                usuario.getIdUsuario())
+                                .orElse(null);
+
+                if (barbeiro != null) {
+                        perfis.add("BARBEIRO");
+
+                        idBarbeiro = barbeiro.getIdBarbeiro();
+
+                        idBarbeariaBarbeiro = barbeiro
+                                        .getBarbearia()
+                                        .getIdBarbearia();
+                }
+
+                List<ProprietarioBarbearia> vinculosProprietario = proprietarioBarbeariaRepository
+                                .findByUsuario_IdUsuarioAndAtivoTrue(
+                                                usuario.getIdUsuario());
+
+                List<Long> idsBarbeariasProprietario = vinculosProprietario.stream()
+                                .map(vinculo -> vinculo
+                                                .getBarbearia()
+                                                .getIdBarbearia())
+                                .toList();
+
+                if (!idsBarbeariasProprietario.isEmpty()) {
+                        perfis.add("PROPRIETARIO");
+                }
+
+                return new LoginResponse(
+                                usuario.getIdUsuario(),
+                                usuario.getNome(),
+                                usuario.getEmail(),
+                                perfis,
+                                idBarbeiro,
+                                idBarbeariaBarbeiro,
+                                idsBarbeariasProprietario);
+        }
 }

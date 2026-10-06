@@ -9,16 +9,16 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.security.web.csrf.CsrfToken;
-
 import br.com.projetobarbearia.dto.LoginRequest;
 import br.com.projetobarbearia.dto.LoginResponse;
+import br.com.projetobarbearia.security.UsuarioPrincipal;
 import br.com.projetobarbearia.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,13 +26,6 @@ import jakarta.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-
-        @GetMapping("/csrf")
-        public ResponseEntity<CsrfToken> csrf(
-                        CsrfToken csrfToken) {
-
-                return ResponseEntity.ok(csrfToken);
-        }
 
         private final AuthService authService;
         private final SecurityContextRepository securityContextRepository;
@@ -46,6 +39,13 @@ public class AuthController {
                 this.authService = authService;
                 this.securityContextRepository = securityContextRepository;
                 this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
+        }
+
+        @GetMapping("/csrf")
+        public ResponseEntity<CsrfToken> csrf(
+                        CsrfToken csrfToken) {
+
+                return ResponseEntity.ok(csrfToken);
         }
 
         @PostMapping("/login")
@@ -89,8 +89,15 @@ public class AuthController {
                                         .build();
                 }
 
+                if (!(authentication.getPrincipal() instanceof UsuarioPrincipal usuarioPrincipal)) {
+
+                        return ResponseEntity
+                                        .status(HttpStatus.UNAUTHORIZED)
+                                        .build();
+                }
+
                 LoginResponse response = authService.buscarDadosUsuarioAutenticado(
-                                authentication.getName());
+                                usuarioPrincipal.getIdUsuario());
 
                 return ResponseEntity.ok(response);
         }
