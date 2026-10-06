@@ -19,6 +19,13 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
+import java.util.List;
+
+import org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+
 import jakarta.servlet.DispatcherType;
 
 import org.springframework.http.HttpMethod;
@@ -27,74 +34,95 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 @Configuration
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http,
-            SecurityContextRepository securityContextRepository) throws Exception {
+        @Bean
+        public SecurityFilterChain securityFilterChain(
+                        HttpSecurity http,
+                        SecurityContextRepository securityContextRepository,
+                        CsrfTokenRepository csrfTokenRepository)
+                        throws Exception {
 
-        http
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**"))
-                .securityContext(securityContext -> securityContext
-                        .securityContextRepository(securityContextRepository))
-                .authorizeHttpRequests(authorize -> authorize
-                        .dispatcherTypeMatchers(
-                                DispatcherType.ERROR,
-                                DispatcherType.FORWARD)
-                        .permitAll()
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/auth/login",
-                                "/api/usuarios")
-                        .permitAll()
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/barbearias/**",
-                                "/api/enderecos/**",
-                                "/api/horarios-funcionamento/**",
-                                "/api/servicos/**",
-                                "/api/barbeiros/**")
-                        .permitAll()
-                        .anyRequest().authenticated())
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(
-                                new HttpStatusEntryPoint(
-                                        HttpStatus.UNAUTHORIZED)))
-                .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable())
-                .logout(logout -> logout
-                        .logoutUrl("/api/auth/logout")
-                        .logoutSuccessHandler(
-                                new HttpStatusReturningLogoutSuccessHandler(
-                                        HttpStatus.NO_CONTENT))
-                        .permitAll());
+                http
+                                .csrf(csrf -> csrf
+                                                .spa()
+                                                .csrfTokenRepository(csrfTokenRepository))
+                                .securityContext(securityContext -> securityContext
+                                                .securityContextRepository(securityContextRepository))
+                                .authorizeHttpRequests(authorize -> authorize
+                                                .dispatcherTypeMatchers(
+                                                                DispatcherType.ERROR,
+                                                                DispatcherType.FORWARD)
+                                                .permitAll()
+                                                .requestMatchers(
+                                                                HttpMethod.POST,
+                                                                "/api/auth/login",
+                                                                "/api/usuarios")
+                                                .permitAll()
+                                                .requestMatchers(
+                                                                HttpMethod.GET,
+                                                                "/api/auth/csrf")
+                                                .permitAll()
+                                                .requestMatchers(
+                                                                HttpMethod.GET,
+                                                                "/api/barbearias/**",
+                                                                "/api/enderecos/**",
+                                                                "/api/horarios-funcionamento/**",
+                                                                "/api/servicos/**",
+                                                                "/api/barbeiros/**")
+                                                .permitAll()
+                                                .anyRequest().authenticated())
+                                .exceptionHandling(exception -> exception
+                                                .authenticationEntryPoint(
+                                                                new HttpStatusEntryPoint(
+                                                                                HttpStatus.UNAUTHORIZED)))
+                                .formLogin(form -> form.disable())
+                                .httpBasic(basic -> basic.disable())
+                                .logout(logout -> logout
+                                                .logoutUrl("/api/auth/logout")
+                                                .logoutSuccessHandler(
+                                                                new HttpStatusReturningLogoutSuccessHandler(
+                                                                                HttpStatus.NO_CONTENT))
+                                                .permitAll());
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-            UserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder) {
+        @Bean
+        public CsrfTokenRepository csrfTokenRepository() {
 
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userDetailsService);
+                return CookieCsrfTokenRepository
+                                .withHttpOnlyFalse();
+        }
 
-        authenticationProvider.setPasswordEncoder(passwordEncoder);
+        @Bean
+        public AuthenticationManager authenticationManager(
+                        UserDetailsService userDetailsService,
+                        PasswordEncoder passwordEncoder) {
 
-        return new ProviderManager(authenticationProvider);
-    }
+                DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userDetailsService);
 
-    @Bean
-    public SecurityContextRepository securityContextRepository() {
+                authenticationProvider.setPasswordEncoder(passwordEncoder);
 
-        return new DelegatingSecurityContextRepository(
-                new RequestAttributeSecurityContextRepository(),
-                new HttpSessionSecurityContextRepository());
-    }
+                return new ProviderManager(authenticationProvider);
+        }
 
-    @Bean
-    public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+        @Bean
+        public SecurityContextRepository securityContextRepository() {
 
-        return new ChangeSessionIdAuthenticationStrategy();
-    }
+                return new DelegatingSecurityContextRepository(
+                                new RequestAttributeSecurityContextRepository(),
+                                new HttpSessionSecurityContextRepository());
+        }
+
+        @Bean
+        public SessionAuthenticationStrategy sessionAuthenticationStrategy(
+                        CsrfTokenRepository csrfTokenRepository) {
+
+                CsrfAuthenticationStrategy csrfStrategy = new CsrfAuthenticationStrategy(
+                                csrfTokenRepository);
+
+                return new CompositeSessionAuthenticationStrategy(
+                                List.of(
+                                                new ChangeSessionIdAuthenticationStrategy(),
+                                                csrfStrategy));
+        }
 }

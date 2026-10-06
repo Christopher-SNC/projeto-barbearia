@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.security.web.csrf.CsrfToken;
+
 import br.com.projetobarbearia.dto.LoginRequest;
 import br.com.projetobarbearia.dto.LoginResponse;
 import br.com.projetobarbearia.service.AuthService;
@@ -25,64 +27,71 @@ import jakarta.servlet.http.HttpServletResponse;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthService authService;
-    private final SecurityContextRepository securityContextRepository;
-    private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
+        @GetMapping("/csrf")
+        public ResponseEntity<CsrfToken> csrf(
+                        CsrfToken csrfToken) {
 
-    public AuthController(
-            AuthService authService,
-            SecurityContextRepository securityContextRepository,
-            SessionAuthenticationStrategy sessionAuthenticationStrategy) {
-
-        this.authService = authService;
-        this.securityContextRepository = securityContextRepository;
-        this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<Void> login(
-            @RequestBody LoginRequest request,
-            HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse) {
-
-        Authentication authentication = authService.autenticar(
-                request.getEmail(),
-                request.getSenha());
-
-        sessionAuthenticationStrategy.onAuthentication(
-                authentication,
-                httpRequest,
-                httpResponse);
-
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-
-        securityContext.setAuthentication(authentication);
-        SecurityContextHolder.setContext(securityContext);
-
-        securityContextRepository.saveContext(
-                securityContext,
-                httpRequest,
-                httpResponse);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<LoginResponse> me(
-            @CurrentSecurityContext(expression = "authentication") Authentication authentication) {
-
-        if (authentication == null
-                || authentication instanceof AnonymousAuthenticationToken
-                || !authentication.isAuthenticated()) {
-
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .build();
+                return ResponseEntity.ok(csrfToken);
         }
 
-        LoginResponse response = authService.buscarDadosUsuarioAutenticado(
-                authentication.getName());
+        private final AuthService authService;
+        private final SecurityContextRepository securityContextRepository;
+        private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
 
-        return ResponseEntity.ok(response);
-    }
+        public AuthController(
+                        AuthService authService,
+                        SecurityContextRepository securityContextRepository,
+                        SessionAuthenticationStrategy sessionAuthenticationStrategy) {
+
+                this.authService = authService;
+                this.securityContextRepository = securityContextRepository;
+                this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
+        }
+
+        @PostMapping("/login")
+        public ResponseEntity<Void> login(
+                        @RequestBody LoginRequest request,
+                        HttpServletRequest httpRequest,
+                        HttpServletResponse httpResponse) {
+
+                Authentication authentication = authService.autenticar(
+                                request.getEmail(),
+                                request.getSenha());
+
+                sessionAuthenticationStrategy.onAuthentication(
+                                authentication,
+                                httpRequest,
+                                httpResponse);
+
+                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+
+                securityContext.setAuthentication(authentication);
+                SecurityContextHolder.setContext(securityContext);
+
+                securityContextRepository.saveContext(
+                                securityContext,
+                                httpRequest,
+                                httpResponse);
+
+                return ResponseEntity.ok().build();
+        }
+
+        @GetMapping("/me")
+        public ResponseEntity<LoginResponse> me(
+                        @CurrentSecurityContext(expression = "authentication") Authentication authentication) {
+
+                if (authentication == null
+                                || authentication instanceof AnonymousAuthenticationToken
+                                || !authentication.isAuthenticated()) {
+
+                        return ResponseEntity
+                                        .status(HttpStatus.UNAUTHORIZED)
+                                        .build();
+                }
+
+                LoginResponse response = authService.buscarDadosUsuarioAutenticado(
+                                authentication.getName());
+
+                return ResponseEntity.ok(response);
+        }
 }

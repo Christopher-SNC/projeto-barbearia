@@ -11,6 +11,7 @@ import {
     buscarSessao,
     fazerLogin,
     fazerLogout,
+    prepararCsrf,
 } from '../services/authService'
 
 import type {
@@ -28,14 +29,18 @@ function AuthProvider({
     const [usuario, setUsuario] =
         useState<UsuarioAutenticado | null>(null)
 
-    const [carregando, setCarregando] = useState(true)
+    const [carregando, setCarregando] =
+        useState(true)
 
     useEffect(() => {
         let componenteAtivo = true
 
         async function carregarSessao() {
             try {
-                const dados = await buscarSessao()
+                await prepararCsrf()
+
+                const dados =
+                    await buscarSessao()
 
                 if (componenteAtivo) {
                     setUsuario(dados)
@@ -93,7 +98,10 @@ function AuthProvider({
     function possuiPerfil(
         perfil: PerfilUsuario,
     ): boolean {
-        return usuario?.perfis.includes(perfil) ?? false
+        return (
+            usuario?.perfis.includes(perfil) ??
+            false
+        )
     }
 
     return (
