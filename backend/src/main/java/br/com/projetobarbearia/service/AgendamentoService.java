@@ -43,6 +43,7 @@ public class AgendamentoService {
     private final HorarioFuncionamentoRepository horarioFuncionamentoRepository;
     private final DisponibilidadeRepository disponibilidadeRepository;
     private final UsuarioRepository usuarioRepository;
+    private final AutorizacaoService autorizacaoService;
 
     public AgendamentoService(
             AgendamentoRepository agendamentoRepository,
@@ -53,7 +54,8 @@ public class AgendamentoService {
             BarbeiroServicoRepository barbeiroServicoRepository,
             HorarioFuncionamentoRepository horarioFuncionamentoRepository,
             DisponibilidadeRepository disponibilidadeRepository,
-            UsuarioRepository usuarioRepository) {
+            UsuarioRepository usuarioRepository,
+            AutorizacaoService autorizacaoService) {
 
         this.agendamentoRepository = agendamentoRepository;
         this.itemAgendamentoRepository = itemAgendamentoRepository;
@@ -64,6 +66,7 @@ public class AgendamentoService {
         this.horarioFuncionamentoRepository = horarioFuncionamentoRepository;
         this.disponibilidadeRepository = disponibilidadeRepository;
         this.usuarioRepository = usuarioRepository;
+        this.autorizacaoService = autorizacaoService;
     }
 
     public List<Agendamento> listarTodos() {
@@ -170,6 +173,10 @@ public class AgendamentoService {
 
         Agendamento agendamento = buscarAgendamento(id);
 
+        autorizacaoService
+                .exigirPermissaoCancelarAgendamento(
+                        agendamento);
+
         validarStatusConfirmado(agendamento);
 
         agendamento.setStatus(
@@ -183,6 +190,10 @@ public class AgendamentoService {
 
         Agendamento agendamento = buscarAgendamento(id);
 
+        autorizacaoService
+                .exigirPermissaoGerenciarAgendamento(
+                        agendamento);
+
         validarStatusConfirmado(agendamento);
 
         agendamento.setStatus(
@@ -195,6 +206,10 @@ public class AgendamentoService {
     public Agendamento marcarNaoCompareceu(Long id) {
 
         Agendamento agendamento = buscarAgendamento(id);
+
+        autorizacaoService
+                .exigirPermissaoGerenciarAgendamento(
+                        agendamento);
 
         validarStatusConfirmado(agendamento);
 
