@@ -10,7 +10,7 @@ import DateInput from '../../components/DateInput/DateInput'
 
 import {
   criarAgendamento,
-  listarAgendamentos,
+  listarOcupacoesAgendamento,
 } from '../../services/agendamentoService'
 import { listarBarbeiros } from '../../services/barbeiroService'
 import { listarBarbeirosServicos } from '../../services/barbeiroServicoService'
@@ -19,7 +19,7 @@ import { listarHorariosFuncionamento } from '../../services/horarioFuncionamento
 import { listarServicos } from '../../services/servicoService'
 import { listarUsuarios } from '../../services/usuarioService'
 
-import type { Agendamento } from '../../types/Agendamento'
+import type { OcupacaoAgendamento } from '../../types/Agendamento'
 import type { Barbeiro } from '../../types/Barbeiro'
 import type { BarbeiroServico } from '../../types/BarbeiroServico'
 import type { Disponibilidade } from '../../types/Disponibilidade'
@@ -105,9 +105,7 @@ function NovoAgendamento() {
     horariosFuncionamento,
     setHorariosFuncionamento,
   ] = useState<HorarioFuncionamento[]>([])
-  const [agendamentos, setAgendamentos] = useState<
-    Agendamento[]
-  >([])
+  const [ocupacoes, setOcupacoes] = useState<OcupacaoAgendamento[]>([])
 
   const [idServico, setIdServico] = useState<
     number | null
@@ -139,7 +137,6 @@ function NovoAgendamento() {
           dadosVinculos,
           dadosDisponibilidades,
           dadosHorarios,
-          dadosAgendamentos,
         ] = await Promise.all([
           listarServicos(),
           listarBarbeiros(),
@@ -147,7 +144,6 @@ function NovoAgendamento() {
           listarBarbeirosServicos(),
           listarDisponibilidades(),
           listarHorariosFuncionamento(),
-          listarAgendamentos(),
         ])
 
         setServicos(
@@ -170,7 +166,6 @@ function NovoAgendamento() {
         setVinculos(dadosVinculos)
         setDisponibilidades(dadosDisponibilidades)
         setHorariosFuncionamento(dadosHorarios)
-        setAgendamentos(dadosAgendamentos)
       } catch (error) {
         console.error(error)
 
@@ -184,6 +179,45 @@ function NovoAgendamento() {
 
     carregarDados()
   }, [idBarbearia])
+
+  useEffect(() => {
+    let ativo = true
+
+    async function carregarOcupacoes() {
+      setOcupacoes([])
+
+      if (!idBarbeiro || !data) {
+        return
+      }
+
+      try {
+        const dadosOcupacoes =
+          await listarOcupacoesAgendamento(
+            idBarbeiro,
+            data,
+          )
+
+        if (ativo) {
+          setOcupacoes(dadosOcupacoes)
+        }
+      } catch (error) {
+        console.error(error)
+
+        if (ativo) {
+          setOcupacoes([])
+          setErro(
+            'Não foi possível carregar os horários disponíveis.',
+          )
+        }
+      }
+    }
+
+    carregarOcupacoes()
+
+    return () => {
+      ativo = false
+    }
+  }, [idBarbeiro, data])
 
   const servicoSelecionado = servicos.find(
     (servico) => servico.idServico === idServico,
@@ -271,12 +305,7 @@ function NovoAgendamento() {
     const duracao =
       servicoSelecionado.duracaoMinutos
 
-    const ocupados = agendamentos.filter(
-      (agendamento) =>
-        agendamento.idBarbeiro === idBarbeiro &&
-        agendamento.status === 'CONFIRMADO' &&
-        agendamento.dataHoraInicio.startsWith(data),
-    )
+    const ocupados = ocupacoes
 
     const opcoes: string[] = []
 
@@ -300,11 +329,7 @@ function NovoAgendamento() {
             horaParaMinutos(horaExistente)
 
           const duracaoExistente =
-            agendamento.itens.reduce(
-              (total, item) =>
-                total + item.duracaoMinutos,
-              0,
-            )
+          agendamento.duracaoMinutos
 
           const fimExistenteComBuffer =
             inicioExistente +
@@ -353,7 +378,7 @@ function NovoAgendamento() {
     horariosFuncionamento,
     disponibilidades,
     idBarbearia,
-    agendamentos,
+    ocupacoes,
   ])
 
   function nomeBarbeiro(barbeiro: Barbeiro) {
@@ -439,10 +464,13 @@ function NovoAgendamento() {
 
       setHora('')
 
-      const atualizados =
-        await listarAgendamentos()
+      const ocupacoesAtualizadas =
+        await listarOcupacoesAgendamento(
+          idBarbeiro,
+          data,
+        )
 
-      setAgendamentos(atualizados)
+      setOcupacoes(ocupacoesAtualizadas)
     } catch (error) {
       console.error(error)
 

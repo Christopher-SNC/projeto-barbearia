@@ -1,5 +1,6 @@
 package br.com.projetobarbearia.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,12 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.projetobarbearia.dto.AgendamentoRequest;
 import br.com.projetobarbearia.dto.AgendamentoResponse;
 import br.com.projetobarbearia.dto.ItemAgendamentoRequest;
 import br.com.projetobarbearia.dto.ItemAgendamentoResponse;
+import br.com.projetobarbearia.dto.OcupacaoAgendamentoResponse;
 import br.com.projetobarbearia.entity.Agendamento;
 import br.com.projetobarbearia.entity.Barbearia;
 import br.com.projetobarbearia.entity.Barbeiro;
@@ -66,6 +69,17 @@ public class AgendamentoController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() ->
                         ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/ocupacoes")
+    public ResponseEntity<List<OcupacaoAgendamentoResponse>> listarOcupacoes(
+            @RequestParam Long idBarbeiro,
+            @RequestParam LocalDate data) {
+
+        return ResponseEntity.ok(
+                agendamentoService.listarOcupacoes(
+                        idBarbeiro,
+                        data));
     }
 
     @PostMapping

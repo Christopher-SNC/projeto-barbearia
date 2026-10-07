@@ -2,6 +2,7 @@ package br.com.projetobarbearia.service;
 
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.projetobarbearia.dto.OcupacaoAgendamentoResponse;
 import br.com.projetobarbearia.entity.Agendamento;
 import br.com.projetobarbearia.entity.Barbearia;
 import br.com.projetobarbearia.entity.Barbeiro;
@@ -75,6 +77,52 @@ public class AgendamentoService {
 
     public Optional<Agendamento> buscarPorId(Long id) {
         return agendamentoRepository.findById(id);
+    }
+
+    public List<OcupacaoAgendamentoResponse> listarOcupacoes(
+            Long idBarbeiro,
+            LocalDate data) {
+
+        if (idBarbeiro == null) {
+            throw new IllegalArgumentException(
+                    "O barbeiro é obrigatório.");
+        }
+
+        if (data == null) {
+            throw new IllegalArgumentException(
+                    "A data é obrigatória.");
+        }
+
+        LocalDateTime inicio =
+                data.atStartOfDay();
+
+        LocalDateTime fim =
+                data.plusDays(1)
+                        .atStartOfDay();
+
+        return agendamentoRepository
+                .findByBarbeiro_IdBarbeiroAndStatusAndDataHoraInicioGreaterThanEqualAndDataHoraInicioLessThan(
+                        idBarbeiro,
+                        StatusAgendamento.CONFIRMADO,
+                        inicio,
+                        fim)
+                .stream()
+                .map(agendamento -> {
+
+                    int duracaoMinutos =
+                            itemAgendamentoRepository
+                                    .findByAgendamento_IdAgendamento(
+                                            agendamento.getIdAgendamento())
+                                    .stream()
+                                    .mapToInt(
+                                            ItemAgendamento::getDuracaoMinutos)
+                                    .sum();
+
+                    return new OcupacaoAgendamentoResponse(
+                            agendamento.getDataHoraInicio(),
+                            duracaoMinutos);
+                })
+                .toList();
     }
 
     @Transactional

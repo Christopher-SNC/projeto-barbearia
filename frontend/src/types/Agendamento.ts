@@ -36,3 +36,8 @@ export interface Agendamento {
   dataCriacao: string
   itens: ItemAgendamento[]
 }
+
+export interface OcupacaoAgendamento {
+  dataHoraInicio: string
+  duracaoMinutos: number
+}
