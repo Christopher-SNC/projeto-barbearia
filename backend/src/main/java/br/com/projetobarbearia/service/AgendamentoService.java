@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +29,7 @@ import br.com.projetobarbearia.repository.BarbeiroServicoRepository;
 import br.com.projetobarbearia.repository.DisponibilidadeRepository;
 import br.com.projetobarbearia.repository.HorarioFuncionamentoRepository;
 import br.com.projetobarbearia.repository.ItemAgendamentoRepository;
+import br.com.projetobarbearia.repository.ProprietarioBarbeariaRepository;
 import br.com.projetobarbearia.repository.ServicoRepository;
 import br.com.projetobarbearia.repository.UsuarioRepository;
 
@@ -45,6 +47,7 @@ public class AgendamentoService {
     private final HorarioFuncionamentoRepository horarioFuncionamentoRepository;
     private final DisponibilidadeRepository disponibilidadeRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ProprietarioBarbeariaRepository proprietarioBarbeariaRepository;
     private final AutorizacaoService autorizacaoService;
 
     public AgendamentoService(
@@ -57,6 +60,7 @@ public class AgendamentoService {
             HorarioFuncionamentoRepository horarioFuncionamentoRepository,
             DisponibilidadeRepository disponibilidadeRepository,
             UsuarioRepository usuarioRepository,
+            ProprietarioBarbeariaRepository proprietarioBarbeariaRepository,
             AutorizacaoService autorizacaoService) {
 
         this.agendamentoRepository = agendamentoRepository;
@@ -68,15 +72,70 @@ public class AgendamentoService {
         this.horarioFuncionamentoRepository = horarioFuncionamentoRepository;
         this.disponibilidadeRepository = disponibilidadeRepository;
         this.usuarioRepository = usuarioRepository;
+        this.proprietarioBarbeariaRepository = proprietarioBarbeariaRepository;
         this.autorizacaoService = autorizacaoService;
     }
 
     public List<Agendamento> listarTodos() {
-        return agendamentoRepository.findAll();
+
+        Long idUsuario =
+                autorizacaoService.obterIdUsuarioAutenticado();
+
+        LinkedHashMap<Long, Agendamento> autorizados =
+                new LinkedHashMap<>();
+
+        agendamentoRepository
+                .findByCliente_IdUsuario(idUsuario)
+                .forEach(agendamento ->
+                        autorizados.put(
+                                agendamento.getIdAgendamento(),
+                                agendamento));
+
+        barbeiroRepository
+                .findByUsuario_IdUsuarioAndAtivoTrue(idUsuario)
+                .ifPresent(barbeiro ->
+                        agendamentoRepository
+                                .findByBarbeiro_IdBarbeiro(
+                                        barbeiro.getIdBarbeiro())
+                                .forEach(agendamento ->
+                                        autorizados.put(
+                                                agendamento.getIdAgendamento(),
+                                                agendamento)));
+
+        List<Long> idsBarbeariasProprietario =
+                proprietarioBarbeariaRepository
+                        .findByUsuario_IdUsuarioAndAtivoTrue(
+                                idUsuario)
+                        .stream()
+                        .map(vinculo -> vinculo.getBarbearia()
+                                .getIdBarbearia())
+                        .distinct()
+                        .toList();
+
+        if (!idsBarbeariasProprietario.isEmpty()) {
+
+            agendamentoRepository
+                    .findByBarbearia_IdBarbeariaIn(
+                            idsBarbeariasProprietario)
+                    .forEach(agendamento ->
+                            autorizados.put(
+                                    agendamento.getIdAgendamento(),
+                                    agendamento));
+        }
+
+        return List.copyOf(
+                autorizados.values());
     }
 
     public Optional<Agendamento> buscarPorId(Long id) {
-        return agendamentoRepository.findById(id);
+
+        Optional<Agendamento> agendamento =
+                agendamentoRepository.findById(id);
+
+        agendamento.ifPresent(
+                autorizacaoService::exigirPermissaoVisualizarAgendamento);
+
+        return agendamento;
     }
 
     public List<OcupacaoAgendamentoResponse> listarOcupacoes(

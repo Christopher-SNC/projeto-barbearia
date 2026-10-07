@@ -104,6 +104,40 @@ public class AutorizacaoService {
         }
     }
 
+    public void exigirPermissaoVisualizarAgendamento(
+            Agendamento agendamento) {
+
+        Long idUsuarioAutenticado =
+                obterIdUsuarioAutenticado();
+
+        boolean clienteDoAgendamento =
+                idUsuarioAutenticado.equals(
+                        agendamento.getCliente()
+                                .getIdUsuario());
+
+        boolean barbeiroResponsavel = barbeiroRepository
+                .findByUsuario_IdUsuarioAndAtivoTrue(
+                        idUsuarioAutenticado)
+                .map(barbeiro -> barbeiro.getIdBarbeiro()
+                        .equals(
+                                agendamento.getBarbeiro()
+                                        .getIdBarbeiro()))
+                .orElse(false);
+
+        boolean proprietarioDaBarbearia =
+                ehProprietarioDaBarbearia(
+                        idUsuarioAutenticado,
+                        agendamento.getBarbearia()
+                                .getIdBarbearia());
+
+        if (!clienteDoAgendamento
+                && !barbeiroResponsavel
+                && !proprietarioDaBarbearia) {
+
+            negarAcesso();
+        }
+    }
+
     private boolean ehProprietarioDaBarbearia(
             Long idUsuario,
             Long idBarbearia) {

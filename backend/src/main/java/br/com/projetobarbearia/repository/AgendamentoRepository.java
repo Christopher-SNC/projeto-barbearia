@@ -11,6 +11,15 @@ import br.com.projetobarbearia.enums.StatusAgendamento;
 public interface AgendamentoRepository
         extends JpaRepository<Agendamento, Long> {
 
+    List<Agendamento> findByCliente_IdUsuario(
+            Long idUsuario);
+
+    List<Agendamento> findByBarbeiro_IdBarbeiro(
+            Long idBarbeiro);
+
+    List<Agendamento> findByBarbearia_IdBarbeariaIn(
+            List<Long> idsBarbearias);
+
     List<Agendamento>
             findByBarbeiro_IdBarbeiroAndStatusAndDataHoraInicioGreaterThanEqualAndDataHoraInicioLessThan(
                     Long idBarbeiro,
