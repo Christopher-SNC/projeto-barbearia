@@ -9,8 +9,14 @@ import br.com.projetobarbearia.entity.ProprietarioBarbearia;
 public interface ProprietarioBarbeariaRepository
         extends JpaRepository<ProprietarioBarbearia, Long> {
 
-    boolean existsByBarbearia_IdBarbeariaAndAtivoTrue(Long idBarbearia);
+    boolean existsByBarbearia_IdBarbeariaAndAtivoTrue(
+            Long idBarbearia);
 
-    List<ProprietarioBarbearia> findByUsuario_IdUsuarioAndAtivoTrue(
-            Long idUsuario);
+    List<ProprietarioBarbearia>
+            findByUsuario_IdUsuarioAndAtivoTrue(
+                    Long idUsuario);
+
+    List<ProprietarioBarbearia>
+            findByBarbearia_IdBarbeariaIn(
+                    List<Long> idsBarbearias);
 }

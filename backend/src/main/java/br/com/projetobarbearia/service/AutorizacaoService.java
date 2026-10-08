@@ -1,5 +1,7 @@
 package br.com.projetobarbearia.service;
 
+import java.util.List;
+
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,14 +23,16 @@ public class AutorizacaoService {
             ProprietarioBarbeariaRepository proprietarioBarbeariaRepository) {
 
         this.barbeiroRepository = barbeiroRepository;
-        this.proprietarioBarbeariaRepository = proprietarioBarbeariaRepository;
+        this.proprietarioBarbeariaRepository =
+                proprietarioBarbeariaRepository;
     }
 
     public Long obterIdUsuarioAutenticado() {
 
-        Authentication authentication = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
+        Authentication authentication =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
 
         if (authentication == null
                 || !authentication.isAuthenticated()) {
@@ -36,7 +40,8 @@ public class AutorizacaoService {
             negarAcesso();
         }
 
-        Object principal = authentication.getPrincipal();
+        Object principal =
+                authentication.getPrincipal();
 
         if (!(principal instanceof UsuarioPrincipal)) {
             negarAcesso();
@@ -49,7 +54,8 @@ public class AutorizacaoService {
     public void exigirProprioUsuario(
             Long idUsuario) {
 
-        Long idUsuarioAutenticado = obterIdUsuarioAutenticado();
+        Long idUsuarioAutenticado =
+                obterIdUsuarioAutenticado();
 
         if (!idUsuarioAutenticado.equals(idUsuario)) {
             negarAcesso();
@@ -59,16 +65,19 @@ public class AutorizacaoService {
     public void exigirPermissaoCancelarAgendamento(
             Agendamento agendamento) {
 
-        Long idUsuarioAutenticado = obterIdUsuarioAutenticado();
+        Long idUsuarioAutenticado =
+                obterIdUsuarioAutenticado();
 
-        boolean clienteDoAgendamento = idUsuarioAutenticado.equals(
-                agendamento.getCliente()
-                        .getIdUsuario());
+        boolean clienteDoAgendamento =
+                idUsuarioAutenticado.equals(
+                        agendamento.getCliente()
+                                .getIdUsuario());
 
-        boolean proprietarioDaBarbearia = ehProprietarioDaBarbearia(
-                idUsuarioAutenticado,
-                agendamento.getBarbearia()
-                        .getIdBarbearia());
+        boolean proprietarioDaBarbearia =
+                ehProprietarioDaBarbearia(
+                        idUsuarioAutenticado,
+                        agendamento.getBarbearia()
+                                .getIdBarbearia());
 
         if (!clienteDoAgendamento
                 && !proprietarioDaBarbearia) {
@@ -80,22 +89,26 @@ public class AutorizacaoService {
     public void exigirPermissaoGerenciarAgendamento(
             Agendamento agendamento) {
 
-        Long idUsuarioAutenticado = obterIdUsuarioAutenticado();
+        Long idUsuarioAutenticado =
+                obterIdUsuarioAutenticado();
 
-        boolean barbeiroResponsavel = barbeiroRepository
-                .findByUsuario_IdUsuarioAndAtivoTrue(
-                        idUsuarioAutenticado)
-                .map(barbeiro -> barbeiro.getIdBarbeiro()
-                        .equals(
-                                agendamento
-                                        .getBarbeiro()
-                                        .getIdBarbeiro()))
-                .orElse(false);
+        boolean barbeiroResponsavel =
+                barbeiroRepository
+                        .findByUsuario_IdUsuarioAndAtivoTrue(
+                                idUsuarioAutenticado)
+                        .map(barbeiro ->
+                                barbeiro.getIdBarbeiro()
+                                        .equals(
+                                                agendamento
+                                                        .getBarbeiro()
+                                                        .getIdBarbeiro()))
+                        .orElse(false);
 
-        boolean proprietarioDaBarbearia = ehProprietarioDaBarbearia(
-                idUsuarioAutenticado,
-                agendamento.getBarbearia()
-                        .getIdBarbearia());
+        boolean proprietarioDaBarbearia =
+                ehProprietarioDaBarbearia(
+                        idUsuarioAutenticado,
+                        agendamento.getBarbearia()
+                                .getIdBarbearia());
 
         if (!barbeiroResponsavel
                 && !proprietarioDaBarbearia) {
@@ -115,14 +128,17 @@ public class AutorizacaoService {
                         agendamento.getCliente()
                                 .getIdUsuario());
 
-        boolean barbeiroResponsavel = barbeiroRepository
-                .findByUsuario_IdUsuarioAndAtivoTrue(
-                        idUsuarioAutenticado)
-                .map(barbeiro -> barbeiro.getIdBarbeiro()
-                        .equals(
-                                agendamento.getBarbeiro()
-                                        .getIdBarbeiro()))
-                .orElse(false);
+        boolean barbeiroResponsavel =
+                barbeiroRepository
+                        .findByUsuario_IdUsuarioAndAtivoTrue(
+                                idUsuarioAutenticado)
+                        .map(barbeiro ->
+                                barbeiro.getIdBarbeiro()
+                                        .equals(
+                                                agendamento
+                                                        .getBarbeiro()
+                                                        .getIdBarbeiro()))
+                        .orElse(false);
 
         boolean proprietarioDaBarbearia =
                 ehProprietarioDaBarbearia(
@@ -138,6 +154,40 @@ public class AutorizacaoService {
         }
     }
 
+    public List<Long> obterIdsBarbeariasProprietario() {
+
+        Long idUsuarioAutenticado =
+                obterIdUsuarioAutenticado();
+
+        return proprietarioBarbeariaRepository
+                .findByUsuario_IdUsuarioAndAtivoTrue(
+                        idUsuarioAutenticado)
+                .stream()
+                .map(vinculo ->
+                        vinculo.getBarbearia()
+                                .getIdBarbearia())
+                .distinct()
+                .toList();
+    }
+
+    public void exigirProprietarioDaBarbearia(
+            Long idBarbearia) {
+
+        if (idBarbearia == null) {
+            negarAcesso();
+        }
+
+        Long idUsuarioAutenticado =
+                obterIdUsuarioAutenticado();
+
+        if (!ehProprietarioDaBarbearia(
+                idUsuarioAutenticado,
+                idBarbearia)) {
+
+            negarAcesso();
+        }
+    }
+
     private boolean ehProprietarioDaBarbearia(
             Long idUsuario,
             Long idBarbearia) {
@@ -146,9 +196,10 @@ public class AutorizacaoService {
                 .findByUsuario_IdUsuarioAndAtivoTrue(
                         idUsuario)
                 .stream()
-                .anyMatch(vinculo -> vinculo.getBarbearia()
-                        .getIdBarbearia()
-                        .equals(idBarbearia));
+                .anyMatch(vinculo ->
+                        vinculo.getBarbearia()
+                                .getIdBarbearia()
+                                .equals(idBarbearia));
     }
 
     private void negarAcesso() {
