@@ -34,7 +34,7 @@ public class AvaliacaoController {
     public ResponseEntity<List<AvaliacaoResponse>> listarTodas() {
 
         List<AvaliacaoResponse> avaliacoes =
-                avaliacaoService.listarTodas()
+                avaliacaoService.listarVisiveis()
                         .stream()
                         .map(this::converterParaResponse)
                         .toList();

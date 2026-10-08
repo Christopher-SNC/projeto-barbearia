@@ -17,21 +17,41 @@ public class AvaliacaoService {
 
     private final AvaliacaoRepository avaliacaoRepository;
     private final AgendamentoRepository agendamentoRepository;
+    private final AutorizacaoService autorizacaoService;
 
     public AvaliacaoService(
             AvaliacaoRepository avaliacaoRepository,
-            AgendamentoRepository agendamentoRepository) {
+            AgendamentoRepository agendamentoRepository,
+            AutorizacaoService autorizacaoService) {
 
         this.avaliacaoRepository = avaliacaoRepository;
         this.agendamentoRepository = agendamentoRepository;
+        this.autorizacaoService = autorizacaoService;
     }
 
-    public List<Avaliacao> listarTodas() {
-        return avaliacaoRepository.findAll();
+    public List<Avaliacao> listarVisiveis() {
+
+        return avaliacaoRepository
+                .findAll()
+                .stream()
+                .filter(avaliacao ->
+                        autorizacaoService
+                                .podeVisualizarAgendamento(
+                                        avaliacao.getAgendamento()))
+                .toList();
     }
 
     public Optional<Avaliacao> buscarPorId(Long id) {
-        return avaliacaoRepository.findById(id);
+
+        Optional<Avaliacao> avaliacao =
+                avaliacaoRepository.findById(id);
+
+        avaliacao.ifPresent(valor ->
+                autorizacaoService
+                        .exigirPermissaoVisualizarAgendamento(
+                                valor.getAgendamento()));
+
+        return avaliacao;
     }
 
     public Avaliacao salvar(Avaliacao avaliacao) {
@@ -39,20 +59,28 @@ public class AvaliacaoService {
         validarNotas(avaliacao);
 
         if (avaliacao.getAgendamento() == null
-                || avaliacao.getAgendamento().getIdAgendamento() == null) {
+                || avaliacao.getAgendamento()
+                        .getIdAgendamento() == null) {
 
             throw new IllegalArgumentException(
                     "O agendamento é obrigatório.");
         }
 
         Long idAgendamento =
-                avaliacao.getAgendamento().getIdAgendamento();
+                avaliacao.getAgendamento()
+                        .getIdAgendamento();
 
-        Agendamento agendamento = agendamentoRepository
-                .findById(idAgendamento)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Agendamento não encontrado."));
+        Agendamento agendamento =
+                agendamentoRepository
+                        .findById(idAgendamento)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Agendamento não encontrado."));
+
+        autorizacaoService
+                .exigirProprioUsuario(
+                        agendamento.getCliente()
+                                .getIdUsuario());
 
         if (agendamento.getStatus()
                 != StatusAgendamento.CONCLUIDO) {
@@ -61,32 +89,37 @@ public class AvaliacaoService {
                     "Só é possível avaliar um agendamento concluído.");
         }
 
-        if (avaliacao.getIdAvaliacao() == null
-                && avaliacaoRepository
-                        .existsByAgendamento_IdAgendamento(
-                                idAgendamento)) {
+        if (avaliacaoRepository
+                .existsByAgendamento_IdAgendamento(
+                        idAgendamento)) {
 
             throw new IllegalArgumentException(
                     "Este agendamento já possui uma avaliação.");
         }
 
         avaliacao.setAgendamento(agendamento);
-
-        if (avaliacao.getDataAvaliacao() == null) {
-            avaliacao.setDataAvaliacao(LocalDateTime.now());
-        }
+        avaliacao.setDataAvaliacao(
+                LocalDateTime.now());
 
         return avaliacaoRepository.save(avaliacao);
     }
 
     public void excluir(Long id) {
 
-        if (!avaliacaoRepository.existsById(id)) {
-            throw new IllegalArgumentException(
-                    "Avaliação não encontrada.");
-        }
+        Avaliacao avaliacao =
+                avaliacaoRepository
+                        .findById(id)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Avaliação não encontrada."));
 
-        avaliacaoRepository.deleteById(id);
+        autorizacaoService
+                .exigirProprioUsuario(
+                        avaliacao.getAgendamento()
+                                .getCliente()
+                                .getIdUsuario());
+
+        avaliacaoRepository.delete(avaliacao);
     }
 
     private void validarNotas(Avaliacao avaliacao) {

@@ -118,7 +118,7 @@ public class AutorizacaoService {
         }
     }
 
-    public void exigirPermissaoVisualizarAgendamento(
+    public boolean podeVisualizarAgendamento(
             Agendamento agendamento) {
 
         Long idUsuarioAutenticado =
@@ -147,10 +147,15 @@ public class AutorizacaoService {
                         agendamento.getBarbearia()
                                 .getIdBarbearia());
 
-        if (!clienteDoAgendamento
-                && !barbeiroResponsavel
-                && !proprietarioDaBarbearia) {
+        return clienteDoAgendamento
+                || barbeiroResponsavel
+                || proprietarioDaBarbearia;
+    }
 
+    public void exigirPermissaoVisualizarAgendamento(
+            Agendamento agendamento) {
+
+        if (!podeVisualizarAgendamento(agendamento)) {
             negarAcesso();
         }
     }
