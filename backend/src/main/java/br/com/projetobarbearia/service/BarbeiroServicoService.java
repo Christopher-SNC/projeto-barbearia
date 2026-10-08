@@ -16,22 +16,28 @@ public class BarbeiroServicoService {
     private final BarbeiroServicoRepository barbeiroServicoRepository;
     private final BarbeiroService barbeiroService;
     private final ServicoService servicoService;
+    private final AutorizacaoService autorizacaoService;
 
     public BarbeiroServicoService(
             BarbeiroServicoRepository barbeiroServicoRepository,
             BarbeiroService barbeiroService,
-            ServicoService servicoService) {
+            ServicoService servicoService,
+            AutorizacaoService autorizacaoService) {
 
-        this.barbeiroServicoRepository = barbeiroServicoRepository;
+        this.barbeiroServicoRepository =
+                barbeiroServicoRepository;
         this.barbeiroService = barbeiroService;
         this.servicoService = servicoService;
+        this.autorizacaoService = autorizacaoService;
     }
 
     public List<BarbeiroServico> listarTodos() {
         return barbeiroServicoRepository.findAll();
     }
 
-    public Optional<BarbeiroServico> buscarPorId(Long id) {
+    public Optional<BarbeiroServico> buscarPorId(
+            Long id) {
+
         return barbeiroServicoRepository.findById(id);
     }
 
@@ -39,18 +45,30 @@ public class BarbeiroServicoService {
             Long idBarbeiro,
             Long idServico) {
 
-        Barbeiro barbeiro = barbeiroService.buscarPorId(idBarbeiro)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Barbeiro não encontrado."));
+        Barbeiro barbeiro =
+                barbeiroService
+                        .buscarPorId(idBarbeiro)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Barbeiro não encontrado."));
 
-        Servico servico = servicoService.buscarPorId(idServico)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Serviço não encontrado."));
+        autorizacaoService
+                .exigirProprietarioDaBarbearia(
+                        barbeiro.getBarbearia()
+                                .getIdBarbearia());
 
-        if (!barbeiro.getBarbearia().getIdBarbearia()
-                .equals(servico.getBarbearia().getIdBarbearia())) {
+        Servico servico =
+                servicoService
+                        .buscarPorId(idServico)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Serviço não encontrado."));
+
+        if (!barbeiro.getBarbearia()
+                .getIdBarbearia()
+                .equals(
+                        servico.getBarbearia()
+                                .getIdBarbearia())) {
 
             throw new IllegalArgumentException(
                     "O barbeiro e o serviço precisam pertencer à mesma barbearia.");
@@ -79,10 +97,13 @@ public class BarbeiroServicoService {
                         "Este serviço já está vinculado ao barbeiro.");
             }
 
-            BarbeiroServico vinculo = existente.get();
+            BarbeiroServico vinculo =
+                    existente.get();
+
             vinculo.setAtivo(true);
 
-            return barbeiroServicoRepository.save(vinculo);
+            return barbeiroServicoRepository
+                    .save(vinculo);
         }
 
         BarbeiroServico barbeiroServico =
@@ -92,55 +113,87 @@ public class BarbeiroServicoService {
         barbeiroServico.setServico(servico);
         barbeiroServico.setAtivo(true);
 
-        return barbeiroServicoRepository.save(
-                barbeiroServico);
+        return barbeiroServicoRepository
+                .save(barbeiroServico);
     }
 
     public BarbeiroServico ativar(Long id) {
 
         BarbeiroServico barbeiroServico =
-                barbeiroServicoRepository.findById(id)
+                barbeiroServicoRepository
+                        .findById(id)
                         .orElseThrow(() ->
                                 new IllegalArgumentException(
                                         "Vínculo barbeiro-serviço não encontrado."));
 
-        if (!barbeiroServico.getBarbeiro().isAtivo()) {
+        autorizacaoService
+                .exigirProprietarioDaBarbearia(
+                        barbeiroServico
+                                .getBarbeiro()
+                                .getBarbearia()
+                                .getIdBarbearia());
+
+        if (!barbeiroServico
+                .getBarbeiro()
+                .isAtivo()) {
+
             throw new IllegalArgumentException(
                     "O barbeiro precisa estar ativo.");
         }
 
-        if (!barbeiroServico.getServico().isAtivo()) {
+        if (!barbeiroServico
+                .getServico()
+                .isAtivo()) {
+
             throw new IllegalArgumentException(
                     "O serviço precisa estar ativo.");
         }
 
         barbeiroServico.setAtivo(true);
 
-        return barbeiroServicoRepository.save(
-                barbeiroServico);
+        return barbeiroServicoRepository
+                .save(barbeiroServico);
     }
 
     public BarbeiroServico desativar(Long id) {
 
         BarbeiroServico barbeiroServico =
-                barbeiroServicoRepository.findById(id)
+                barbeiroServicoRepository
+                        .findById(id)
                         .orElseThrow(() ->
                                 new IllegalArgumentException(
                                         "Vínculo barbeiro-serviço não encontrado."));
 
+        autorizacaoService
+                .exigirProprietarioDaBarbearia(
+                        barbeiroServico
+                                .getBarbeiro()
+                                .getBarbearia()
+                                .getIdBarbearia());
+
         barbeiroServico.setAtivo(false);
 
-        return barbeiroServicoRepository.save(
-                barbeiroServico);
+        return barbeiroServicoRepository
+                .save(barbeiroServico);
     }
 
     public void excluir(Long id) {
 
-        if (!barbeiroServicoRepository.existsById(id)) {
-            throw new IllegalArgumentException(
-                    "Vínculo barbeiro-serviço não encontrado.");
-        }
+        BarbeiroServico barbeiroServico =
+                barbeiroServicoRepository
+                        .findById(id)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Vínculo barbeiro-serviço não encontrado."));
 
-        barbeiroServicoRepository.deleteById(id);
+        autorizacaoService
+                .exigirProprietarioDaBarbearia(
+                        barbeiroServico
+                                .getBarbeiro()
+                                .getBarbearia()
+                                .getIdBarbearia());
+
+        barbeiroServicoRepository
+                .delete(barbeiroServico);
     }
 }

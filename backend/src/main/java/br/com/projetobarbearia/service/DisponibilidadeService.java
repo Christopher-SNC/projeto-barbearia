@@ -14,20 +14,26 @@ public class DisponibilidadeService {
 
     private final DisponibilidadeRepository disponibilidadeRepository;
     private final BarbeiroService barbeiroService;
+    private final AutorizacaoService autorizacaoService;
 
     public DisponibilidadeService(
             DisponibilidadeRepository disponibilidadeRepository,
-            BarbeiroService barbeiroService) {
+            BarbeiroService barbeiroService,
+            AutorizacaoService autorizacaoService) {
 
-        this.disponibilidadeRepository = disponibilidadeRepository;
+        this.disponibilidadeRepository =
+                disponibilidadeRepository;
         this.barbeiroService = barbeiroService;
+        this.autorizacaoService = autorizacaoService;
     }
 
     public List<Disponibilidade> listarTodos() {
         return disponibilidadeRepository.findAll();
     }
 
-    public Optional<Disponibilidade> buscarPorId(Long id) {
+    public Optional<Disponibilidade> buscarPorId(
+            Long id) {
+
         return disponibilidadeRepository.findById(id);
     }
 
@@ -35,17 +41,24 @@ public class DisponibilidadeService {
             Long idBarbeiro,
             Disponibilidade disponibilidade) {
 
-        Barbeiro barbeiro = barbeiroService.buscarPorId(idBarbeiro)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Barbeiro não encontrado."));
+        Barbeiro barbeiro =
+                barbeiroService
+                        .buscarPorId(idBarbeiro)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Barbeiro não encontrado."));
+
+        autorizacaoService
+                .exigirPermissaoGerenciarDisponibilidade(
+                        barbeiro);
 
         validarDisponibilidade(disponibilidade);
 
         disponibilidade.setBarbeiro(barbeiro);
         disponibilidade.setAtivo(true);
 
-        return disponibilidadeRepository.save(
-                disponibilidade);
+        return disponibilidadeRepository
+                .save(disponibilidade);
     }
 
     public Disponibilidade atualizar(
@@ -53,13 +66,30 @@ public class DisponibilidadeService {
             Long idBarbeiro,
             Disponibilidade novosDados) {
 
-        Disponibilidade disponibilidade = disponibilidadeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Disponibilidade não encontrada."));
+        Disponibilidade disponibilidade =
+                disponibilidadeRepository
+                        .findById(id)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Disponibilidade não encontrada."));
 
-        Barbeiro barbeiro = barbeiroService.buscarPorId(idBarbeiro)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Barbeiro não encontrado."));
+        Barbeiro barbeiroAnterior =
+                disponibilidade.getBarbeiro();
+
+        autorizacaoService
+                .exigirPermissaoGerenciarDisponibilidade(
+                        barbeiroAnterior);
+
+        Barbeiro barbeiro =
+                barbeiroService
+                        .buscarPorId(idBarbeiro)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Barbeiro não encontrado."));
+
+        autorizacaoService
+                .exigirPermissaoGerenciarDisponibilidade(
+                        barbeiro);
 
         validarDisponibilidade(novosDados);
 
@@ -71,42 +101,63 @@ public class DisponibilidadeService {
         disponibilidade.setHoraFim(
                 novosDados.getHoraFim());
 
-        return disponibilidadeRepository.save(
-                disponibilidade);
+        return disponibilidadeRepository
+                .save(disponibilidade);
     }
 
     public Disponibilidade ativar(Long id) {
 
-        Disponibilidade disponibilidade = disponibilidadeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Disponibilidade não encontrada."));
+        Disponibilidade disponibilidade =
+                disponibilidadeRepository
+                        .findById(id)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Disponibilidade não encontrada."));
+
+        autorizacaoService
+                .exigirPermissaoGerenciarDisponibilidade(
+                        disponibilidade.getBarbeiro());
 
         disponibilidade.setAtivo(true);
 
-        return disponibilidadeRepository.save(
-                disponibilidade);
+        return disponibilidadeRepository
+                .save(disponibilidade);
     }
 
     public Disponibilidade desativar(Long id) {
 
-        Disponibilidade disponibilidade = disponibilidadeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Disponibilidade não encontrada."));
+        Disponibilidade disponibilidade =
+                disponibilidadeRepository
+                        .findById(id)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Disponibilidade não encontrada."));
+
+        autorizacaoService
+                .exigirPermissaoGerenciarDisponibilidade(
+                        disponibilidade.getBarbeiro());
 
         disponibilidade.setAtivo(false);
 
-        return disponibilidadeRepository.save(
-                disponibilidade);
+        return disponibilidadeRepository
+                .save(disponibilidade);
     }
 
     public void excluir(Long id) {
 
-        if (!disponibilidadeRepository.existsById(id)) {
-            throw new IllegalArgumentException(
-                    "Disponibilidade não encontrada.");
-        }
+        Disponibilidade disponibilidade =
+                disponibilidadeRepository
+                        .findById(id)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Disponibilidade não encontrada."));
 
-        disponibilidadeRepository.deleteById(id);
+        autorizacaoService
+                .exigirPermissaoGerenciarDisponibilidade(
+                        disponibilidade.getBarbeiro());
+
+        disponibilidadeRepository
+                .delete(disponibilidade);
     }
 
     private void validarDisponibilidade(
@@ -124,8 +175,10 @@ public class DisponibilidadeService {
                     "Horário inicial e final são obrigatórios.");
         }
 
-        if (!disponibilidade.getHoraInicio()
-                .isBefore(disponibilidade.getHoraFim())) {
+        if (!disponibilidade
+                .getHoraInicio()
+                .isBefore(
+                        disponibilidade.getHoraFim())) {
 
             throw new IllegalArgumentException(
                     "O horário inicial deve ser anterior ao horário final.");

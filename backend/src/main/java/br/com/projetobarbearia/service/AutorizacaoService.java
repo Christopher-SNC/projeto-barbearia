@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import br.com.projetobarbearia.entity.Agendamento;
+import br.com.projetobarbearia.entity.Barbeiro;
 import br.com.projetobarbearia.repository.BarbeiroRepository;
 import br.com.projetobarbearia.repository.ProprietarioBarbeariaRepository;
 import br.com.projetobarbearia.security.UsuarioPrincipal;
@@ -183,6 +184,38 @@ public class AutorizacaoService {
         if (!ehProprietarioDaBarbearia(
                 idUsuarioAutenticado,
                 idBarbearia)) {
+
+            negarAcesso();
+        }
+    }
+
+    public void exigirPermissaoGerenciarDisponibilidade(
+            Barbeiro barbeiro) {
+
+        if (barbeiro == null
+                || barbeiro.getUsuario() == null
+                || barbeiro.getBarbearia() == null) {
+
+            negarAcesso();
+        }
+
+        Long idUsuarioAutenticado =
+                obterIdUsuarioAutenticado();
+
+        boolean proprioBarbeiro =
+                barbeiro.isAtivo()
+                        && idUsuarioAutenticado.equals(
+                                barbeiro.getUsuario()
+                                        .getIdUsuario());
+
+        boolean proprietarioDaBarbearia =
+                ehProprietarioDaBarbearia(
+                        idUsuarioAutenticado,
+                        barbeiro.getBarbearia()
+                                .getIdBarbearia());
+
+        if (!proprioBarbeiro
+                && !proprietarioDaBarbearia) {
 
             negarAcesso();
         }
