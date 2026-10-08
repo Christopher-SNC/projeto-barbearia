@@ -15,13 +15,16 @@ public class ServicoService {
 
     private final ServicoRepository servicoRepository;
     private final BarbeariaService barbeariaService;
+    private final AutorizacaoService autorizacaoService;
 
     public ServicoService(
             ServicoRepository servicoRepository,
-            BarbeariaService barbeariaService) {
+            BarbeariaService barbeariaService,
+            AutorizacaoService autorizacaoService) {
 
         this.servicoRepository = servicoRepository;
         this.barbeariaService = barbeariaService;
+        this.autorizacaoService = autorizacaoService;
     }
 
     public List<Servico> listarTodos() {
@@ -32,20 +35,16 @@ public class ServicoService {
         return servicoRepository.findById(id);
     }
 
-    public Servico cadastrar(
-            Long idBarbearia,
-            Servico servico) {
+    public Servico cadastrar(Long idBarbearia, Servico servico) {
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
 
         Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Barbearia não encontrada."));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Barbearia nÃ£o encontrada."));
 
         validarServico(servico);
-
         servico.setBarbearia(barbearia);
         servico.setAtivo(true);
-
         return servicoRepository.save(servico);
     }
 
@@ -55,102 +54,91 @@ public class ServicoService {
             Servico novosDados) {
 
         Servico servico = servicoRepository.findById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Serviço não encontrado."));
-
-        Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Barbearia não encontrada."));
-
-        validarServico(novosDados);
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "ServiÃ§o nÃ£o encontrado."));
 
         Long idBarbeariaAnterior =
                 servico.getBarbearia().getIdBarbearia();
+
+        autorizacaoService.exigirProprietarioDaBarbearia(
+                idBarbeariaAnterior);
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
+
+        Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Barbearia nÃ£o encontrada."));
+
+        validarServico(novosDados);
 
         servico.setBarbearia(barbearia);
         servico.setNome(novosDados.getNome());
         servico.setDescricao(novosDados.getDescricao());
         servico.setPreco(novosDados.getPreco());
-        servico.setDuracaoMinutos(
-                novosDados.getDuracaoMinutos());
+        servico.setDuracaoMinutos(novosDados.getDuracaoMinutos());
 
         Servico salvo = servicoRepository.save(servico);
 
         if (!idBarbeariaAnterior.equals(idBarbearia)) {
-            barbeariaService.desativarSeInvalida(
-                    idBarbeariaAnterior);
+            barbeariaService.desativarSeInvalida(idBarbeariaAnterior);
         }
 
         return salvo;
     }
 
     public Servico ativar(Long id) {
-
         Servico servico = servicoRepository.findById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Serviço não encontrado."));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "ServiÃ§o nÃ£o encontrado."));
+
+        autorizacaoService.exigirProprietarioDaBarbearia(
+                servico.getBarbearia().getIdBarbearia());
 
         servico.setAtivo(true);
-
         return servicoRepository.save(servico);
     }
 
     public Servico desativar(Long id) {
-
         Servico servico = servicoRepository.findById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Serviço não encontrado."));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "ServiÃ§o nÃ£o encontrado."));
+
+        Long idBarbearia = servico.getBarbearia().getIdBarbearia();
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
 
         servico.setAtivo(false);
-
         Servico salvo = servicoRepository.save(servico);
-
-        barbeariaService.desativarSeInvalida(
-                servico.getBarbearia().getIdBarbearia());
-
+        barbeariaService.desativarSeInvalida(idBarbearia);
         return salvo;
     }
 
     @Transactional
     public void excluir(Long id) {
-
         Servico servico = servicoRepository.findById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Serviço não encontrado."));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "ServiÃ§o nÃ£o encontrado."));
 
-        Long idBarbearia =
-                servico.getBarbearia().getIdBarbearia();
+        Long idBarbearia = servico.getBarbearia().getIdBarbearia();
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
 
         servicoRepository.delete(servico);
         servicoRepository.flush();
-
         barbeariaService.desativarSeInvalida(idBarbearia);
     }
 
     private void validarServico(Servico servico) {
-
-        if (servico.getNome() == null
-                || servico.getNome().isBlank()) {
-
+        if (servico.getNome() == null || servico.getNome().isBlank()) {
             throw new IllegalArgumentException(
-                    "O nome do serviço é obrigatório.");
+                    "O nome do serviÃ§o Ã© obrigatÃ³rio.");
         }
 
-        if (servico.getPreco() == null
-                || servico.getPreco().signum() < 0) {
-
+        if (servico.getPreco() == null || servico.getPreco().signum() < 0) {
             throw new IllegalArgumentException(
-                    "O preço do serviço não pode ser negativo.");
+                    "O preÃ§o do serviÃ§o nÃ£o pode ser negativo.");
         }
 
         if (servico.getDuracaoMinutos() <= 0) {
             throw new IllegalArgumentException(
-                    "A duração do serviço deve ser maior que zero.");
+                    "A duraÃ§Ã£o do serviÃ§o deve ser maior que zero.");
         }
     }
 }
