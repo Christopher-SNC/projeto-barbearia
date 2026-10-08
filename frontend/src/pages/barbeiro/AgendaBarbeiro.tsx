@@ -11,12 +11,10 @@ import useAuth from '../../hooks/useAuth'
 import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarDisponibilidades } from '../../services/disponibilidadeService'
 import { listarHorariosFuncionamento } from '../../services/horarioFuncionamentoService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type { Agendamento } from '../../types/Agendamento'
 import type { Disponibilidade } from '../../types/Disponibilidade'
 import type { HorarioFuncionamento } from '../../types/HorarioFuncionamento'
-import type { Usuario } from '../../types/Usuario'
 
 import './AgendaBarbeiro.css'
 
@@ -103,9 +101,6 @@ function AgendaBarbeiro() {
     const [agendamentos, setAgendamentos] =
         useState<Agendamento[]>([])
 
-    const [usuarios, setUsuarios] =
-        useState<Usuario[]>([])
-
     const [
         disponibilidades,
         setDisponibilidades,
@@ -126,12 +121,10 @@ function AgendaBarbeiro() {
             try {
                 const [
                     dadosAgendamentos,
-                    dadosUsuarios,
                     dadosDisponibilidades,
                     dadosHorarios,
                 ] = await Promise.all([
                     listarAgendamentos(),
-                    listarUsuarios(),
                     listarDisponibilidades(),
                     listarHorariosFuncionamento(),
                 ])
@@ -139,8 +132,6 @@ function AgendaBarbeiro() {
                 setAgendamentos(
                     dadosAgendamentos,
                 )
-
-                setUsuarios(dadosUsuarios)
 
                 setDisponibilidades(
                     dadosDisponibilidades,
@@ -360,18 +351,6 @@ function AgendaBarbeiro() {
         )
     }
 
-    function nomeCliente(
-        idCliente: number,
-    ) {
-        return (
-            usuarios.find(
-                (usuario) =>
-                    usuario.idUsuario ===
-                    idCliente,
-            )?.nome ?? 'Cliente'
-        )
-    }
-
     function nomeServicos(
         agendamento: Agendamento,
     ) {
@@ -540,9 +519,7 @@ function AgendaBarbeiro() {
                                                     <>
                                                         <div className="barber-agenda__slot-top">
                                                             <strong>
-                                                                {nomeCliente(
-                                                                    agendamento.idCliente,
-                                                                )}
+                                                                {agendamento.nomeCliente || 'Cliente'}
                                                             </strong>
 
                                                             <span className="barber-agenda__pill">

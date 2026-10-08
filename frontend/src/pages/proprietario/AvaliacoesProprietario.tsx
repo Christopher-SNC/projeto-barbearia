@@ -10,13 +10,9 @@ import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarAvaliacoes } from '../../services/avaliacaoService'
-import { listarBarbeiros } from '../../services/barbeiroService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type { Agendamento } from '../../types/Agendamento'
 import type { Avaliacao } from '../../types/Avaliacao'
-import type { Barbeiro } from '../../types/Barbeiro'
-import type { Usuario } from '../../types/Usuario'
 
 import './AvaliacoesProprietario.css'
 
@@ -76,12 +72,6 @@ function AvaliacoesProprietario() {
         setAgendamentos,
     ] = useState<Agendamento[]>([])
 
-    const [barbeiros, setBarbeiros] =
-        useState<Barbeiro[]>([])
-
-    const [usuarios, setUsuarios] =
-        useState<Usuario[]>([])
-
     const [carregando, setCarregando] =
         useState(true)
 
@@ -94,13 +84,9 @@ function AvaliacoesProprietario() {
                 const [
                     dadosAvaliacoes,
                     dadosAgendamentos,
-                    dadosBarbeiros,
-                    dadosUsuarios,
                 ] = await Promise.all([
                     listarAvaliacoes(),
                     listarAgendamentos(),
-                    listarBarbeiros(),
-                    listarUsuarios(),
                 ])
 
                 setAvaliacoes(
@@ -111,13 +97,6 @@ function AvaliacoesProprietario() {
                     dadosAgendamentos,
                 )
 
-                setBarbeiros(
-                    dadosBarbeiros,
-                )
-
-                setUsuarios(
-                    dadosUsuarios,
-                )
             } catch (error) {
                 console.error(error)
 
@@ -252,17 +231,7 @@ function AvaliacoesProprietario() {
             return 'Cliente'
         }
 
-        const usuario =
-            usuarios.find(
-                (item) =>
-                    item.idUsuario ===
-                    agendamento.idCliente,
-            )
-
-        return (
-            usuario?.nome ??
-            'Cliente'
-        )
+        return agendamento.nomeCliente || 'Cliente'
     }
 
     function nomeBarbeiro(
@@ -277,24 +246,7 @@ function AvaliacoesProprietario() {
             return 'Barbeiro'
         }
 
-        const barbeiro =
-            barbeiros.find(
-                (item) =>
-                    item.idBarbeiro ===
-                    agendamento.idBarbeiro,
-            )
-
-        if (!barbeiro) {
-            return 'Barbeiro'
-        }
-
-        return (
-            usuarios.find(
-                (usuario) =>
-                    usuario.idUsuario ===
-                    barbeiro.idUsuario,
-            )?.nome ?? 'Barbeiro'
-        )
+        return agendamento.nomeBarbeiro || 'Barbeiro'
     }
 
     function formatarDataAvaliacao(

@@ -10,7 +10,7 @@ import useAuth from '../../hooks/useAuth'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarAvaliacoes } from '../../services/avaliacaoService'
-import { listarUsuarios } from '../../services/usuarioService'
+import { buscarUsuarioPorId } from '../../services/usuarioService'
 
 import type { Agendamento } from '../../types/Agendamento'
 import type { Avaliacao } from '../../types/Avaliacao'
@@ -68,8 +68,8 @@ function DashboardBarbeiro() {
     const [avaliacoes, setAvaliacoes] =
         useState<Avaliacao[]>([])
 
-    const [usuarios, setUsuarios] =
-        useState<Usuario[]>([])
+    const [usuarioBarbeiro, setUsuarioBarbeiro] =
+        useState<Usuario | null>(null)
 
     const [carregando, setCarregando] =
         useState(true)
@@ -82,11 +82,13 @@ function DashboardBarbeiro() {
                 const [
                     dadosAgendamentos,
                     dadosAvaliacoes,
-                    dadosUsuarios,
+                    dadosUsuario,
                 ] = await Promise.all([
                     listarAgendamentos(),
                     listarAvaliacoes(),
-                    listarUsuarios(),
+                    idUsuario !== undefined
+                        ? buscarUsuarioPorId(idUsuario)
+                        : Promise.resolve(null),
                 ])
 
                 setAgendamentos(
@@ -97,8 +99,8 @@ function DashboardBarbeiro() {
                     dadosAvaliacoes,
                 )
 
-                setUsuarios(
-                    dadosUsuarios,
+                setUsuarioBarbeiro(
+                    dadosUsuario,
                 )
             } catch (error) {
                 console.error(error)
@@ -112,14 +114,7 @@ function DashboardBarbeiro() {
         }
 
         carregarDashboard()
-    }, [])
-
-    const usuarioBarbeiro = useMemo(() => {
-        return usuarios.find(
-            (usuario) =>
-                usuario.idUsuario === idUsuario,
-        )
-    }, [usuarios, idUsuario])
+    }, [idUsuario])
 
     const agendamentosBarbeiro =
         useMemo(() => {
@@ -240,18 +235,6 @@ function DashboardBarbeiro() {
                 ) / notas.length
             )
         }, [avaliacoesBarbeiro])
-
-    function nomeCliente(
-        idCliente: number,
-    ) {
-        return (
-            usuarios.find(
-                (usuario) =>
-                    usuario.idUsuario ===
-                    idCliente,
-            )?.nome ?? 'Cliente'
-        )
-    }
 
     function nomeServicos(
         agendamento: Agendamento,
@@ -399,9 +382,7 @@ function DashboardBarbeiro() {
 
                                     <div className="barber-dashboard__appointment-info">
                                         <strong>
-                                            {nomeCliente(
-                                                agendamento.idCliente,
-                                            )}
+                                            {agendamento.nomeCliente || 'Cliente'}
                                         </strong>
 
                                         <span>

@@ -9,13 +9,11 @@ import StatusBadge from '../../components/StatusBadge/StatusBadge'
 import useAuth from '../../hooks/useAuth'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type {
     Agendamento,
     StatusAgendamento,
 } from '../../types/Agendamento'
-import type { Usuario } from '../../types/Usuario'
 
 import './AgendamentosBarbeiro.css'
 
@@ -106,9 +104,6 @@ function AgendamentosBarbeiro() {
     const [agendamentos, setAgendamentos] =
         useState<Agendamento[]>([])
 
-    const [usuarios, setUsuarios] =
-        useState<Usuario[]>([])
-
     const [carregando, setCarregando] =
         useState(true)
 
@@ -117,13 +112,8 @@ function AgendamentosBarbeiro() {
     useEffect(() => {
         async function carregarDados() {
             try {
-                const [
-                    dadosAgendamentos,
-                    dadosUsuarios,
-                ] = await Promise.all([
-                    listarAgendamentos(),
-                    listarUsuarios(),
-                ])
+                const dadosAgendamentos =
+                    await listarAgendamentos()
 
                 setAgendamentos(
                     dadosAgendamentos.filter(
@@ -135,7 +125,6 @@ function AgendamentosBarbeiro() {
                     ),
                 )
 
-                setUsuarios(dadosUsuarios)
             } catch (error) {
                 console.error(error)
 
@@ -217,18 +206,6 @@ function AgendamentosBarbeiro() {
                 },
             )
         }, [agendamentos, filtro])
-
-    function nomeCliente(
-        idCliente: number,
-    ) {
-        return (
-            usuarios.find(
-                (usuario) =>
-                    usuario.idUsuario ===
-                    idCliente,
-            )?.nome ?? 'Cliente'
-        )
-    }
 
     function nomeServicos(
         agendamento: Agendamento,
@@ -408,9 +385,7 @@ function AgendamentosBarbeiro() {
                                                             agendamento.dataHoraInicio,
                                                         )}{' '}
                                                         •{' '}
-                                                        {nomeCliente(
-                                                            agendamento.idCliente,
-                                                        )}
+                                                        {agendamento.nomeCliente || 'Cliente'}
                                                     </strong>
 
                                                     {filtro !==
@@ -507,9 +482,7 @@ function AgendamentosBarbeiro() {
                                                             agendamento.dataHoraInicio,
                                                         )}{' '}
                                                         •{' '}
-                                                        {nomeCliente(
-                                                            agendamento.idCliente,
-                                                        )}
+                                                        {agendamento.nomeCliente || 'Cliente'}
                                                     </strong>
 
                                                     {filtro !==

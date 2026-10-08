@@ -207,8 +207,10 @@ public class AgendamentoController {
         return new AgendamentoResponse(
                 agendamento.getIdAgendamento(),
                 agendamento.getCliente().getIdUsuario(),
+                agendamento.getCliente().getNome(),
                 agendamento.getBarbearia().getIdBarbearia(),
                 agendamento.getBarbeiro().getIdBarbeiro(),
+                agendamento.getBarbeiro().getUsuario().getNome(),
                 agendamento.getDataHoraInicio(),
                 agendamento.getStatus(),
                 agendamento.getValorTotal(),

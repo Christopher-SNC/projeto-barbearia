@@ -11,13 +11,9 @@ import StatusBadge from '../../components/StatusBadge/StatusBadge'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
 import { buscarBarbeariaPorId } from '../../services/barbeariaService'
-import { listarBarbeiros } from '../../services/barbeiroService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type { Agendamento } from '../../types/Agendamento'
 import type { Barbearia } from '../../types/Barbearia'
-import type { Barbeiro } from '../../types/Barbeiro'
-import type { Usuario } from '../../types/Usuario'
 
 import './DashboardProprietario.css'
 
@@ -103,14 +99,6 @@ function DashboardProprietario() {
     const [barbeariaAtual, setBarbeariaAtual] =
         useState<Barbearia | null>(null)
 
-    const [barbeiros, setBarbeiros] = useState<
-        Barbeiro[]
-    >([])
-
-    const [usuarios, setUsuarios] = useState<Usuario[]>(
-        [],
-    )
-
     const [carregando, setCarregando] = useState(true)
     const [erro, setErro] = useState('')
 
@@ -121,21 +109,15 @@ function DashboardProprietario() {
                     dadosAgendamentos,
                     dadosAvaliacoes,
                     dadosBarbearia,
-                    dadosBarbeiros,
-                    dadosUsuarios,
                 ] = await Promise.all([
                     listarAgendamentos(),
                     listarAvaliacoes(),
                     buscarBarbeariaPorId(idBarbearia),
-                    listarBarbeiros(),
-                    listarUsuarios(),
                 ])
 
                 setAgendamentos(dadosAgendamentos)
                 setAvaliacoes(dadosAvaliacoes)
                 setBarbeariaAtual(dadosBarbearia)
-                setBarbeiros(dadosBarbeiros)
-                setUsuarios(dadosUsuarios)
             } catch (error) {
                 console.error(error)
 
@@ -408,34 +390,6 @@ function DashboardProprietario() {
             }))
     }, [agendamentosBarbearia])
 
-    function nomeCliente(idCliente: number) {
-        return (
-            usuarios.find(
-                (usuario) =>
-                    usuario.idUsuario === idCliente,
-            )?.nome ?? 'Cliente'
-        )
-    }
-
-    function nomeBarbeiro(idBarbeiro: number) {
-        const barbeiro = barbeiros.find(
-            (item) =>
-                item.idBarbeiro === idBarbeiro,
-        )
-
-        if (!barbeiro) {
-            return 'Barbeiro'
-        }
-
-        return (
-            usuarios.find(
-                (usuario) =>
-                    usuario.idUsuario ===
-                    barbeiro.idUsuario,
-            )?.nome ?? 'Barbeiro'
-        )
-    }
-
     function nomeServicos(
         agendamento: Agendamento,
     ) {
@@ -551,9 +505,7 @@ function DashboardProprietario() {
                                                             agendamento.dataHoraInicio,
                                                         )}{' '}
                                                         •{' '}
-                                                        {nomeCliente(
-                                                            agendamento.idCliente,
-                                                        )}
+                                                        {agendamento.nomeCliente || 'Cliente'}
                                                     </strong>
 
                                                     <div className="admin-dashboard__appointment-status">
@@ -568,9 +520,7 @@ function DashboardProprietario() {
                                                         agendamento,
                                                     )}{' '}
                                                     •{' '}
-                                                    {nomeBarbeiro(
-                                                        agendamento.idBarbeiro,
-                                                    )}
+                                                    {agendamento.nomeBarbeiro || 'Barbeiro'}
                                                 </span>
 
                                                 <span className="admin-dashboard__appointment-view">

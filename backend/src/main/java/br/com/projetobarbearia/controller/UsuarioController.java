@@ -1,7 +1,5 @@
 package br.com.projetobarbearia.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,8 +16,10 @@ import br.com.projetobarbearia.dto.AlterarSenhaRequest;
 import br.com.projetobarbearia.dto.UsuarioRequest;
 import br.com.projetobarbearia.dto.UsuarioResponse;
 import br.com.projetobarbearia.dto.UsuarioUpdateRequest;
+import br.com.projetobarbearia.entity.Barbeiro;
 import br.com.projetobarbearia.entity.Usuario;
 import br.com.projetobarbearia.service.AutorizacaoService;
+import br.com.projetobarbearia.service.BarbeiroService;
 import br.com.projetobarbearia.service.UsuarioService;
 
 @RestController
@@ -28,25 +28,16 @@ public class UsuarioController {
 
         private final UsuarioService usuarioService;
         private final AutorizacaoService autorizacaoService;
+        private final BarbeiroService barbeiroService;
 
         public UsuarioController(
                         UsuarioService usuarioService,
-                        AutorizacaoService autorizacaoService) {
+                        AutorizacaoService autorizacaoService,
+                        BarbeiroService barbeiroService) {
 
                 this.usuarioService = usuarioService;
                 this.autorizacaoService = autorizacaoService;
-        }
-
-        @GetMapping
-        public ResponseEntity<List<UsuarioResponse>> listarTodos() {
-
-                List<UsuarioResponse> usuarios = usuarioService
-                                .listarVisiveis()
-                                .stream()
-                                .map(this::converterParaResponse)
-                                .toList();
-
-                return ResponseEntity.ok(usuarios);
+                this.barbeiroService = barbeiroService;
         }
 
         @GetMapping("/{id}")
@@ -59,6 +50,43 @@ public class UsuarioController {
                                 .map(this::converterParaResponse)
                                 .map(ResponseEntity::ok)
                                 .orElseGet(() -> ResponseEntity.notFound().build());
+        }
+
+        @GetMapping("/barbeiros/{idBarbeiro}")
+        public ResponseEntity<UsuarioResponse> buscarUsuarioBarbeiro(
+                        @PathVariable Long idBarbeiro) {
+
+                Barbeiro barbeiro =
+                                obterBarbeiroGerenciavel(idBarbeiro);
+
+                return ResponseEntity.ok(
+                                converterParaResponse(
+                                                barbeiro.getUsuario()));
+        }
+
+        @PutMapping("/barbeiros/{idBarbeiro}")
+        public ResponseEntity<UsuarioResponse> atualizarUsuarioBarbeiro(
+                        @PathVariable Long idBarbeiro,
+                        @RequestBody UsuarioUpdateRequest request) {
+
+                Barbeiro barbeiro =
+                                obterBarbeiroGerenciavel(idBarbeiro);
+
+                Usuario dadosAtualizados = new Usuario();
+
+                dadosAtualizados.setNome(request.getNome());
+                dadosAtualizados.setEmail(request.getEmail());
+                dadosAtualizados.setTelefone(request.getTelefone());
+
+                Usuario usuarioAtualizado =
+                                usuarioService.atualizar(
+                                                barbeiro.getUsuario()
+                                                                .getIdUsuario(),
+                                                dadosAtualizados);
+
+                return ResponseEntity.ok(
+                                converterParaResponse(
+                                                usuarioAtualizado));
         }
 
         @PostMapping
@@ -126,6 +154,22 @@ public class UsuarioController {
                 usuarioService.excluir(id);
 
                 return ResponseEntity.noContent().build();
+        }
+
+        private Barbeiro obterBarbeiroGerenciavel(
+                        Long idBarbeiro) {
+
+                Barbeiro barbeiro = barbeiroService
+                                .buscarPorId(idBarbeiro)
+                                .orElseThrow(() ->
+                                                new IllegalArgumentException(
+                                                                "Barbeiro não encontrado."));
+
+                autorizacaoService.exigirProprietarioDaBarbearia(
+                                barbeiro.getBarbearia()
+                                                .getIdBarbearia());
+
+                return barbeiro;
         }
 
         private UsuarioResponse converterParaResponse(

@@ -28,8 +28,10 @@ export interface ItemAgendamento {
 export interface Agendamento {
   idAgendamento: number
   idCliente: number
+  nomeCliente: string
   idBarbearia: number
   idBarbeiro: number
+  nomeBarbeiro: string
   dataHoraInicio: string
   status: StatusAgendamento
   valorTotal: number

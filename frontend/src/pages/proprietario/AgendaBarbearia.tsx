@@ -12,13 +12,11 @@ import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarBarbeiros } from '../../services/barbeiroService'
 import { listarDisponibilidades } from '../../services/disponibilidadeService'
 import { listarHorariosFuncionamento } from '../../services/horarioFuncionamentoService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type { Agendamento } from '../../types/Agendamento'
 import type { Barbeiro } from '../../types/Barbeiro'
 import type { Disponibilidade } from '../../types/Disponibilidade'
 import type { HorarioFuncionamento } from '../../types/HorarioFuncionamento'
-import type { Usuario } from '../../types/Usuario'
 
 import './AgendaBarbearia.css'
 
@@ -121,10 +119,6 @@ function AgendaBarbearia() {
         Barbeiro[]
     >([])
 
-    const [usuarios, setUsuarios] = useState<
-        Usuario[]
-    >([])
-
     const [
         disponibilidades,
         setDisponibilidades,
@@ -146,13 +140,11 @@ function AgendaBarbearia() {
                 const [
                     dadosAgendamentos,
                     dadosBarbeiros,
-                    dadosUsuarios,
                     dadosDisponibilidades,
                     dadosHorarios,
                 ] = await Promise.all([
                     listarAgendamentos(),
                     listarBarbeiros(),
-                    listarUsuarios(),
                     listarDisponibilidades(),
                     listarHorariosFuncionamento(),
                 ])
@@ -168,10 +160,6 @@ function AgendaBarbearia() {
                             idBarbearia &&
                             barbeiro.ativo,
                     ),
-                )
-
-                setUsuarios(
-                    dadosUsuarios,
                 )
 
                 setDisponibilidades(
@@ -283,24 +271,10 @@ function AgendaBarbearia() {
         agendamentosDoDia,
     ])
 
-    function nomeUsuario(
-        idUsuario: number,
-    ) {
-        return (
-            usuarios.find(
-                (usuario) =>
-                    usuario.idUsuario ===
-                    idUsuario,
-            )?.nome ?? 'Usuário'
-        )
-    }
-
     function nomeBarbeiro(
         barbeiro: Barbeiro,
     ) {
-        return nomeUsuario(
-            barbeiro.idUsuario,
-        )
+        return barbeiro.nomeUsuario || 'Barbeiro'
     }
 
     function barbeiroEstaDisponivel(
@@ -649,9 +623,7 @@ function AgendaBarbearia() {
                                                                             </strong>
 
                                                                             <span>
-                                                                                {nomeUsuario(
-                                                                                    agendamento.idCliente,
-                                                                                )}
+                                                                                {agendamento.nomeCliente || 'Cliente'}
                                                                             </span>
 
                                                                             <small>
@@ -723,11 +695,8 @@ function AgendaBarbearia() {
                                                     }{' '}
                                                     •{' '}
                                                     {item.agendamento
-                                                        ? nomeUsuario(
-                                                            item
-                                                                .agendamento
-                                                                .idCliente,
-                                                        )
+                                                        ? item.agendamento.nomeCliente ||
+                                                        'Cliente'
                                                         : 'Livre'}
                                                 </strong>
 

@@ -10,8 +10,10 @@ public class AgendamentoResponse {
 
     private Long idAgendamento;
     private Long idCliente;
+    private String nomeCliente;
     private Long idBarbearia;
     private Long idBarbeiro;
+    private String nomeBarbeiro;
     private LocalDateTime dataHoraInicio;
     private StatusAgendamento status;
     private BigDecimal valorTotal;
@@ -24,8 +26,10 @@ public class AgendamentoResponse {
     public AgendamentoResponse(
             Long idAgendamento,
             Long idCliente,
+            String nomeCliente,
             Long idBarbearia,
             Long idBarbeiro,
+            String nomeBarbeiro,
             LocalDateTime dataHoraInicio,
             StatusAgendamento status,
             BigDecimal valorTotal,
@@ -34,8 +38,10 @@ public class AgendamentoResponse {
 
         this.idAgendamento = idAgendamento;
         this.idCliente = idCliente;
+        this.nomeCliente = nomeCliente;
         this.idBarbearia = idBarbearia;
         this.idBarbeiro = idBarbeiro;
+        this.nomeBarbeiro = nomeBarbeiro;
         this.dataHoraInicio = dataHoraInicio;
         this.status = status;
         this.valorTotal = valorTotal;
@@ -59,6 +65,14 @@ public class AgendamentoResponse {
         this.idCliente = idCliente;
     }
 
+    public String getNomeCliente() {
+        return nomeCliente;
+    }
+
+    public void setNomeCliente(String nomeCliente) {
+        this.nomeCliente = nomeCliente;
+    }
+
     public Long getIdBarbearia() {
         return idBarbearia;
     }
@@ -73,6 +87,14 @@ public class AgendamentoResponse {
 
     public void setIdBarbeiro(Long idBarbeiro) {
         this.idBarbeiro = idBarbeiro;
+    }
+
+    public String getNomeBarbeiro() {
+        return nomeBarbeiro;
+    }
+
+    public void setNomeBarbeiro(String nomeBarbeiro) {
+        this.nomeBarbeiro = nomeBarbeiro;
     }
 
     public LocalDateTime getDataHoraInicio() {

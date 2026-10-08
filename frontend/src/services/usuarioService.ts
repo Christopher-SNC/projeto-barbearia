@@ -7,14 +7,6 @@ import type {
   UsuarioUpdateRequest,
 } from '../types/Usuario'
 
-export async function listarUsuarios(): Promise<Usuario[]> {
-  const response = await api.get<Usuario[]>(
-    '/api/usuarios',
-  )
-
-  return response.data
-}
-
 export async function buscarUsuarioPorId(
   id: number,
 ): Promise<Usuario> {

@@ -11,15 +11,11 @@ import StatusBadge from '../../components/StatusBadge/StatusBadge'
 import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
-import { listarBarbeiros } from '../../services/barbeiroService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type {
   Agendamento,
   StatusAgendamento,
 } from '../../types/Agendamento'
-import type { Barbeiro } from '../../types/Barbeiro'
-import type { Usuario } from '../../types/Usuario'
 
 import './AgendamentosProprietario.css'
 
@@ -123,12 +119,6 @@ function AgendamentosProprietario() {
   const [agendamentos, setAgendamentos] =
     useState<Agendamento[]>([])
 
-  const [barbeiros, setBarbeiros] =
-    useState<Barbeiro[]>([])
-
-  const [usuarios, setUsuarios] =
-    useState<Usuario[]>([])
-
   const [carregando, setCarregando] =
     useState(true)
 
@@ -138,15 +128,8 @@ function AgendamentosProprietario() {
   useEffect(() => {
     async function carregarDados() {
       try {
-        const [
-          dadosAgendamentos,
-          dadosBarbeiros,
-          dadosUsuarios,
-        ] = await Promise.all([
-          listarAgendamentos(),
-          listarBarbeiros(),
-          listarUsuarios(),
-        ])
+        const dadosAgendamentos =
+          await listarAgendamentos()
 
         setAgendamentos(
           dadosAgendamentos.filter(
@@ -156,17 +139,6 @@ function AgendamentosProprietario() {
           ),
         )
 
-        setBarbeiros(
-          dadosBarbeiros.filter(
-            (barbeiro) =>
-              barbeiro.idBarbearia ===
-              idBarbearia,
-          ),
-        )
-
-        setUsuarios(
-          dadosUsuarios,
-        )
       } catch (error) {
         console.error(error)
 
@@ -250,41 +222,6 @@ function AgendamentosProprietario() {
       agendamentos,
       filtro,
     ])
-
-  function nomeCliente(
-    idCliente: number,
-  ) {
-    return (
-      usuarios.find(
-        (usuario) =>
-          usuario.idUsuario ===
-          idCliente,
-      )?.nome ?? 'Cliente'
-    )
-  }
-
-  function nomeBarbeiro(
-    idBarbeiro: number,
-  ) {
-    const barbeiro =
-      barbeiros.find(
-        (item) =>
-          item.idBarbeiro ===
-          idBarbeiro,
-      )
-
-    if (!barbeiro) {
-      return 'Barbeiro'
-    }
-
-    return (
-      usuarios.find(
-        (usuario) =>
-          usuario.idUsuario ===
-          barbeiro.idUsuario,
-      )?.nome ?? 'Barbeiro'
-    )
-  }
 
   function nomeServicos(
     agendamento: Agendamento,
@@ -453,9 +390,7 @@ function AgendamentosProprietario() {
                               agendamento.dataHoraInicio,
                             )}{' '}
                             •{' '}
-                            {nomeCliente(
-                              agendamento.idCliente,
-                            )}
+                            {agendamento.nomeCliente || 'Cliente'}
                           </strong>
 
                           {filtro !==
@@ -473,9 +408,7 @@ function AgendamentosProprietario() {
                             agendamento,
                           )}{' '}
                           •{' '}
-                          {nomeBarbeiro(
-                            agendamento.idBarbeiro,
-                          )}
+                          {agendamento.nomeBarbeiro || 'Barbeiro'}
                         </span>
 
                         <StatusBadge
@@ -518,9 +451,7 @@ function AgendamentosProprietario() {
                               agendamento.dataHoraInicio,
                             )}{' '}
                             •{' '}
-                            {nomeCliente(
-                              agendamento.idCliente,
-                            )}
+                            {agendamento.nomeCliente || 'Cliente'}
                           </strong>
 
                           {filtro !==
@@ -549,9 +480,7 @@ function AgendamentosProprietario() {
                           agendamento,
                         )}{' '}
                         •{' '}
-                        {nomeBarbeiro(
-                          agendamento.idBarbeiro,
-                        )}
+                        {agendamento.nomeBarbeiro || 'Barbeiro'}
                       </p>
                     </article>
                   ),

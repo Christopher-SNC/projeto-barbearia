@@ -10,11 +10,9 @@ import useAuth from '../../hooks/useAuth'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarAvaliacoes } from '../../services/avaliacaoService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type { Agendamento } from '../../types/Agendamento'
 import type { Avaliacao } from '../../types/Avaliacao'
-import type { Usuario } from '../../types/Usuario'
 
 import './AvaliacoesBarbeiro.css'
 
@@ -86,9 +84,6 @@ function AvaliacoesBarbeiro() {
     const [agendamentos, setAgendamentos] =
         useState<Agendamento[]>([])
 
-    const [usuarios, setUsuarios] =
-        useState<Usuario[]>([])
-
     const [carregando, setCarregando] =
         useState(true)
 
@@ -100,11 +95,9 @@ function AvaliacoesBarbeiro() {
                 const [
                     dadosAvaliacoes,
                     dadosAgendamentos,
-                    dadosUsuarios,
                 ] = await Promise.all([
                     listarAvaliacoes(),
                     listarAgendamentos(),
-                    listarUsuarios(),
                 ])
 
                 setAvaliacoes(
@@ -115,9 +108,6 @@ function AvaliacoesBarbeiro() {
                     dadosAgendamentos,
                 )
 
-                setUsuarios(
-                    dadosUsuarios,
-                )
             } catch (error) {
                 console.error(error)
 
@@ -242,13 +232,7 @@ function AvaliacoesBarbeiro() {
             return 'Cliente'
         }
 
-        return (
-            usuarios.find(
-                (usuario) =>
-                    usuario.idUsuario ===
-                    agendamento.idCliente,
-            )?.nome ?? 'Cliente'
-        )
+        return agendamento.nomeCliente || 'Cliente'
     }
 
     function nomeServicos(
