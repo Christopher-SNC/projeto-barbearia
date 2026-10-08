@@ -17,7 +17,6 @@ import { listarBarbeirosServicos } from '../../services/barbeiroServicoService'
 import { listarDisponibilidades } from '../../services/disponibilidadeService'
 import { listarHorariosFuncionamento } from '../../services/horarioFuncionamentoService'
 import { listarServicos } from '../../services/servicoService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type { OcupacaoAgendamento } from '../../types/Agendamento'
 import type { Barbeiro } from '../../types/Barbeiro'
@@ -25,7 +24,6 @@ import type { BarbeiroServico } from '../../types/BarbeiroServico'
 import type { Disponibilidade } from '../../types/Disponibilidade'
 import type { HorarioFuncionamento } from '../../types/HorarioFuncionamento'
 import type { Servico } from '../../types/Servico'
-import type { Usuario } from '../../types/Usuario'
 
 import './NovoAgendamento.css'
 
@@ -93,9 +91,6 @@ function NovoAgendamento() {
   const [barbeiros, setBarbeiros] = useState<
     Barbeiro[]
   >([])
-  const [usuarios, setUsuarios] = useState<Usuario[]>(
-    [],
-  )
   const [vinculos, setVinculos] = useState<
     BarbeiroServico[]
   >([])
@@ -133,14 +128,12 @@ function NovoAgendamento() {
         const [
           dadosServicos,
           dadosBarbeiros,
-          dadosUsuarios,
           dadosVinculos,
           dadosDisponibilidades,
           dadosHorarios,
         ] = await Promise.all([
           listarServicos(),
           listarBarbeiros(),
-          listarUsuarios(),
           listarBarbeirosServicos(),
           listarDisponibilidades(),
           listarHorariosFuncionamento(),
@@ -161,8 +154,6 @@ function NovoAgendamento() {
               idBarbearia && barbeiro.ativo,
           ),
         )
-
-        setUsuarios(dadosUsuarios)
         setVinculos(dadosVinculos)
         setDisponibilidades(dadosDisponibilidades)
         setHorariosFuncionamento(dadosHorarios)
@@ -380,14 +371,8 @@ function NovoAgendamento() {
     idBarbearia,
     ocupacoes,
   ])
-
   function nomeBarbeiro(barbeiro: Barbeiro) {
-    return (
-      usuarios.find(
-        (usuario) =>
-          usuario.idUsuario === barbeiro.idUsuario,
-      )?.nome ?? 'Barbeiro'
-    )
+    return barbeiro.nomeUsuario || 'Barbeiro'
   }
 
   function selecionarServico(idSelecionado: number) {

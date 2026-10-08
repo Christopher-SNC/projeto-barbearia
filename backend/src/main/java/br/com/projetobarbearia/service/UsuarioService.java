@@ -1,5 +1,6 @@
 package br.com.projetobarbearia.service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.projetobarbearia.entity.Usuario;
+import br.com.projetobarbearia.repository.BarbeiroRepository;
+import br.com.projetobarbearia.repository.ProprietarioBarbeariaRepository;
 import br.com.projetobarbearia.repository.UsuarioRepository;
 
 @Service
@@ -14,17 +17,99 @@ public class UsuarioService {
 
         private final UsuarioRepository usuarioRepository;
         private final PasswordEncoder passwordEncoder;
+        private final AgendamentoService agendamentoService;
+        private final AutorizacaoService autorizacaoService;
+        private final BarbeiroRepository barbeiroRepository;
+        private final ProprietarioBarbeariaRepository proprietarioBarbeariaRepository;
 
         public UsuarioService(
                         UsuarioRepository usuarioRepository,
-                        PasswordEncoder passwordEncoder) {
+                        PasswordEncoder passwordEncoder,
+                        AgendamentoService agendamentoService,
+                        AutorizacaoService autorizacaoService,
+                        BarbeiroRepository barbeiroRepository,
+                        ProprietarioBarbeariaRepository proprietarioBarbeariaRepository) {
 
                 this.usuarioRepository = usuarioRepository;
                 this.passwordEncoder = passwordEncoder;
+                this.agendamentoService = agendamentoService;
+                this.autorizacaoService = autorizacaoService;
+                this.barbeiroRepository = barbeiroRepository;
+                this.proprietarioBarbeariaRepository =
+                                proprietarioBarbeariaRepository;
         }
 
-        public List<Usuario> listarTodos() {
-                return usuarioRepository.findAll();
+        public List<Usuario> listarVisiveis() {
+
+                Long idUsuarioAutenticado =
+                                autorizacaoService.obterIdUsuarioAutenticado();
+
+                LinkedHashMap<Long, Usuario> usuariosVisiveis =
+                                new LinkedHashMap<>();
+
+                usuarioRepository
+                                .findById(idUsuarioAutenticado)
+                                .ifPresent(usuario ->
+                                                usuariosVisiveis.put(
+                                                                usuario.getIdUsuario(),
+                                                                usuario));
+
+                agendamentoService
+                                .listarTodos()
+                                .forEach(agendamento -> {
+
+                                        Usuario cliente =
+                                                        agendamento.getCliente();
+
+                                        if (cliente != null) {
+                                                usuariosVisiveis.put(
+                                                                cliente.getIdUsuario(),
+                                                                cliente);
+                                        }
+
+                                        if (agendamento.getBarbeiro() != null
+                                                        && agendamento.getBarbeiro()
+                                                                        .getUsuario() != null) {
+
+                                                Usuario usuarioBarbeiro =
+                                                                agendamento.getBarbeiro()
+                                                                                .getUsuario();
+
+                                                usuariosVisiveis.put(
+                                                                usuarioBarbeiro.getIdUsuario(),
+                                                                usuarioBarbeiro);
+                                        }
+                                });
+
+                List<Long> idsBarbeariasProprietario =
+                                proprietarioBarbeariaRepository
+                                                .findByUsuario_IdUsuarioAndAtivoTrue(
+                                                                idUsuarioAutenticado)
+                                                .stream()
+                                                .map(vinculo ->
+                                                                vinculo.getBarbearia()
+                                                                                .getIdBarbearia())
+                                                .distinct()
+                                                .toList();
+
+                if (!idsBarbeariasProprietario.isEmpty()) {
+
+                        barbeiroRepository
+                                        .findByBarbearia_IdBarbeariaIn(
+                                                        idsBarbeariasProprietario)
+                                        .forEach(barbeiro -> {
+
+                                                Usuario usuarioBarbeiro =
+                                                                barbeiro.getUsuario();
+
+                                                usuariosVisiveis.put(
+                                                                usuarioBarbeiro.getIdUsuario(),
+                                                                usuarioBarbeiro);
+                                        });
+                }
+
+                return List.copyOf(
+                                usuariosVisiveis.values());
         }
 
         public Optional<Usuario> buscarPorId(Long id) {

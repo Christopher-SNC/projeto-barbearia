@@ -41,7 +41,7 @@ public class UsuarioController {
         public ResponseEntity<List<UsuarioResponse>> listarTodos() {
 
                 List<UsuarioResponse> usuarios = usuarioService
-                                .listarTodos()
+                                .listarVisiveis()
                                 .stream()
                                 .map(this::converterParaResponse)
                                 .toList();
@@ -52,6 +52,8 @@ public class UsuarioController {
         @GetMapping("/{id}")
         public ResponseEntity<UsuarioResponse> buscarPorId(
                         @PathVariable Long id) {
+
+                autorizacaoService.exigirProprioUsuario(id);
 
                 return usuarioService.buscarPorId(id)
                                 .map(this::converterParaResponse)
