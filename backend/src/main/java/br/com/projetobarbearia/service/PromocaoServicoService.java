@@ -16,33 +16,30 @@ public class PromocaoServicoService {
     private final PromocaoServicoRepository promocaoServicoRepository;
     private final PromocaoService promocaoService;
     private final ServicoService servicoService;
+    private final AutorizacaoService autorizacaoService;
 
     public PromocaoServicoService(
             PromocaoServicoRepository promocaoServicoRepository,
             PromocaoService promocaoService,
-            ServicoService servicoService) {
+            ServicoService servicoService,
+            AutorizacaoService autorizacaoService) {
 
         this.promocaoServicoRepository = promocaoServicoRepository;
-
         this.promocaoService = promocaoService;
-
         this.servicoService = servicoService;
+        this.autorizacaoService = autorizacaoService;
     }
 
     public List<PromocaoServico> listarTodos() {
         return promocaoServicoRepository.findAll();
     }
 
-    public List<PromocaoServico> listarPorPromocao(
-            Long idPromocao) {
-
+    public List<PromocaoServico> listarPorPromocao(Long idPromocao) {
         return promocaoServicoRepository
                 .findByPromocao_IdPromocao(idPromocao);
     }
 
-    public Optional<PromocaoServico> buscarPorId(
-            Long id) {
-
+    public Optional<PromocaoServico> buscarPorId(Long id) {
         return promocaoServicoRepository.findById(id);
     }
 
@@ -54,19 +51,20 @@ public class PromocaoServicoService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Promoção não encontrada."));
 
+        Long idBarbeariaPromocao =
+                promocao.getBarbearia().getIdBarbearia();
+
+        autorizacaoService.exigirProprietarioDaBarbearia(
+                idBarbeariaPromocao);
+
         Servico servico = servicoService.buscarPorId(idServico)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Serviço não encontrado."));
 
-        Long idBarbeariaPromocao = promocao.getBarbearia()
-                .getIdBarbearia();
+        Long idBarbeariaServico =
+                servico.getBarbearia().getIdBarbearia();
 
-        Long idBarbeariaServico = servico.getBarbearia()
-                .getIdBarbearia();
-
-        if (!idBarbeariaPromocao.equals(
-                idBarbeariaServico)) {
-
+        if (!idBarbeariaPromocao.equals(idBarbeariaServico)) {
             throw new IllegalArgumentException(
                     "A promoção e o serviço precisam pertencer à mesma barbearia.");
         }
@@ -82,21 +80,23 @@ public class PromocaoServicoService {
         }
 
         PromocaoServico vinculo = new PromocaoServico();
-
         vinculo.setPromocao(promocao);
         vinculo.setServico(servico);
 
-        return promocaoServicoRepository.save(
-                vinculo);
+        return promocaoServicoRepository.save(vinculo);
     }
 
     public void excluir(Long id) {
 
-        if (!promocaoServicoRepository.existsById(id)) {
-            throw new IllegalArgumentException(
-                    "Vínculo entre promoção e serviço não encontrado.");
-        }
+        PromocaoServico vinculo = promocaoServicoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Vínculo entre promoção e serviço não encontrado."));
 
-        promocaoServicoRepository.deleteById(id);
+        autorizacaoService.exigirProprietarioDaBarbearia(
+                vinculo.getPromocao()
+                        .getBarbearia()
+                        .getIdBarbearia());
+
+        promocaoServicoRepository.delete(vinculo);
     }
 }

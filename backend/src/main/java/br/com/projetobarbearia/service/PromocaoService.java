@@ -17,15 +17,18 @@ public class PromocaoService {
     private final PromocaoRepository promocaoRepository;
     private final PromocaoServicoRepository promocaoServicoRepository;
     private final BarbeariaService barbeariaService;
+    private final AutorizacaoService autorizacaoService;
 
     public PromocaoService(
             PromocaoRepository promocaoRepository,
             PromocaoServicoRepository promocaoServicoRepository,
-            BarbeariaService barbeariaService) {
+            BarbeariaService barbeariaService,
+            AutorizacaoService autorizacaoService) {
 
         this.promocaoRepository = promocaoRepository;
         this.promocaoServicoRepository = promocaoServicoRepository;
         this.barbeariaService = barbeariaService;
+        this.autorizacaoService = autorizacaoService;
     }
 
     public List<Promocao> listarTodas() {
@@ -39,6 +42,8 @@ public class PromocaoService {
     public Promocao cadastrar(
             Long idBarbearia,
             Promocao promocao) {
+
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
 
         Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -61,42 +66,28 @@ public class PromocaoService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Promoção não encontrada."));
 
+        Long idBarbeariaAtual = promocao.getBarbearia().getIdBarbearia();
+
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbeariaAtual);
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
+
         Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Barbearia não encontrada."));
 
         validarPromocao(novosDados);
 
-        /*
-         * Uma promoção não deve ser transferida para outra
-         * barbearia depois de criada, pois ela pode possuir
-         * serviços vinculados.
-         */
-        if (!promocao.getBarbearia()
-                .getIdBarbearia()
-                .equals(barbearia.getIdBarbearia())) {
-
+        if (!idBarbeariaAtual.equals(barbearia.getIdBarbearia())) {
             throw new IllegalArgumentException(
                     "Não é permitido alterar a barbearia da promoção.");
         }
 
-        promocao.setTitulo(
-                novosDados.getTitulo());
-
-        promocao.setDescricao(
-                novosDados.getDescricao());
-
-        promocao.setPercentualDesconto(
-                novosDados.getPercentualDesconto());
-
-        promocao.setDataInicio(
-                novosDados.getDataInicio());
-
-        promocao.setDataFim(
-                novosDados.getDataFim());
-
-        promocao.setTipo(
-                novosDados.getTipo());
+        promocao.setTitulo(novosDados.getTitulo());
+        promocao.setDescricao(novosDados.getDescricao());
+        promocao.setPercentualDesconto(novosDados.getPercentualDesconto());
+        promocao.setDataInicio(novosDados.getDataInicio());
+        promocao.setDataFim(novosDados.getDataFim());
+        promocao.setTipo(novosDados.getTipo());
 
         return promocaoRepository.save(promocao);
     }
@@ -107,8 +98,10 @@ public class PromocaoService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Promoção não encontrada."));
 
-        validarPromocao(promocao);
+        autorizacaoService.exigirProprietarioDaBarbearia(
+                promocao.getBarbearia().getIdBarbearia());
 
+        validarPromocao(promocao);
         promocao.setAtiva(true);
 
         return promocaoRepository.save(promocao);
@@ -119,6 +112,9 @@ public class PromocaoService {
         Promocao promocao = promocaoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Promoção não encontrada."));
+
+        autorizacaoService.exigirProprietarioDaBarbearia(
+                promocao.getBarbearia().getIdBarbearia());
 
         promocao.setAtiva(false);
 
@@ -132,26 +128,23 @@ public class PromocaoService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Promoção não encontrada."));
 
-        promocaoServicoRepository
-                .deleteByPromocao_IdPromocao(id);
+        autorizacaoService.exigirProprietarioDaBarbearia(
+                promocao.getBarbearia().getIdBarbearia());
 
+        promocaoServicoRepository.deleteByPromocao_IdPromocao(id);
         promocaoRepository.delete(promocao);
     }
 
-    private void validarPromocao(
-            Promocao promocao) {
+    private void validarPromocao(Promocao promocao) {
 
         if (promocao.getTitulo() == null
                 || promocao.getTitulo().isBlank()) {
-
             throw new IllegalArgumentException(
                     "O título da promoção é obrigatório.");
         }
 
         if (promocao.getPercentualDesconto() == null
-                || promocao.getPercentualDesconto()
-                        .signum() <= 0) {
-
+                || promocao.getPercentualDesconto().signum() <= 0) {
             throw new IllegalArgumentException(
                     "O percentual de desconto deve ser maior que zero.");
         }
@@ -166,9 +159,7 @@ public class PromocaoService {
                     "A data final é obrigatória.");
         }
 
-        if (promocao.getDataFim()
-                .isBefore(promocao.getDataInicio())) {
-
+        if (promocao.getDataFim().isBefore(promocao.getDataInicio())) {
             throw new IllegalArgumentException(
                     "A data final não pode ser anterior à data inicial.");
         }

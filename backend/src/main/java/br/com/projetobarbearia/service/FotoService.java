@@ -14,13 +14,16 @@ public class FotoService {
 
     private final FotoRepository fotoRepository;
     private final BarbeariaService barbeariaService;
+    private final AutorizacaoService autorizacaoService;
 
     public FotoService(
             FotoRepository fotoRepository,
-            BarbeariaService barbeariaService) {
+            BarbeariaService barbeariaService,
+            AutorizacaoService autorizacaoService) {
 
         this.fotoRepository = fotoRepository;
         this.barbeariaService = barbeariaService;
+        this.autorizacaoService = autorizacaoService;
     }
 
     public List<Foto> listarTodas() {
@@ -34,6 +37,8 @@ public class FotoService {
     public Foto cadastrar(
             Long idBarbearia,
             Foto foto) {
+
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
 
         Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -56,16 +61,19 @@ public class FotoService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Foto não encontrada."));
 
+        Long idBarbeariaAtual =
+                foto.getBarbearia().getIdBarbearia();
+
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbeariaAtual);
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
+
         Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Barbearia não encontrada."));
 
         validar(novosDados);
 
-        if (!foto.getBarbearia()
-                .getIdBarbearia()
-                .equals(barbearia.getIdBarbearia())) {
-
+        if (!idBarbeariaAtual.equals(barbearia.getIdBarbearia())) {
             throw new IllegalArgumentException(
                     "Não é permitido alterar a barbearia da foto.");
         }
@@ -83,6 +91,9 @@ public class FotoService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Foto não encontrada."));
 
+        autorizacaoService.exigirProprietarioDaBarbearia(
+                foto.getBarbearia().getIdBarbearia());
+
         foto.setAtiva(true);
 
         return fotoRepository.save(foto);
@@ -94,6 +105,9 @@ public class FotoService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Foto não encontrada."));
 
+        autorizacaoService.exigirProprietarioDaBarbearia(
+                foto.getBarbearia().getIdBarbearia());
+
         foto.setAtiva(false);
 
         return fotoRepository.save(foto);
@@ -101,19 +115,20 @@ public class FotoService {
 
     public void excluir(Long id) {
 
-        if (!fotoRepository.existsById(id)) {
-            throw new IllegalArgumentException(
-                    "Foto não encontrada.");
-        }
+        Foto foto = fotoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Foto não encontrada."));
 
-        fotoRepository.deleteById(id);
+        autorizacaoService.exigirProprietarioDaBarbearia(
+                foto.getBarbearia().getIdBarbearia());
+
+        fotoRepository.delete(foto);
     }
 
     private void validar(Foto foto) {
 
         if (foto.getUrl() == null
                 || foto.getUrl().isBlank()) {
-
             throw new IllegalArgumentException(
                     "A URL da foto é obrigatória.");
         }
