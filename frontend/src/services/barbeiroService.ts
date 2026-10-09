@@ -2,6 +2,7 @@ import api from './api'
 
 import type {
   Barbeiro,
+  BarbeiroCadastroRequest,
   BarbeiroRequest,
 } from '../types/Barbeiro'
 
@@ -15,6 +16,16 @@ export async function listarBarbeiros(): Promise<
   return response.data
 }
 
+export async function cadastrarBarbeiroCompleto(
+  dados: BarbeiroCadastroRequest,
+): Promise<Barbeiro> {
+  const response = await api.post<Barbeiro>(
+    '/api/barbeiros/cadastro-completo',
+    dados,
+  )
+
+  return response.data
+}
 export async function cadastrarBarbeiro(
   dados: BarbeiroRequest,
 ): Promise<Barbeiro> {
