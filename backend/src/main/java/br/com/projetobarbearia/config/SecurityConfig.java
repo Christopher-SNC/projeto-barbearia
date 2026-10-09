@@ -15,6 +15,7 @@ import org.springframework.security.web.context.DelegatingSecurityContextReposit
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
@@ -31,6 +32,9 @@ import jakarta.servlet.DispatcherType;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
+import br.com.projetobarbearia.repository.UsuarioRepository;
+import br.com.projetobarbearia.security.SessaoUsuarioAtivoFilter;
+
 @Configuration
 public class SecurityConfig {
 
@@ -38,7 +42,8 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(
                         HttpSecurity http,
                         SecurityContextRepository securityContextRepository,
-                        CsrfTokenRepository csrfTokenRepository)
+                        CsrfTokenRepository csrfTokenRepository,
+                        SessaoUsuarioAtivoFilter sessaoUsuarioAtivoFilter)
                         throws Exception {
 
                 http
@@ -47,6 +52,9 @@ public class SecurityConfig {
                                                 .csrfTokenRepository(csrfTokenRepository))
                                 .securityContext(securityContext -> securityContext
                                                 .securityContextRepository(securityContextRepository))
+                                .addFilterAfter(
+                                                sessaoUsuarioAtivoFilter,
+                                                SecurityContextHolderFilter.class)
                                 .authorizeHttpRequests(authorize -> authorize
                                                 .dispatcherTypeMatchers(
                                                                 DispatcherType.ERROR,
@@ -84,6 +92,14 @@ public class SecurityConfig {
                                                 .permitAll());
 
                 return http.build();
+        }
+
+        @Bean
+        public SessaoUsuarioAtivoFilter sessaoUsuarioAtivoFilter(
+                        UsuarioRepository usuarioRepository) {
+
+                return new SessaoUsuarioAtivoFilter(
+                                usuarioRepository);
         }
 
         @Bean

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import br.com.projetobarbearia.dto.AlterarSenhaRequest;
 import br.com.projetobarbearia.dto.UsuarioRequest;
@@ -21,6 +22,8 @@ import br.com.projetobarbearia.entity.Usuario;
 import br.com.projetobarbearia.service.AutorizacaoService;
 import br.com.projetobarbearia.service.BarbeiroService;
 import br.com.projetobarbearia.service.UsuarioService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -147,11 +150,20 @@ public class UsuarioController {
 
         @DeleteMapping("/{id}")
         public ResponseEntity<Void> excluir(
-                        @PathVariable Long id) {
+                        @PathVariable Long id,
+                        HttpServletRequest request) {
 
                 autorizacaoService.exigirProprioUsuario(id);
 
                 usuarioService.excluir(id);
+
+                SecurityContextHolder.clearContext();
+
+                HttpSession session = request.getSession(false);
+
+                if (session != null) {
+                        session.invalidate();
+                }
 
                 return ResponseEntity.noContent().build();
         }
