@@ -4,6 +4,7 @@ import {
     type FormEvent,
 } from 'react'
 import {
+    Link,
     Navigate,
     useLocation,
     useNavigate,
@@ -136,6 +137,17 @@ function Login() {
                             : 'Entrar'}
                     </button>
                 </form>
+                <p className="login-card__cadastro">
+                    Ainda não possui uma conta?{' '}
+                    <Link
+                        to="/cadastro"
+                        state={{
+                            from: destino,
+                        }}
+                    >
+                        Criar conta
+                    </Link>
+                </p>
             </section>
         </main>
     )
