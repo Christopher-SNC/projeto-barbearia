@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import {
+    NavLink,
+    useNavigate,
+} from 'react-router-dom'
 
-import { DEMO_IDS } from '../../config/demo'
+import useAuth from '../../hooks/useAuth'
+
 import { buscarBarbeariaPorId } from '../../services/barbeariaService'
 
 import '../AdminSidebar/AdminSidebar.css'
@@ -41,15 +45,32 @@ const links = [
 
 function BarbeiroSidebar() {
     const [menuAberto, setMenuAberto] = useState(false)
+
     const [nomeBarbearia, setNomeBarbearia] =
         useState('Barbearia')
 
+    const navigate = useNavigate()
+    const { usuario, sair } = useAuth()
+
+    const idBarbearia =
+        usuario?.idBarbeariaBarbeiro
+
     useEffect(() => {
+        if (
+            idBarbearia === null ||
+            idBarbearia === undefined
+        ) {
+            return
+        }
+
+        const idBarbeariaAtual = idBarbearia
+
         async function carregarBarbearia() {
             try {
-                const barbearia = await buscarBarbeariaPorId(
-                    DEMO_IDS.barbearia,
-                )
+                const barbearia =
+                    await buscarBarbeariaPorId(
+                        idBarbeariaAtual,
+                    )
 
                 setNomeBarbearia(barbearia.nome)
             } catch (error) {
@@ -58,10 +79,20 @@ function BarbeiroSidebar() {
         }
 
         carregarBarbearia()
-    }, [])
+    }, [idBarbearia])
 
     function fecharMenu() {
         setMenuAberto(false)
+    }
+
+    async function sairDaConta() {
+        await sair()
+
+        fecharMenu()
+
+        navigate('/login', {
+            replace: true,
+        })
     }
 
     const navigation = (
@@ -92,6 +123,7 @@ function BarbeiroSidebar() {
             <button
                 className="admin-sidebar__logout"
                 type="button"
+                onClick={sairDaConta}
             >
                 Sair da conta
             </button>

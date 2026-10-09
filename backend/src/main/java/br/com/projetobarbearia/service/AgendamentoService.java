@@ -2,13 +2,16 @@ package br.com.projetobarbearia.service;
 
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.projetobarbearia.dto.OcupacaoAgendamentoResponse;
 import br.com.projetobarbearia.entity.Agendamento;
 import br.com.projetobarbearia.entity.Barbearia;
 import br.com.projetobarbearia.entity.Barbeiro;
@@ -26,6 +29,7 @@ import br.com.projetobarbearia.repository.BarbeiroServicoRepository;
 import br.com.projetobarbearia.repository.DisponibilidadeRepository;
 import br.com.projetobarbearia.repository.HorarioFuncionamentoRepository;
 import br.com.projetobarbearia.repository.ItemAgendamentoRepository;
+import br.com.projetobarbearia.repository.ProprietarioBarbeariaRepository;
 import br.com.projetobarbearia.repository.ServicoRepository;
 import br.com.projetobarbearia.repository.UsuarioRepository;
 
@@ -43,6 +47,8 @@ public class AgendamentoService {
     private final HorarioFuncionamentoRepository horarioFuncionamentoRepository;
     private final DisponibilidadeRepository disponibilidadeRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ProprietarioBarbeariaRepository proprietarioBarbeariaRepository;
+    private final AutorizacaoService autorizacaoService;
 
     public AgendamentoService(
             AgendamentoRepository agendamentoRepository,
@@ -53,7 +59,9 @@ public class AgendamentoService {
             BarbeiroServicoRepository barbeiroServicoRepository,
             HorarioFuncionamentoRepository horarioFuncionamentoRepository,
             DisponibilidadeRepository disponibilidadeRepository,
-            UsuarioRepository usuarioRepository) {
+            UsuarioRepository usuarioRepository,
+            ProprietarioBarbeariaRepository proprietarioBarbeariaRepository,
+            AutorizacaoService autorizacaoService) {
 
         this.agendamentoRepository = agendamentoRepository;
         this.itemAgendamentoRepository = itemAgendamentoRepository;
@@ -64,14 +72,116 @@ public class AgendamentoService {
         this.horarioFuncionamentoRepository = horarioFuncionamentoRepository;
         this.disponibilidadeRepository = disponibilidadeRepository;
         this.usuarioRepository = usuarioRepository;
+        this.proprietarioBarbeariaRepository = proprietarioBarbeariaRepository;
+        this.autorizacaoService = autorizacaoService;
     }
 
     public List<Agendamento> listarTodos() {
-        return agendamentoRepository.findAll();
+
+        Long idUsuario =
+                autorizacaoService.obterIdUsuarioAutenticado();
+
+        LinkedHashMap<Long, Agendamento> autorizados =
+                new LinkedHashMap<>();
+
+        agendamentoRepository
+                .findByCliente_IdUsuario(idUsuario)
+                .forEach(agendamento ->
+                        autorizados.put(
+                                agendamento.getIdAgendamento(),
+                                agendamento));
+
+        barbeiroRepository
+                .findByUsuario_IdUsuarioAndAtivoTrue(idUsuario)
+                .ifPresent(barbeiro ->
+                        agendamentoRepository
+                                .findByBarbeiro_IdBarbeiro(
+                                        barbeiro.getIdBarbeiro())
+                                .forEach(agendamento ->
+                                        autorizados.put(
+                                                agendamento.getIdAgendamento(),
+                                                agendamento)));
+
+        List<Long> idsBarbeariasProprietario =
+                proprietarioBarbeariaRepository
+                        .findByUsuario_IdUsuarioAndAtivoTrue(
+                                idUsuario)
+                        .stream()
+                        .map(vinculo -> vinculo.getBarbearia()
+                                .getIdBarbearia())
+                        .distinct()
+                        .toList();
+
+        if (!idsBarbeariasProprietario.isEmpty()) {
+
+            agendamentoRepository
+                    .findByBarbearia_IdBarbeariaIn(
+                            idsBarbeariasProprietario)
+                    .forEach(agendamento ->
+                            autorizados.put(
+                                    agendamento.getIdAgendamento(),
+                                    agendamento));
+        }
+
+        return List.copyOf(
+                autorizados.values());
     }
 
     public Optional<Agendamento> buscarPorId(Long id) {
-        return agendamentoRepository.findById(id);
+
+        Optional<Agendamento> agendamento =
+                agendamentoRepository.findById(id);
+
+        agendamento.ifPresent(
+                autorizacaoService::exigirPermissaoVisualizarAgendamento);
+
+        return agendamento;
+    }
+
+    public List<OcupacaoAgendamentoResponse> listarOcupacoes(
+            Long idBarbeiro,
+            LocalDate data) {
+
+        if (idBarbeiro == null) {
+            throw new IllegalArgumentException(
+                    "O barbeiro é obrigatório.");
+        }
+
+        if (data == null) {
+            throw new IllegalArgumentException(
+                    "A data é obrigatória.");
+        }
+
+        LocalDateTime inicio =
+                data.atStartOfDay();
+
+        LocalDateTime fim =
+                data.plusDays(1)
+                        .atStartOfDay();
+
+        return agendamentoRepository
+                .findByBarbeiro_IdBarbeiroAndStatusAndDataHoraInicioGreaterThanEqualAndDataHoraInicioLessThan(
+                        idBarbeiro,
+                        StatusAgendamento.CONFIRMADO,
+                        inicio,
+                        fim)
+                .stream()
+                .map(agendamento -> {
+
+                    int duracaoMinutos =
+                            itemAgendamentoRepository
+                                    .findByAgendamento_IdAgendamento(
+                                            agendamento.getIdAgendamento())
+                                    .stream()
+                                    .mapToInt(
+                                            ItemAgendamento::getDuracaoMinutos)
+                                    .sum();
+
+                    return new OcupacaoAgendamentoResponse(
+                            agendamento.getDataHoraInicio(),
+                            duracaoMinutos);
+                })
+                .toList();
     }
 
     @Transactional
@@ -170,6 +280,10 @@ public class AgendamentoService {
 
         Agendamento agendamento = buscarAgendamento(id);
 
+        autorizacaoService
+                .exigirPermissaoCancelarAgendamento(
+                        agendamento);
+
         validarStatusConfirmado(agendamento);
 
         agendamento.setStatus(
@@ -183,6 +297,10 @@ public class AgendamentoService {
 
         Agendamento agendamento = buscarAgendamento(id);
 
+        autorizacaoService
+                .exigirPermissaoGerenciarAgendamento(
+                        agendamento);
+
         validarStatusConfirmado(agendamento);
 
         agendamento.setStatus(
@@ -195,6 +313,10 @@ public class AgendamentoService {
     public Agendamento marcarNaoCompareceu(Long id) {
 
         Agendamento agendamento = buscarAgendamento(id);
+
+        autorizacaoService
+                .exigirPermissaoGerenciarAgendamento(
+                        agendamento);
 
         validarStatusConfirmado(agendamento);
 

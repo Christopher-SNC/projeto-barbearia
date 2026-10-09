@@ -9,7 +9,6 @@ export interface ItemAgendamentoRequest {
 }
 
 export interface AgendamentoRequest {
-  idCliente: number
   idBarbearia: number
   idBarbeiro: number
   dataHoraInicio: string
@@ -29,11 +28,18 @@ export interface ItemAgendamento {
 export interface Agendamento {
   idAgendamento: number
   idCliente: number
+  nomeCliente: string
   idBarbearia: number
   idBarbeiro: number
+  nomeBarbeiro: string
   dataHoraInicio: string
   status: StatusAgendamento
   valorTotal: number
   dataCriacao: string
   itens: ItemAgendamento[]
+}
+
+export interface OcupacaoAgendamento {
+  dataHoraInicio: string
+  duracaoMinutos: number
 }

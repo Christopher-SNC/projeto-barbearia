@@ -6,7 +6,7 @@ import type { FormEvent } from 'react'
 
 import Button from '../../components/Button/Button'
 
-import { DEMO_IDS } from '../../config/demo'
+import useAuth from '../../hooks/useAuth'
 
 import {
     alterarSenhaUsuario,
@@ -43,6 +43,9 @@ function formatarTelefone(valor: string) {
 }
 
 function ConfiguracoesBarbeiro() {
+    const { usuario } = useAuth()
+
+    const idUsuario = usuario?.idUsuario
     const [nome, setNome] = useState('')
     const [email, setEmail] = useState('')
     const [telefone, setTelefone] =
@@ -68,11 +71,12 @@ function ConfiguracoesBarbeiro() {
         useState('')
 
     useEffect(() => {
+        if (idUsuario === undefined) {
+            return
+        }
         let componenteAtivo = true
 
-        buscarUsuarioPorId(
-            DEMO_IDS.usuarioBarbeiro,
-        )
+        buscarUsuarioPorId(idUsuario)
             .then((usuario) => {
                 if (!componenteAtivo) {
                     return
@@ -105,7 +109,7 @@ function ConfiguracoesBarbeiro() {
         return () => {
             componenteAtivo = false
         }
-    }, [])
+    }, [idUsuario])
 
     async function salvarAlteracoes(
         event: FormEvent<HTMLFormElement>,
@@ -114,6 +118,13 @@ function ConfiguracoesBarbeiro() {
 
         setErro('')
         setSucesso('')
+
+        if (idUsuario === undefined) {
+            setErro(
+                'Sua sessão não está disponível. Entre novamente.',
+            )
+            return
+        }
 
         if (!nome.trim()) {
             setErro(
@@ -166,7 +177,7 @@ function ConfiguracoesBarbeiro() {
 
             const usuarioAtualizado =
                 await atualizarUsuario(
-                    DEMO_IDS.usuarioBarbeiro,
+                    idUsuario,
                     {
                         nome: nome.trim(),
                         email: email.trim(),
@@ -180,7 +191,7 @@ function ConfiguracoesBarbeiro() {
 
             if (desejaAlterarSenha) {
                 await alterarSenhaUsuario(
-                    DEMO_IDS.usuarioBarbeiro,
+                    idUsuario,
                     {
                         senhaAtual,
                         novaSenha,

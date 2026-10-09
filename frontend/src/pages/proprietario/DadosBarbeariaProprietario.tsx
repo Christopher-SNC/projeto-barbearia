@@ -26,7 +26,7 @@ import type {
 
 import './DadosBarbeariaProprietario.css'
 
-import { DEMO_IDS } from '../../config/demo'
+import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
 
 function somenteDigitos(valor: string) {
     return valor.replace(/\D/g, '')
@@ -98,6 +98,8 @@ function separarCidadeEstado(
 }
 
 function DadosBarbeariaProprietario() {
+    const idBarbearia =
+        useBarbeariaProprietario()
     const [
         enderecoAtual,
         setEnderecoAtual,
@@ -152,7 +154,7 @@ function DadosBarbeariaProprietario() {
                     enderecos,
                 ] = await Promise.all([
                     buscarBarbeariaPorId(
-                        DEMO_IDS.barbearia,
+                        idBarbearia,
                     ),
 
                     listarEnderecos(),
@@ -178,7 +180,7 @@ function DadosBarbeariaProprietario() {
                     enderecos.find(
                         (item) =>
                             item.idBarbearia ===
-                            DEMO_IDS.barbearia,
+                            idBarbearia,
                     ) ?? null
 
                 setEnderecoAtual(endereco)
@@ -218,7 +220,7 @@ function DadosBarbeariaProprietario() {
         }
 
         carregarDados()
-    }, [])
+    }, [idBarbearia])
 
     async function salvarDados(
         event: FormEvent<HTMLFormElement>,
@@ -308,7 +310,7 @@ function DadosBarbeariaProprietario() {
         const dadosEndereco: EnderecoRequest =
         {
             idBarbearia:
-                DEMO_IDS.barbearia,
+                idBarbearia,
 
             logradouro:
                 logradouro.trim(),
@@ -346,7 +348,7 @@ function DadosBarbeariaProprietario() {
 
             const barbeariaAtualizada =
                 await atualizarBarbearia(
-                    DEMO_IDS.barbearia,
+                    idBarbearia,
                     dadosBarbearia,
                 )
 

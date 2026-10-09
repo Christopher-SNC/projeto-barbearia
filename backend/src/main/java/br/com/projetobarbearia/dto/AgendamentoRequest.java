@@ -5,21 +5,12 @@ import java.util.List;
 
 public class AgendamentoRequest {
 
-    private Long idCliente;
     private Long idBarbearia;
     private Long idBarbeiro;
     private LocalDateTime dataHoraInicio;
     private List<ItemAgendamentoRequest> itens;
 
     public AgendamentoRequest() {
-    }
-
-    public Long getIdCliente() {
-        return idCliente;
-    }
-
-    public void setIdCliente(Long idCliente) {
-        this.idCliente = idCliente;
     }
 
     public Long getIdBarbearia() {

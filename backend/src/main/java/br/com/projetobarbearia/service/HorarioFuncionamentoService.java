@@ -15,13 +15,16 @@ public class HorarioFuncionamentoService {
 
     private final HorarioFuncionamentoRepository horarioFuncionamentoRepository;
     private final BarbeariaService barbeariaService;
+    private final AutorizacaoService autorizacaoService;
 
     public HorarioFuncionamentoService(
             HorarioFuncionamentoRepository horarioFuncionamentoRepository,
-            BarbeariaService barbeariaService) {
+            BarbeariaService barbeariaService,
+            AutorizacaoService autorizacaoService) {
 
         this.horarioFuncionamentoRepository = horarioFuncionamentoRepository;
         this.barbeariaService = barbeariaService;
+        this.autorizacaoService = autorizacaoService;
     }
 
     public List<HorarioFuncionamento> listarTodos() {
@@ -36,15 +39,14 @@ public class HorarioFuncionamentoService {
             Long idBarbearia,
             HorarioFuncionamento horario) {
 
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
+
         Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Barbearia não encontrada."));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Barbearia nÃ£o encontrada."));
 
         validarHorario(horario);
-
         horario.setBarbearia(barbearia);
-
         return horarioFuncionamentoRepository.save(horario);
     }
 
@@ -53,22 +55,23 @@ public class HorarioFuncionamentoService {
             Long idBarbearia,
             HorarioFuncionamento novosDados) {
 
-        HorarioFuncionamento horario =
-                horarioFuncionamentoRepository.findById(id)
-                        .orElseThrow(() ->
-                                new IllegalArgumentException(
-                                        "Horário de funcionamento não encontrado."));
-
-        Barbearia barbearia =
-                barbeariaService.buscarPorId(idBarbearia)
-                        .orElseThrow(() ->
-                                new IllegalArgumentException(
-                                        "Barbearia não encontrada."));
-
-        validarHorario(novosDados);
+        HorarioFuncionamento horario = horarioFuncionamentoRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "HorÃ¡rio de funcionamento nÃ£o encontrado."));
 
         Long idBarbeariaAnterior =
                 horario.getBarbearia().getIdBarbearia();
+
+        autorizacaoService.exigirProprietarioDaBarbearia(
+                idBarbeariaAnterior);
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
+
+        Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Barbearia nÃ£o encontrada."));
+
+        validarHorario(novosDados);
 
         horario.setBarbearia(barbearia);
         horario.setDiaSemana(novosDados.getDiaSemana());
@@ -82,8 +85,7 @@ public class HorarioFuncionamentoService {
         barbeariaService.desativarSeInvalida(idBarbearia);
 
         if (!idBarbeariaAnterior.equals(idBarbearia)) {
-            barbeariaService.desativarSeInvalida(
-                    idBarbeariaAnterior);
+            barbeariaService.desativarSeInvalida(idBarbeariaAnterior);
         }
 
         return salvo;
@@ -91,44 +93,36 @@ public class HorarioFuncionamentoService {
 
     @Transactional
     public void excluir(Long id) {
+        HorarioFuncionamento horario = horarioFuncionamentoRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "HorÃ¡rio de funcionamento nÃ£o encontrado."));
 
-        HorarioFuncionamento horario =
-                horarioFuncionamentoRepository.findById(id)
-                        .orElseThrow(() ->
-                                new IllegalArgumentException(
-                                        "Horário de funcionamento não encontrado."));
-
-        Long idBarbearia =
-                horario.getBarbearia().getIdBarbearia();
+        Long idBarbearia = horario.getBarbearia().getIdBarbearia();
+        autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
 
         horarioFuncionamentoRepository.delete(horario);
         horarioFuncionamentoRepository.flush();
-
         barbeariaService.desativarSeInvalida(idBarbearia);
     }
 
-    private void validarHorario(
-            HorarioFuncionamento horario) {
-
+    private void validarHorario(HorarioFuncionamento horario) {
         if (horario.getDiaSemana() == null) {
             throw new IllegalArgumentException(
-                    "O dia da semana é obrigatório.");
+                    "O dia da semana Ã© obrigatÃ³rio.");
         }
 
         if (!horario.isFechado()) {
-
             if (horario.getHoraAbertura() == null
                     || horario.getHoraFechamento() == null) {
-
                 throw new IllegalArgumentException(
-                        "Horário de abertura e fechamento são obrigatórios.");
+                        "HorÃ¡rio de abertura e fechamento sÃ£o obrigatÃ³rios.");
             }
 
             if (!horario.getHoraAbertura()
                     .isBefore(horario.getHoraFechamento())) {
-
                 throw new IllegalArgumentException(
-                        "O horário de abertura deve ser anterior ao horário de fechamento.");
+                        "O horÃ¡rio de abertura deve ser anterior ao horÃ¡rio de fechamento.");
             }
         }
     }

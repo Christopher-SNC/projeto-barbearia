@@ -37,11 +37,11 @@ import {
 
 import { listarServicos } from '../../services/servicoService'
 
+import { cadastrarUsuario } from '../../services/usuarioService'
 import {
-    atualizarUsuario,
-    cadastrarUsuario,
-    listarUsuarios,
-} from '../../services/usuarioService'
+    atualizarUsuarioBarbeiro,
+    buscarUsuarioBarbeiro,
+} from '../../services/barbeiroUsuarioService'
 
 import type { Agendamento } from '../../types/Agendamento'
 import type { Avaliacao } from '../../types/Avaliacao'
@@ -52,11 +52,10 @@ import type {
     Disponibilidade,
 } from '../../types/Disponibilidade'
 import type { Servico } from '../../types/Servico'
-import type { Usuario } from '../../types/Usuario'
 
 import './BarbeirosProprietario.css'
 
-import { DEMO_IDS } from '../../config/demo'
+import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
 
 const DIAS: {
     valor: DiaSemana
@@ -144,12 +143,10 @@ function criarDisponibilidadeInicial(): DisponibilidadeSemanal {
 }
 
 function BarbeirosProprietario() {
+    const idBarbearia =
+        useBarbeariaProprietario()
     const [barbeiros, setBarbeiros] = useState<
         Barbeiro[]
-    >([])
-
-    const [usuarios, setUsuarios] = useState<
-        Usuario[]
     >([])
 
     const [servicos, setServicos] = useState<
@@ -219,7 +216,6 @@ function BarbeirosProprietario() {
 
                 const [
                     dadosBarbeiros,
-                    dadosUsuarios,
                     dadosServicos,
                     dadosVinculos,
                     dadosDisponibilidades,
@@ -227,7 +223,6 @@ function BarbeirosProprietario() {
                     dadosAvaliacoes,
                 ] = await Promise.all([
                     listarBarbeiros(),
-                    listarUsuarios(),
                     listarServicos(),
                     listarBarbeirosServicos(),
                     listarDisponibilidades(),
@@ -239,17 +234,15 @@ function BarbeirosProprietario() {
                     dadosBarbeiros.filter(
                         (barbeiro) =>
                             barbeiro.idBarbearia ===
-                            DEMO_IDS.barbearia,
+                            idBarbearia,
                     ),
                 )
-
-                setUsuarios(dadosUsuarios)
 
                 setServicos(
                     dadosServicos.filter(
                         (servico) =>
                             servico.idBarbearia ===
-                            DEMO_IDS.barbearia &&
+                            idBarbearia &&
                             servico.ativo,
                     ),
                 )
@@ -263,7 +256,7 @@ function BarbeirosProprietario() {
                     dadosAgendamentos.filter(
                         (agendamento) =>
                             agendamento.idBarbearia ===
-                            DEMO_IDS.barbearia,
+                            idBarbearia,
                     ),
                 )
 
@@ -278,7 +271,7 @@ function BarbeirosProprietario() {
                 setCarregando(false)
             }
         },
-        [],
+        [idBarbearia],
     )
 
     useEffect(() => {
@@ -286,7 +279,6 @@ function BarbeirosProprietario() {
 
         Promise.all([
             listarBarbeiros(),
-            listarUsuarios(),
             listarServicos(),
             listarBarbeirosServicos(),
             listarDisponibilidades(),
@@ -296,7 +288,6 @@ function BarbeirosProprietario() {
             .then(
                 ([
                     dadosBarbeiros,
-                    dadosUsuarios,
                     dadosServicos,
                     dadosVinculos,
                     dadosDisponibilidades,
@@ -311,17 +302,15 @@ function BarbeirosProprietario() {
                         dadosBarbeiros.filter(
                             (barbeiro) =>
                                 barbeiro.idBarbearia ===
-                                DEMO_IDS.barbearia,
+                                idBarbearia,
                         ),
                     )
-
-                    setUsuarios(dadosUsuarios)
 
                     setServicos(
                         dadosServicos.filter(
                             (servico) =>
                                 servico.idBarbearia ===
-                                DEMO_IDS.barbearia &&
+                                idBarbearia &&
                                 servico.ativo,
                         ),
                     )
@@ -336,7 +325,7 @@ function BarbeirosProprietario() {
                         dadosAgendamentos.filter(
                             (agendamento) =>
                                 agendamento.idBarbearia ===
-                                DEMO_IDS.barbearia,
+                                idBarbearia,
                         ),
                     )
 
@@ -363,17 +352,11 @@ function BarbeirosProprietario() {
         return () => {
             componenteAtivo = false
         }
-    }, [])
+    }, [idBarbearia])
 
     const barbeirosOrdenados = useMemo(() => {
         function obterNome(barbeiro: Barbeiro) {
-            return (
-                usuarios.find(
-                    (usuario) =>
-                        usuario.idUsuario ===
-                        barbeiro.idUsuario,
-                )?.nome ?? 'Barbeiro'
-            )
+            return barbeiro.nomeUsuario || 'Barbeiro'
         }
 
         return [...barbeiros].sort((a, b) => {
@@ -385,25 +368,12 @@ function BarbeirosProprietario() {
                 obterNome(b),
             )
         })
-    }, [barbeiros, usuarios])
-
-    function usuarioDoBarbeiro(
-        barbeiro: Barbeiro,
-    ) {
-        return usuarios.find(
-            (usuario) =>
-                usuario.idUsuario ===
-                barbeiro.idUsuario,
-        )
-    }
+    }, [barbeiros])
 
     function nomeBarbeiro(
         barbeiro: Barbeiro,
     ) {
-        return (
-            usuarioDoBarbeiro(barbeiro)?.nome ??
-            'Barbeiro'
-        )
+        return barbeiro.nomeUsuario || 'Barbeiro'
     }
 
     function iniciaisBarbeiro(
@@ -542,68 +512,79 @@ function BarbeirosProprietario() {
         setModalAberto(true)
     }
 
-    function abrirEdicao(
+    async function abrirEdicao(
         barbeiro: Barbeiro,
     ) {
-        const usuario =
-            usuarioDoBarbeiro(barbeiro)
+        try {
+            setErro('')
+            setSucesso('')
 
-        setBarbeiroEditando(barbeiro)
-
-        setNome(usuario?.nome ?? '')
-        setEmail(usuario?.email ?? '')
-        setTelefone(usuario?.telefone ?? '')
-        setSenha('')
-        setDescricao(barbeiro.descricao ?? '')
-
-        const servicosAtivos =
-            barbeirosServicos
-                .filter(
-                    (vinculo) =>
-                        vinculo.idBarbeiro ===
-                        barbeiro.idBarbeiro &&
-                        vinculo.ativo,
-                )
-                .map(
-                    (vinculo) =>
-                        vinculo.idServico,
+            const usuario =
+                await buscarUsuarioBarbeiro(
+                    barbeiro.idBarbeiro,
                 )
 
-        setServicosSelecionados(
-            servicosAtivos,
-        )
+            setBarbeiroEditando(barbeiro)
 
-        const novaDisponibilidade =
-            criarDisponibilidadeInicial()
+            setNome(usuario.nome)
+            setEmail(usuario.email)
+            setTelefone(usuario.telefone ?? '')
+            setSenha('')
+            setDescricao(barbeiro.descricao ?? '')
 
-        for (const dia of DIAS) {
-            const registro = disponibilidades.find(
-                (disponibilidade) =>
-                    disponibilidade.idBarbeiro ===
-                    barbeiro.idBarbeiro &&
-                    disponibilidade.diaSemana ===
-                    dia.valor,
+            const servicosAtivos =
+                barbeirosServicos
+                    .filter(
+                        (vinculo) =>
+                            vinculo.idBarbeiro ===
+                            barbeiro.idBarbeiro &&
+                            vinculo.ativo,
+                    )
+                    .map(
+                        (vinculo) =>
+                            vinculo.idServico,
+                    )
+
+            setServicosSelecionados(
+                servicosAtivos,
             )
 
-            if (registro) {
-                novaDisponibilidade[dia.valor] = {
-                    ativo: registro.ativo,
-                    horaInicio:
-                        registro.horaInicio.slice(0, 5),
-                    horaFim:
-                        registro.horaFim.slice(0, 5),
+            const novaDisponibilidade =
+                criarDisponibilidadeInicial()
+
+            for (const dia of DIAS) {
+                const registro = disponibilidades.find(
+                    (disponibilidade) =>
+                        disponibilidade.idBarbeiro ===
+                        barbeiro.idBarbeiro &&
+                        disponibilidade.diaSemana ===
+                        dia.valor,
+                )
+
+                if (registro) {
+                    novaDisponibilidade[dia.valor] = {
+                        ativo: registro.ativo,
+                        horaInicio:
+                            registro.horaInicio.slice(0, 5),
+                        horaFim:
+                            registro.horaFim.slice(0, 5),
+                    }
                 }
             }
+
+            setDisponibilidadeFormulario(
+                novaDisponibilidade,
+            )
+
+            setErroFormulario('')
+            setModalAberto(true)
+        } catch (error) {
+            console.error(error)
+
+            setErro(
+                'Não foi possível carregar os dados do barbeiro.',
+            )
         }
-
-        setDisponibilidadeFormulario(
-            novaDisponibilidade,
-        )
-
-        setErroFormulario('')
-        setErro('')
-        setSucesso('')
-        setModalAberto(true)
     }
 
     function fecharModal() {
@@ -794,8 +775,8 @@ function BarbeirosProprietario() {
             let barbeiroSalvo: Barbeiro
 
             if (barbeiroEditando) {
-                await atualizarUsuario(
-                    barbeiroEditando.idUsuario,
+                await atualizarUsuarioBarbeiro(
+                    barbeiroEditando.idBarbeiro,
                     {
                         nome: nomeLimpo,
                         email: emailLimpo,
@@ -812,7 +793,7 @@ function BarbeirosProprietario() {
                                 barbeiroEditando.idUsuario,
 
                             idBarbearia:
-                                DEMO_IDS.barbearia,
+                                idBarbearia,
 
                             descricao:
                                 descricao.trim() || null,
@@ -834,7 +815,7 @@ function BarbeirosProprietario() {
                             usuarioCriado.idUsuario,
 
                         idBarbearia:
-                            DEMO_IDS.barbearia,
+                            idBarbearia,
 
                         descricao:
                             descricao.trim() || null,

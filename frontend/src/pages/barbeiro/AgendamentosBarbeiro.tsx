@@ -6,16 +6,14 @@ import {
 
 import StatusBadge from '../../components/StatusBadge/StatusBadge'
 
-import { DEMO_IDS } from '../../config/demo'
+import useAuth from '../../hooks/useAuth'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type {
     Agendamento,
     StatusAgendamento,
 } from '../../types/Agendamento'
-import type { Usuario } from '../../types/Usuario'
 
 import './AgendamentosBarbeiro.css'
 
@@ -96,14 +94,15 @@ function obterStatusLabel(
 }
 
 function AgendamentosBarbeiro() {
+    const { usuario } = useAuth()
+
+    const idBarbeiro = usuario?.idBarbeiro
+    const idBarbearia = usuario?.idBarbeariaBarbeiro
     const [filtro, setFiltro] =
         useState<FiltroAgendamento>('hoje')
 
     const [agendamentos, setAgendamentos] =
         useState<Agendamento[]>([])
-
-    const [usuarios, setUsuarios] =
-        useState<Usuario[]>([])
 
     const [carregando, setCarregando] =
         useState(true)
@@ -113,25 +112,19 @@ function AgendamentosBarbeiro() {
     useEffect(() => {
         async function carregarDados() {
             try {
-                const [
-                    dadosAgendamentos,
-                    dadosUsuarios,
-                ] = await Promise.all([
-                    listarAgendamentos(),
-                    listarUsuarios(),
-                ])
+                const dadosAgendamentos =
+                    await listarAgendamentos()
 
                 setAgendamentos(
                     dadosAgendamentos.filter(
                         (agendamento) =>
                             agendamento.idBarbearia ===
-                            DEMO_IDS.barbearia &&
+                            idBarbearia &&
                             agendamento.idBarbeiro ===
-                            DEMO_IDS.barbeiro,
+                            idBarbeiro,
                     ),
                 )
 
-                setUsuarios(dadosUsuarios)
             } catch (error) {
                 console.error(error)
 
@@ -144,7 +137,7 @@ function AgendamentosBarbeiro() {
         }
 
         carregarDados()
-    }, [])
+    }, [idBarbearia, idBarbeiro])
 
     const agendamentosFiltrados =
         useMemo(() => {
@@ -213,18 +206,6 @@ function AgendamentosBarbeiro() {
                 },
             )
         }, [agendamentos, filtro])
-
-    function nomeCliente(
-        idCliente: number,
-    ) {
-        return (
-            usuarios.find(
-                (usuario) =>
-                    usuario.idUsuario ===
-                    idCliente,
-            )?.nome ?? 'Cliente'
-        )
-    }
 
     function nomeServicos(
         agendamento: Agendamento,
@@ -404,9 +385,7 @@ function AgendamentosBarbeiro() {
                                                             agendamento.dataHoraInicio,
                                                         )}{' '}
                                                         •{' '}
-                                                        {nomeCliente(
-                                                            agendamento.idCliente,
-                                                        )}
+                                                        {agendamento.nomeCliente || 'Cliente'}
                                                     </strong>
 
                                                     {filtro !==
@@ -503,9 +482,7 @@ function AgendamentosBarbeiro() {
                                                             agendamento.dataHoraInicio,
                                                         )}{' '}
                                                         •{' '}
-                                                        {nomeCliente(
-                                                            agendamento.idCliente,
-                                                        )}
+                                                        {agendamento.nomeCliente || 'Cliente'}
                                                     </strong>
 
                                                     {filtro !==

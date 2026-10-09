@@ -6,15 +6,13 @@ import {
 
 import AdminStatCard from '../../components/AdminStatCard/AdminStatCard'
 
-import { DEMO_IDS } from '../../config/demo'
+import useAuth from '../../hooks/useAuth'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarAvaliacoes } from '../../services/avaliacaoService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type { Agendamento } from '../../types/Agendamento'
 import type { Avaliacao } from '../../types/Avaliacao'
-import type { Usuario } from '../../types/Usuario'
 
 import './AvaliacoesBarbeiro.css'
 
@@ -76,14 +74,15 @@ function estrelas(nota: number) {
 }
 
 function AvaliacoesBarbeiro() {
+    const { usuario } = useAuth()
+
+    const idBarbeiro = usuario?.idBarbeiro
+    const idBarbearia = usuario?.idBarbeariaBarbeiro
     const [avaliacoes, setAvaliacoes] =
         useState<Avaliacao[]>([])
 
     const [agendamentos, setAgendamentos] =
         useState<Agendamento[]>([])
-
-    const [usuarios, setUsuarios] =
-        useState<Usuario[]>([])
 
     const [carregando, setCarregando] =
         useState(true)
@@ -96,11 +95,9 @@ function AvaliacoesBarbeiro() {
                 const [
                     dadosAvaliacoes,
                     dadosAgendamentos,
-                    dadosUsuarios,
                 ] = await Promise.all([
                     listarAvaliacoes(),
                     listarAgendamentos(),
-                    listarUsuarios(),
                 ])
 
                 setAvaliacoes(
@@ -111,9 +108,6 @@ function AvaliacoesBarbeiro() {
                     dadosAgendamentos,
                 )
 
-                setUsuarios(
-                    dadosUsuarios,
-                )
             } catch (error) {
                 console.error(error)
 
@@ -133,11 +127,13 @@ function AvaliacoesBarbeiro() {
             return agendamentos.filter(
                 (agendamento) =>
                     agendamento.idBarbearia ===
-                    DEMO_IDS.barbearia &&
+                    idBarbearia &&
                     agendamento.idBarbeiro ===
-                    DEMO_IDS.barbeiro,
+                    idBarbeiro,
             )
-        }, [agendamentos])
+        }, [agendamentos,
+            idBarbearia,
+            idBarbeiro,])
 
     const avaliacoesBarbeiro =
         useMemo(() => {
@@ -236,13 +232,7 @@ function AvaliacoesBarbeiro() {
             return 'Cliente'
         }
 
-        return (
-            usuarios.find(
-                (usuario) =>
-                    usuario.idUsuario ===
-                    agendamento.idCliente,
-            )?.nome ?? 'Cliente'
-        )
+        return agendamento.nomeCliente || 'Cliente'
     }
 
     function nomeServicos(

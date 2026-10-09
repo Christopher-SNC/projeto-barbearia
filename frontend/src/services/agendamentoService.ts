@@ -3,6 +3,7 @@ import api from './api'
 import type {
   Agendamento,
   AgendamentoRequest,
+  OcupacaoAgendamento,
 } from '../types/Agendamento'
 
 export async function listarAgendamentos(): Promise<Agendamento[]> {
@@ -12,6 +13,24 @@ export async function listarAgendamentos(): Promise<Agendamento[]> {
 
   return response.data
 }
+
+export async function listarOcupacoesAgendamento(
+  idBarbeiro: number,
+  data: string,
+): Promise<OcupacaoAgendamento[]> {
+  const response = await api.get<OcupacaoAgendamento[]>(
+    '/api/agendamentos/ocupacoes',
+    {
+      params: {
+        idBarbeiro,
+        data,
+      },
+    },
+  )
+
+  return response.data
+}
+
 
 export async function criarAgendamento(
   dados: AgendamentoRequest,

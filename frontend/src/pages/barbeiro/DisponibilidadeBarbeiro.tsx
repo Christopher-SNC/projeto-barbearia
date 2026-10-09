@@ -1,11 +1,12 @@
 import {
+    useCallback,
     useEffect,
     useState,
 } from 'react'
 
 import Button from '../../components/Button/Button'
 
-import { DEMO_IDS } from '../../config/demo'
+import useAuth from '../../hooks/useAuth'
 
 import {
     ativarDisponibilidade,
@@ -106,6 +107,9 @@ function montarDias(
 }
 
 function DisponibilidadeBarbeiro() {
+    const { usuario } = useAuth()
+
+    const idBarbeiro = usuario?.idBarbeiro
     const [
         disponibilidades,
         setDisponibilidades,
@@ -121,19 +125,27 @@ function DisponibilidadeBarbeiro() {
     const [sucesso, setSucesso] =
         useState('')
 
-    async function buscarDisponibilidadesBarbeiro() {
-        const dados =
-            await listarDisponibilidades()
+    const buscarDisponibilidadesBarbeiro =
+        useCallback(async () => {
+            if (
+                idBarbeiro === null ||
+                idBarbeiro === undefined
+            ) {
+                return montarDias([])
+            }
 
-        const dadosBarbeiro =
-            dados.filter(
-                (disponibilidade) =>
-                    disponibilidade.idBarbeiro ===
-                    DEMO_IDS.barbeiro,
-            )
+            const dados =
+                await listarDisponibilidades()
 
-        return montarDias(dadosBarbeiro)
-    }
+            const dadosBarbeiro =
+                dados.filter(
+                    (disponibilidade) =>
+                        disponibilidade.idBarbeiro ===
+                        idBarbeiro,
+                )
+
+            return montarDias(dadosBarbeiro)
+        }, [idBarbeiro])
 
     useEffect(() => {
         async function carregarDisponibilidades() {
@@ -154,7 +166,7 @@ function DisponibilidadeBarbeiro() {
         }
 
         carregarDisponibilidades()
-    }, [])
+    }, [buscarDisponibilidadesBarbeiro])
 
     function alterarAtivo(
         diaSemana: DiaSemana,
@@ -224,6 +236,12 @@ function DisponibilidadeBarbeiro() {
     }
 
     async function salvar() {
+        if (idBarbeiro === null || idBarbeiro === undefined) {
+            setErro(
+                'Seu perfil de barbeiro não está disponível.',
+            )
+            return
+        }
         const mensagemValidacao =
             validar()
 
@@ -250,7 +268,7 @@ function DisponibilidadeBarbeiro() {
 
                     await cadastrarDisponibilidade({
                         idBarbeiro:
-                            DEMO_IDS.barbeiro,
+                            idBarbeiro,
                         diaSemana:
                             dia.diaSemana,
                         horaInicio:
@@ -265,7 +283,7 @@ function DisponibilidadeBarbeiro() {
                     dia.idDisponibilidade,
                     {
                         idBarbeiro:
-                            DEMO_IDS.barbeiro,
+                            idBarbeiro,
                         diaSemana:
                             dia.diaSemana,
                         horaInicio:

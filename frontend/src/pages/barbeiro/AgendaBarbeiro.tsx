@@ -6,17 +6,15 @@ import {
 
 import DateInput from '../../components/DateInput/DateInput'
 
-import { DEMO_IDS } from '../../config/demo'
+import useAuth from '../../hooks/useAuth'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarDisponibilidades } from '../../services/disponibilidadeService'
 import { listarHorariosFuncionamento } from '../../services/horarioFuncionamentoService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type { Agendamento } from '../../types/Agendamento'
 import type { Disponibilidade } from '../../types/Disponibilidade'
 import type { HorarioFuncionamento } from '../../types/HorarioFuncionamento'
-import type { Usuario } from '../../types/Usuario'
 
 import './AgendaBarbeiro.css'
 
@@ -91,15 +89,17 @@ function formatarDataTitulo(data: string) {
 }
 
 function AgendaBarbeiro() {
+    const { usuario } = useAuth()
+
+    const idBarbeiro = usuario?.idBarbeiro
+    const idBarbearia = usuario?.idBarbeariaBarbeiro
+
     const [data, setData] = useState(
         dataAtualISO(),
     )
 
     const [agendamentos, setAgendamentos] =
         useState<Agendamento[]>([])
-
-    const [usuarios, setUsuarios] =
-        useState<Usuario[]>([])
 
     const [
         disponibilidades,
@@ -121,12 +121,10 @@ function AgendaBarbeiro() {
             try {
                 const [
                     dadosAgendamentos,
-                    dadosUsuarios,
                     dadosDisponibilidades,
                     dadosHorarios,
                 ] = await Promise.all([
                     listarAgendamentos(),
-                    listarUsuarios(),
                     listarDisponibilidades(),
                     listarHorariosFuncionamento(),
                 ])
@@ -134,8 +132,6 @@ function AgendaBarbeiro() {
                 setAgendamentos(
                     dadosAgendamentos,
                 )
-
-                setUsuarios(dadosUsuarios)
 
                 setDisponibilidades(
                     dadosDisponibilidades,
@@ -164,13 +160,14 @@ function AgendaBarbeiro() {
         return horariosFuncionamento.find(
             (horario) =>
                 horario.idBarbearia ===
-                DEMO_IDS.barbearia &&
+                idBarbearia &&
                 horario.diaSemana ===
                 diaSemana,
         )
     }, [
         horariosFuncionamento,
         diaSemana,
+        idBarbearia,
     ])
 
     const disponibilidadeBarbeiro =
@@ -178,7 +175,7 @@ function AgendaBarbeiro() {
             return disponibilidades.find(
                 (disponibilidade) =>
                     disponibilidade.idBarbeiro ===
-                    DEMO_IDS.barbeiro &&
+                    idBarbeiro &&
                     disponibilidade.diaSemana ===
                     diaSemana &&
                     disponibilidade.ativo,
@@ -186,6 +183,7 @@ function AgendaBarbeiro() {
         }, [
             disponibilidades,
             diaSemana,
+            idBarbeiro,
         ])
 
     const agendamentosDoDia =
@@ -193,9 +191,9 @@ function AgendaBarbeiro() {
             return agendamentos.filter(
                 (agendamento) =>
                     agendamento.idBarbearia ===
-                    DEMO_IDS.barbearia &&
+                    idBarbearia &&
                     agendamento.idBarbeiro ===
-                    DEMO_IDS.barbeiro &&
+                    idBarbeiro &&
                     agendamento.status ===
                     'CONFIRMADO' &&
                     agendamento.dataHoraInicio.startsWith(
@@ -205,6 +203,8 @@ function AgendaBarbeiro() {
         }, [
             agendamentos,
             data,
+            idBarbearia,
+            idBarbeiro,
         ])
 
     const horariosGrade = useMemo(() => {
@@ -348,18 +348,6 @@ function AgendaBarbeiro() {
                     fimComBuffer
                 )
             },
-        )
-    }
-
-    function nomeCliente(
-        idCliente: number,
-    ) {
-        return (
-            usuarios.find(
-                (usuario) =>
-                    usuario.idUsuario ===
-                    idCliente,
-            )?.nome ?? 'Cliente'
         )
     }
 
@@ -531,9 +519,7 @@ function AgendaBarbeiro() {
                                                     <>
                                                         <div className="barber-agenda__slot-top">
                                                             <strong>
-                                                                {nomeCliente(
-                                                                    agendamento.idCliente,
-                                                                )}
+                                                                {agendamento.nomeCliente || 'Cliente'}
                                                             </strong>
 
                                                             <span className="barber-agenda__pill">

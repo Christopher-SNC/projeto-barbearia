@@ -1,5 +1,6 @@
 package br.com.projetobarbearia.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,12 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.projetobarbearia.dto.AgendamentoRequest;
 import br.com.projetobarbearia.dto.AgendamentoResponse;
 import br.com.projetobarbearia.dto.ItemAgendamentoRequest;
 import br.com.projetobarbearia.dto.ItemAgendamentoResponse;
+import br.com.projetobarbearia.dto.OcupacaoAgendamentoResponse;
 import br.com.projetobarbearia.entity.Agendamento;
 import br.com.projetobarbearia.entity.Barbearia;
 import br.com.projetobarbearia.entity.Barbeiro;
@@ -24,6 +27,7 @@ import br.com.projetobarbearia.entity.ItemAgendamento;
 import br.com.projetobarbearia.entity.Servico;
 import br.com.projetobarbearia.entity.Usuario;
 import br.com.projetobarbearia.service.AgendamentoService;
+import br.com.projetobarbearia.service.AutorizacaoService;
 import br.com.projetobarbearia.service.ItemAgendamentoService;
 
 @RestController
@@ -32,13 +36,16 @@ public class AgendamentoController {
 
     private final AgendamentoService agendamentoService;
     private final ItemAgendamentoService itemAgendamentoService;
+    private final AutorizacaoService autorizacaoService;
 
     public AgendamentoController(
             AgendamentoService agendamentoService,
-            ItemAgendamentoService itemAgendamentoService) {
+            ItemAgendamentoService itemAgendamentoService,
+            AutorizacaoService autorizacaoService) {
 
         this.agendamentoService = agendamentoService;
         this.itemAgendamentoService = itemAgendamentoService;
+        this.autorizacaoService = autorizacaoService;
     }
 
     @GetMapping
@@ -64,12 +71,28 @@ public class AgendamentoController {
                         ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/ocupacoes")
+    public ResponseEntity<List<OcupacaoAgendamentoResponse>> listarOcupacoes(
+            @RequestParam Long idBarbeiro,
+            @RequestParam LocalDate data) {
+
+        return ResponseEntity.ok(
+                agendamentoService.listarOcupacoes(
+                        idBarbeiro,
+                        data));
+    }
+
     @PostMapping
     public ResponseEntity<AgendamentoResponse> criar(
             @RequestBody AgendamentoRequest request) {
 
+        Long idClienteAutenticado =
+                autorizacaoService.obterIdUsuarioAutenticado();
+
         Agendamento agendamento =
-                converterParaAgendamento(request);
+                converterParaAgendamento(
+                        request,
+                        idClienteAutenticado);
 
         List<ItemAgendamento> itens =
                 converterParaItens(request.getItens());
@@ -118,12 +141,13 @@ public class AgendamentoController {
     }
 
     private Agendamento converterParaAgendamento(
-            AgendamentoRequest request) {
+            AgendamentoRequest request,
+            Long idClienteAutenticado) {
 
         Agendamento agendamento = new Agendamento();
 
         Usuario cliente = new Usuario();
-        cliente.setIdUsuario(request.getIdCliente());
+        cliente.setIdUsuario(idClienteAutenticado);
 
         Barbearia barbearia = new Barbearia();
         barbearia.setIdBarbearia(
@@ -183,8 +207,10 @@ public class AgendamentoController {
         return new AgendamentoResponse(
                 agendamento.getIdAgendamento(),
                 agendamento.getCliente().getIdUsuario(),
+                agendamento.getCliente().getNome(),
                 agendamento.getBarbearia().getIdBarbearia(),
                 agendamento.getBarbeiro().getIdBarbeiro(),
+                agendamento.getBarbeiro().getUsuario().getNome(),
                 agendamento.getDataHoraInicio(),
                 agendamento.getStatus(),
                 agendamento.getValorTotal(),

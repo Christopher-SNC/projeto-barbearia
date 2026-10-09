@@ -4,6 +4,7 @@ public class BarbeiroResponse {
 
     private Long idBarbeiro;
     private Long idUsuario;
+    private String nomeUsuario;
     private Long idBarbearia;
     private String descricao;
     private boolean ativo;
@@ -14,12 +15,14 @@ public class BarbeiroResponse {
     public BarbeiroResponse(
             Long idBarbeiro,
             Long idUsuario,
+            String nomeUsuario,
             Long idBarbearia,
             String descricao,
             boolean ativo) {
 
         this.idBarbeiro = idBarbeiro;
         this.idUsuario = idUsuario;
+        this.nomeUsuario = nomeUsuario;
         this.idBarbearia = idBarbearia;
         this.descricao = descricao;
         this.ativo = ativo;
@@ -39,6 +42,14 @@ public class BarbeiroResponse {
 
     public void setIdUsuario(Long idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public String getNomeUsuario() {
+        return nomeUsuario;
+    }
+
+    public void setNomeUsuario(String nomeUsuario) {
+        this.nomeUsuario = nomeUsuario;
     }
 
     public Long getIdBarbearia() {

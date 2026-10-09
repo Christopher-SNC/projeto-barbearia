@@ -198,3 +198,10 @@
 .site-header__cta:hover {
   background-color: var(--color-graphite-800);
 }
+
+.site-header__link--action {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}

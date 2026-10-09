@@ -8,20 +8,16 @@ import StatusBadge from '../../components/StatusBadge/StatusBadge'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
 import { listarBarbearias } from '../../services/barbeariaService'
-import { listarBarbeiros } from '../../services/barbeiroService'
-import { listarUsuarios } from '../../services/usuarioService'
 
 import type {
     Agendamento,
     StatusAgendamento,
 } from '../../types/Agendamento'
 import type { Barbearia } from '../../types/Barbearia'
-import type { Barbeiro } from '../../types/Barbeiro'
-import type { Usuario } from '../../types/Usuario'
 
 import './MeusAgendamentos.css'
 
-import { DEMO_IDS } from '../../config/demo'
+import useAuth from '../../hooks/useAuth'
 
 
 type AbaAgendamentos = 'proximos' | 'historico'
@@ -88,6 +84,8 @@ function obterStatusLabel(
 }
 
 function MeusAgendamentos() {
+    const { usuario } = useAuth()
+
     const [aba, setAba] =
         useState<AbaAgendamentos>('proximos')
 
@@ -99,14 +97,6 @@ function MeusAgendamentos() {
         Barbearia[]
     >([])
 
-    const [barbeiros, setBarbeiros] = useState<
-        Barbeiro[]
-    >([])
-
-    const [usuarios, setUsuarios] = useState<Usuario[]>(
-        [],
-    )
-
     const [carregando, setCarregando] = useState(true)
     const [erro, setErro] = useState('')
 
@@ -116,26 +106,19 @@ function MeusAgendamentos() {
                 const [
                     dadosAgendamentos,
                     dadosBarbearias,
-                    dadosBarbeiros,
-                    dadosUsuarios,
                 ] = await Promise.all([
                     listarAgendamentos(),
                     listarBarbearias(),
-                    listarBarbeiros(),
-                    listarUsuarios(),
                 ])
 
                 setAgendamentos(
                     dadosAgendamentos.filter(
                         (agendamento) =>
-                            agendamento.idCliente ===
-                            DEMO_IDS.cliente,
+                            agendamento.idCliente === usuario?.idUsuario,
                     ),
                 )
 
                 setBarbearias(dadosBarbearias)
-                setBarbeiros(dadosBarbeiros)
-                setUsuarios(dadosUsuarios)
             } catch (error) {
                 console.error(error)
 
@@ -148,7 +131,7 @@ function MeusAgendamentos() {
         }
 
         carregarDados()
-    }, [])
+    }, [usuario])
 
     const proximos = useMemo(() => {
         const agora = new Date()
@@ -195,25 +178,6 @@ function MeusAgendamentos() {
                 (barbearia) =>
                     barbearia.idBarbearia === idBarbearia,
             )?.nome ?? 'Barbearia'
-        )
-    }
-
-    function nomeBarbeiro(idBarbeiro: number) {
-        const barbeiro = barbeiros.find(
-            (item) =>
-                item.idBarbeiro === idBarbeiro,
-        )
-
-        if (!barbeiro) {
-            return 'Barbeiro'
-        }
-
-        return (
-            usuarios.find(
-                (usuario) =>
-                    usuario.idUsuario ===
-                    barbeiro.idUsuario,
-            )?.nome ?? 'Barbeiro'
         )
     }
 
@@ -349,9 +313,7 @@ function MeusAgendamentos() {
                                                         agendamento.dataHoraInicio,
                                                     )}{' '}
                                                     •{' '}
-                                                    {nomeBarbeiro(
-                                                        agendamento.idBarbeiro,
-                                                    )}{' '}
+                                                    {agendamento.nomeBarbeiro || 'Barbeiro'}{' '}
                                                     •{' '}
                                                     {formatarPreco(
                                                         agendamento.valorTotal,

@@ -1,6 +1,5 @@
 package br.com.projetobarbearia.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,10 +20,6 @@ public class UsuarioService {
 
                 this.usuarioRepository = usuarioRepository;
                 this.passwordEncoder = passwordEncoder;
-        }
-
-        public List<Usuario> listarTodos() {
-                return usuarioRepository.findAll();
         }
 
         public Optional<Usuario> buscarPorId(Long id) {
