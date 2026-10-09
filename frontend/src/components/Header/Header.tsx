@@ -93,13 +93,22 @@ function Header() {
                             Sair
                         </button>
                     ) : (
-                        <NavLink
+                        <>
+<NavLink
                             className="site-header__link"
                             to="/login"
                             onClick={fecharMenu}
                         >
                             Entrar
                         </NavLink>
+                            <NavLink
+                                className="site-header__link"
+                                to="/cadastro"
+                                onClick={fecharMenu}
+                            >
+                                Criar conta
+                            </NavLink>
+                        </>
                     )}
 
                     <Link

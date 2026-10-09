@@ -10,6 +10,7 @@ import Home from '../pages/publico/Home'
 import Barbearias from '../pages/publico/Barbearias'
 import DetalhesBarbearia from '../pages/publico/DetalhesBarbearia'
 import Login from '../pages/publico/Login'
+import Cadastro from '../pages/publico/Cadastro'
 
 import NovoAgendamento from '../pages/cliente/NovoAgendamento'
 import MeusAgendamentos from '../pages/cliente/MeusAgendamentos'
@@ -41,6 +42,11 @@ function AppRoutes() {
         <Route path="/" element={<Home />} />
 
         <Route path="/login" element={<Login />} />
+
+        <Route
+          path="/cadastro"
+          element={<Cadastro />}
+        />
 
         <Route
           path="/barbearias"
