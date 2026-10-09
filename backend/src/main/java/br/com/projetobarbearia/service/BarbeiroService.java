@@ -39,6 +39,35 @@ public class BarbeiroService {
         return barbeiroRepository.findById(id);
     }
 
+    @Transactional
+    public Barbeiro cadastrarCompleto(
+            String nome,
+            String email,
+            String senha,
+            String telefone,
+            Long idBarbearia,
+            String descricao) {
+
+        autorizacaoService
+                .exigirProprietarioDaBarbearia(
+                        idBarbearia);
+
+        Usuario usuario = new Usuario();
+
+        usuario.setNome(nome);
+        usuario.setEmail(email);
+        usuario.setTelefone(telefone);
+
+        Usuario usuarioSalvo =
+                usuarioService.cadastrar(
+                        usuario,
+                        senha);
+
+        return cadastrar(
+                usuarioSalvo.getIdUsuario(),
+                idBarbearia,
+                descricao);
+    }
     public Barbeiro cadastrar(
             Long idUsuario,
             Long idBarbearia,

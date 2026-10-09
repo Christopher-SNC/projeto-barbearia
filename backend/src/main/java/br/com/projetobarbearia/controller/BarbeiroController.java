@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.projetobarbearia.dto.BarbeiroCadastroRequest;
 import br.com.projetobarbearia.dto.BarbeiroRequest;
 import br.com.projetobarbearia.dto.BarbeiroResponse;
 import br.com.projetobarbearia.entity.Barbeiro;
@@ -68,6 +69,23 @@ public class BarbeiroController {
                 .body(converterParaResponse(barbeiro));
     }
 
+    @PostMapping("/cadastro-completo")
+    public ResponseEntity<BarbeiroResponse> cadastrarCompleto(
+            @RequestBody BarbeiroCadastroRequest request) {
+
+        Barbeiro barbeiro =
+                barbeiroService.cadastrarCompleto(
+                        request.getNome(),
+                        request.getEmail(),
+                        request.getSenha(),
+                        request.getTelefone(),
+                        request.getIdBarbearia(),
+                        request.getDescricao());
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(converterParaResponse(barbeiro));
+    }
     @PutMapping("/{id}")
     public ResponseEntity<BarbeiroResponse> atualizar(
             @PathVariable Long id,

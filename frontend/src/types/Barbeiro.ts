@@ -12,3 +12,11 @@ export interface BarbeiroRequest {
   idBarbearia: number
   descricao: string | null
 }
+export interface BarbeiroCadastroRequest {
+  nome: string
+  email: string
+  senha: string
+  telefone: string | null
+  idBarbearia: number
+  descricao: string | null
+}

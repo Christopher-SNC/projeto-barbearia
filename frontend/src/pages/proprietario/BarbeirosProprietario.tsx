@@ -15,7 +15,7 @@ import { listarAvaliacoes } from '../../services/avaliacaoService'
 import {
     ativarBarbeiro,
     atualizarBarbeiro,
-    cadastrarBarbeiro,
+    cadastrarBarbeiroCompleto,
     desativarBarbeiro,
     listarBarbeiros,
 } from '../../services/barbeiroService'
@@ -37,7 +37,6 @@ import {
 
 import { listarServicos } from '../../services/servicoService'
 
-import { cadastrarUsuario } from '../../services/usuarioService'
 import {
     atualizarUsuarioBarbeiro,
     buscarUsuarioBarbeiro,
@@ -800,19 +799,13 @@ function BarbeirosProprietario() {
                         },
                     )
             } else {
-                const usuarioCriado =
-                    await cadastrarUsuario({
+                barbeiroSalvo =
+                    await cadastrarBarbeiroCompleto({
                         nome: nomeLimpo,
                         email: emailLimpo,
                         senha,
                         telefone:
                             telefone.trim() || null,
-                    })
-
-                barbeiroSalvo =
-                    await cadastrarBarbeiro({
-                        idUsuario:
-                            usuarioCriado.idUsuario,
 
                         idBarbearia:
                             idBarbearia,
