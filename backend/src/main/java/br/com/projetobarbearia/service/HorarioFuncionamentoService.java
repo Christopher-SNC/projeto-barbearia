@@ -43,7 +43,7 @@ public class HorarioFuncionamentoService {
 
         Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Barbearia nÃ£o encontrada."));
+                        "Barbearia não encontrada."));
 
         validarHorario(horario);
         horario.setBarbearia(barbearia);
@@ -58,7 +58,7 @@ public class HorarioFuncionamentoService {
         HorarioFuncionamento horario = horarioFuncionamentoRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "HorÃ¡rio de funcionamento nÃ£o encontrado."));
+                        "Horário de funcionamento não encontrado."));
 
         Long idBarbeariaAnterior =
                 horario.getBarbearia().getIdBarbearia();
@@ -69,7 +69,7 @@ public class HorarioFuncionamentoService {
 
         Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Barbearia nÃ£o encontrada."));
+                        "Barbearia não encontrada."));
 
         validarHorario(novosDados);
 
@@ -96,7 +96,7 @@ public class HorarioFuncionamentoService {
         HorarioFuncionamento horario = horarioFuncionamentoRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "HorÃ¡rio de funcionamento nÃ£o encontrado."));
+                        "Horário de funcionamento não encontrado."));
 
         Long idBarbearia = horario.getBarbearia().getIdBarbearia();
         autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
@@ -109,20 +109,20 @@ public class HorarioFuncionamentoService {
     private void validarHorario(HorarioFuncionamento horario) {
         if (horario.getDiaSemana() == null) {
             throw new IllegalArgumentException(
-                    "O dia da semana Ã© obrigatÃ³rio.");
+                    "O dia da semana é obrigatório.");
         }
 
         if (!horario.isFechado()) {
             if (horario.getHoraAbertura() == null
                     || horario.getHoraFechamento() == null) {
                 throw new IllegalArgumentException(
-                        "HorÃ¡rio de abertura e fechamento sÃ£o obrigatÃ³rios.");
+                        "Horário de abertura e fechamento são obrigatórios.");
             }
 
             if (!horario.getHoraAbertura()
                     .isBefore(horario.getHoraFechamento())) {
                 throw new IllegalArgumentException(
-                        "O horÃ¡rio de abertura deve ser anterior ao horÃ¡rio de fechamento.");
+                        "O horário de abertura deve ser anterior ao horário de fechamento.");
             }
         }
     }

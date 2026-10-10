@@ -40,7 +40,7 @@ public class ServicoService {
 
         Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Barbearia nÃ£o encontrada."));
+                        "Barbearia não encontrada."));
 
         validarServico(servico);
         servico.setBarbearia(barbearia);
@@ -55,7 +55,7 @@ public class ServicoService {
 
         Servico servico = servicoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "ServiÃ§o nÃ£o encontrado."));
+                        "Serviço não encontrado."));
 
         Long idBarbeariaAnterior =
                 servico.getBarbearia().getIdBarbearia();
@@ -66,7 +66,7 @@ public class ServicoService {
 
         Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Barbearia nÃ£o encontrada."));
+                        "Barbearia não encontrada."));
 
         validarServico(novosDados);
 
@@ -88,7 +88,7 @@ public class ServicoService {
     public Servico ativar(Long id) {
         Servico servico = servicoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "ServiÃ§o nÃ£o encontrado."));
+                        "Serviço não encontrado."));
 
         autorizacaoService.exigirProprietarioDaBarbearia(
                 servico.getBarbearia().getIdBarbearia());
@@ -100,7 +100,7 @@ public class ServicoService {
     public Servico desativar(Long id) {
         Servico servico = servicoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "ServiÃ§o nÃ£o encontrado."));
+                        "Serviço não encontrado."));
 
         Long idBarbearia = servico.getBarbearia().getIdBarbearia();
         autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
@@ -115,7 +115,7 @@ public class ServicoService {
     public void excluir(Long id) {
         Servico servico = servicoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "ServiÃ§o nÃ£o encontrado."));
+                        "Serviço não encontrado."));
 
         Long idBarbearia = servico.getBarbearia().getIdBarbearia();
         autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);
@@ -128,17 +128,17 @@ public class ServicoService {
     private void validarServico(Servico servico) {
         if (servico.getNome() == null || servico.getNome().isBlank()) {
             throw new IllegalArgumentException(
-                    "O nome do serviÃ§o Ã© obrigatÃ³rio.");
+                    "O nome do serviço é obrigatório.");
         }
 
         if (servico.getPreco() == null || servico.getPreco().signum() < 0) {
             throw new IllegalArgumentException(
-                    "O preÃ§o do serviÃ§o nÃ£o pode ser negativo.");
+                    "O preço do serviço não pode ser negativo.");
         }
 
         if (servico.getDuracaoMinutos() <= 0) {
             throw new IllegalArgumentException(
-                    "A duraÃ§Ã£o do serviÃ§o deve ser maior que zero.");
+                    "A duração do serviço deve ser maior que zero.");
         }
     }
 }

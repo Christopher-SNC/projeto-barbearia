@@ -1,3 +1,4 @@
+import axios from 'axios'
 import {
     useEffect,
     useState,
@@ -7,8 +8,10 @@ import type { FormEvent } from 'react'
 import Button from '../../components/Button/Button'
 
 import {
+    ativarBarbearia,
     atualizarBarbearia,
     buscarBarbeariaPorId,
+    desativarBarbearia,
 } from '../../services/barbeariaService'
 
 import {
@@ -27,6 +30,10 @@ import type {
 import './DadosBarbeariaProprietario.css'
 
 import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
+
+interface ErroApi {
+    erro?: string
+}
 
 function somenteDigitos(valor: string) {
     return valor.replace(/\D/g, '')
@@ -117,6 +124,9 @@ function DadosBarbeariaProprietario() {
     const [descricao, setDescricao] =
         useState('')
 
+    const [ativa, setAtiva] =
+        useState(false)
+
     const [logradouro, setLogradouro] =
         useState('')
 
@@ -139,6 +149,11 @@ function DadosBarbeariaProprietario() {
 
     const [salvando, setSalvando] =
         useState(false)
+
+    const [
+        alterandoStatus,
+        setAlterandoStatus,
+    ] = useState(false)
 
     const [erro, setErro] =
         useState('')
@@ -174,6 +189,10 @@ function DadosBarbeariaProprietario() {
 
                 setDescricao(
                     barbearia.descricao ?? '',
+                )
+
+                setAtiva(
+                    barbearia.ativa,
                 )
 
                 const endereco =
@@ -221,6 +240,58 @@ function DadosBarbeariaProprietario() {
 
         carregarDados()
     }, [idBarbearia])
+
+    async function alterarStatusBarbearia() {
+        setErro('')
+        setSucesso('')
+
+        try {
+            setAlterandoStatus(true)
+
+            const barbeariaAtualizada =
+                ativa
+                    ? await desativarBarbearia(
+                        idBarbearia,
+                    )
+                    : await ativarBarbearia(
+                        idBarbearia,
+                    )
+
+            setAtiva(
+                barbeariaAtualizada.ativa,
+            )
+
+            setSucesso(
+                barbeariaAtualizada.ativa
+                    ? 'Barbearia ativada com sucesso.'
+                    : 'Barbearia desativada com sucesso.',
+            )
+        } catch (error) {
+            if (
+                axios.isAxiosError<ErroApi>(
+                    error,
+                )
+            ) {
+                const mensagem =
+                    error.response?.data?.erro
+
+                if (mensagem) {
+                    setErro(mensagem)
+                    return
+                }
+            }
+
+            console.error(error)
+
+            setErro(
+                ativa
+                    ? 'Não foi possível desativar a barbearia.'
+                    : 'Não foi possível ativar a barbearia.',
+            )
+        } finally {
+            setAlterandoStatus(false)
+        }
+    }
 
     async function salvarDados(
         event: FormEvent<HTMLFormElement>,
@@ -474,6 +545,61 @@ function DadosBarbeariaProprietario() {
                     <p className="admin-data__feedback admin-data__feedback--success">
                         {sucesso}
                     </p>
+                )}
+
+                {!carregando && (
+                    <section className="admin-data__status-card">
+                        <div className="admin-data__status-info">
+                            <span
+                                className={[
+                                    'admin-data__status-badge',
+                                    ativa
+                                        ? 'admin-data__status-badge--active'
+                                        : 'admin-data__status-badge--inactive',
+                                ]
+                                    .filter(Boolean)
+                                    .join(' ')}
+                            >
+                                {ativa
+                                    ? 'Ativa'
+                                    : 'Inativa'}
+                            </span>
+
+                            <div>
+                                <h2>
+                                    Status da barbearia
+                                </h2>
+
+                                <p>
+                                    {ativa
+                                        ? 'Sua barbearia está visível e disponível para agendamentos.'
+                                        : 'Para ativar, mantenha proprietário, endereço, horário de funcionamento, barbeiro e serviço ativos.'}
+                                </p>
+                            </div>
+                        </div>
+
+                        <Button
+                            variant={
+                                ativa
+                                    ? 'secondary'
+                                    : 'accent'
+                            }
+                            type="button"
+                            disabled={
+                                salvando ||
+                                alterandoStatus
+                            }
+                            onClick={
+                                alterarStatusBarbearia
+                            }
+                        >
+                            {alterandoStatus
+                                ? 'Atualizando...'
+                                : ativa
+                                    ? 'Desativar barbearia'
+                                    : 'Ativar barbearia'}
+                        </Button>
+                    </section>
                 )}
 
                 {carregando ? (

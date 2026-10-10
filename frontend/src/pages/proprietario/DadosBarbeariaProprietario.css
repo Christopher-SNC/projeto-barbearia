@@ -225,4 +225,96 @@
         background-color: var(--color-bg-inverse);
         color: var(--color-text-inverse);
     }
+
+    /* STATUS MOBILE */
+
+    .admin-data__status-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+
+        padding: 18px;
+    }
+
+    .admin-data__status-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .admin-data__status-badge {
+        align-self: flex-start;
+    }
+
+    .admin-data__status-card>.button {
+        width: 100%;
+    }
+}
+/* STATUS DA BARBEARIA */
+
+.admin-data__status-card {
+    display: flex;
+    width: min(1080px, 100%);
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    margin-top: 20px;
+    padding: 18px 20px;
+
+    border: 1px solid var(--color-border-default);
+    border-radius: 16px;
+
+    background-color: var(--color-bg-surface);
+}
+
+.admin-data__status-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.admin-data__status-info h2 {
+    margin: 0 0 5px;
+
+    font-size: 1rem;
+}
+
+.admin-data__status-info p {
+    max-width: 650px;
+
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+.admin-data__status-badge {
+    display: inline-flex;
+    min-width: 64px;
+    min-height: 28px;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 10px;
+
+    border-radius: 999px;
+
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.admin-data__status-badge--active {
+    background-color: #edf8f2;
+    color: #16734f;
+}
+
+.admin-data__status-badge--inactive {
+    background-color: #f7eeee;
+    color: #9b3b34;
+}
+
+.admin-data__status-card>.button {
+    flex-shrink: 0;
 }

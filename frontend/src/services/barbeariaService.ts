@@ -36,3 +36,22 @@ export async function atualizarBarbearia(
 
   return response.data
 }
+export async function ativarBarbearia(
+  id: number,
+): Promise<Barbearia> {
+  const response = await api.patch<Barbearia>(
+    `/api/barbearias/${id}/ativar`,
+  )
+
+  return response.data
+}
+
+export async function desativarBarbearia(
+  id: number,
+): Promise<Barbearia> {
+  const response = await api.patch<Barbearia>(
+    `/api/barbearias/${id}/desativar`,
+  )
+
+  return response.data
+}
