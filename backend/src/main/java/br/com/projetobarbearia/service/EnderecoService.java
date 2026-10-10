@@ -40,7 +40,7 @@ public class EnderecoService {
 
         Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Barbearia nÃ£o encontrada."));
+                        "Barbearia não encontrada."));
 
         endereco.setBarbearia(barbearia);
         return enderecoRepository.save(endereco);
@@ -53,7 +53,7 @@ public class EnderecoService {
 
         Endereco endereco = enderecoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "EndereÃ§o nÃ£o encontrado."));
+                        "Endereço não encontrado."));
 
         Long idBarbeariaAnterior =
                 endereco.getBarbearia().getIdBarbearia();
@@ -64,7 +64,7 @@ public class EnderecoService {
 
         Barbearia barbearia = barbeariaService.buscarPorId(idBarbearia)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Barbearia nÃ£o encontrada."));
+                        "Barbearia não encontrada."));
 
         endereco.setBarbearia(barbearia);
         endereco.setLogradouro(novosDados.getLogradouro());
@@ -90,7 +90,7 @@ public class EnderecoService {
     public void excluir(Long id) {
         Endereco endereco = enderecoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "EndereÃ§o nÃ£o encontrado."));
+                        "Endereço não encontrado."));
 
         Long idBarbearia = endereco.getBarbearia().getIdBarbearia();
         autorizacaoService.exigirProprietarioDaBarbearia(idBarbearia);

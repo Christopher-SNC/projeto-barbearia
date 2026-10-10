@@ -80,7 +80,7 @@ public class BarbeariaService {
                             .equals(barbearia.getIdBarbearia())) {
 
                 throw new IllegalArgumentException(
-                        "CNPJ jÃ¡ cadastrado.");
+                        "CNPJ já cadastrado.");
             }
         }
 
@@ -95,7 +95,7 @@ public class BarbeariaService {
             Usuario usuario = usuarioRepository
                     .findById(idUsuarioAutenticado)
                     .orElseThrow(() -> new IllegalArgumentException(
-                            "UsuÃ¡rio nÃ£o encontrado."));
+                            "Usuário não encontrado."));
 
             ProprietarioBarbearia vinculo = new ProprietarioBarbearia();
             vinculo.setUsuario(usuario);
@@ -111,11 +111,11 @@ public class BarbeariaService {
         Barbearia barbeariaAtual = barbeariaRepository
                 .findById(barbearia.getIdBarbearia())
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Barbearia nÃ£o encontrada."));
+                        "Barbearia não encontrada."));
 
         if (!barbeariaAtual.isAtiva() && barbearia.isAtiva()) {
             throw new IllegalArgumentException(
-                    "Para ativar a barbearia, utilize a operaÃ§Ã£o de ativaÃ§Ã£o.");
+                    "Para ativar a barbearia, utilize a operação de ativação.");
         }
 
         return barbeariaRepository.save(barbearia);
@@ -126,23 +126,23 @@ public class BarbeariaService {
 
         Barbearia barbearia = barbeariaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Barbearia nÃ£o encontrada."));
+                        "Barbearia não encontrada."));
 
         if (!proprietarioBarbeariaRepository
                 .existsByBarbearia_IdBarbeariaAndAtivoTrue(id)) {
             throw new IllegalArgumentException(
-                    "A barbearia precisa possuir pelo menos um proprietÃ¡rio ativo.");
+                    "A barbearia precisa possuir pelo menos um proprietário ativo.");
         }
 
         if (!enderecoRepository.existsByBarbearia_IdBarbearia(id)) {
             throw new IllegalArgumentException(
-                    "A barbearia precisa possuir um endereÃ§o cadastrado.");
+                    "A barbearia precisa possuir um endereço cadastrado.");
         }
 
         if (!horarioFuncionamentoRepository
                 .existsByBarbearia_IdBarbeariaAndFechadoFalse(id)) {
             throw new IllegalArgumentException(
-                    "A barbearia precisa possuir pelo menos um horÃ¡rio de funcionamento.");
+                    "A barbearia precisa possuir pelo menos um horário de funcionamento.");
         }
 
         if (!barbeiroRepository
@@ -154,7 +154,7 @@ public class BarbeariaService {
         if (!servicoRepository
                 .existsByBarbearia_IdBarbeariaAndAtivoTrue(id)) {
             throw new IllegalArgumentException(
-                    "A barbearia precisa possuir pelo menos um serviÃ§o ativo.");
+                    "A barbearia precisa possuir pelo menos um serviço ativo.");
         }
 
         barbearia.setAtiva(true);
@@ -166,7 +166,7 @@ public class BarbeariaService {
 
         if (!barbeariaRepository.existsById(id)) {
             throw new IllegalArgumentException(
-                    "Barbearia nÃ£o encontrada.");
+                    "Barbearia não encontrada.");
         }
 
         barbeariaRepository.deleteById(id);
@@ -175,7 +175,7 @@ public class BarbeariaService {
     public void desativarSeInvalida(Long idBarbearia) {
         Barbearia barbearia = barbeariaRepository.findById(idBarbearia)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Barbearia nÃ£o encontrada."));
+                        "Barbearia não encontrada."));
 
         if (!barbearia.isAtiva()) {
             return;
@@ -209,7 +209,7 @@ public class BarbeariaService {
 
         Barbearia barbearia = barbeariaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Barbearia nÃ£o encontrada."));
+                        "Barbearia não encontrada."));
 
         barbearia.setAtiva(false);
         return barbeariaRepository.save(barbearia);
