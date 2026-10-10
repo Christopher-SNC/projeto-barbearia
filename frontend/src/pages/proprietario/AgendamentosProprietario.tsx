@@ -6,6 +6,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 
 import Button from '../../components/Button/Button'
+import AgendamentoAcoes from '../../components/AgendamentoAcoes/AgendamentoAcoes'
 import StatusBadge from '../../components/StatusBadge/StatusBadge'
 
 import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
@@ -420,6 +421,19 @@ function AgendamentosProprietario() {
                             agendamento.status,
                           )}
                         </StatusBadge>
+<AgendamentoAcoes
+    agendamento={agendamento}
+    perfil="proprietario"
+    onAtualizado={(atualizado) =>
+        setAgendamentos((atuais) =>
+            atuais.map((item) =>
+                item.idAgendamento === atualizado.idAgendamento
+                    ? atualizado
+                    : item,
+            ),
+        )
+    }
+/>
                       </article>
                     ),
                   )}
@@ -473,6 +487,19 @@ function AgendamentosProprietario() {
                             agendamento.status,
                           )}
                         </StatusBadge>
+<AgendamentoAcoes
+    agendamento={agendamento}
+    perfil="proprietario"
+    onAtualizado={(atualizado) =>
+        setAgendamentos((atuais) =>
+            atuais.map((item) =>
+                item.idAgendamento === atualizado.idAgendamento
+                    ? atualizado
+                    : item,
+            ),
+        )
+    }
+/>
                       </div>
 
                       <p>

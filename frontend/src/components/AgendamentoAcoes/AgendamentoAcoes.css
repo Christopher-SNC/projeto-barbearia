@@ -1,0 +1,62 @@
+.agendamento-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.agendamento-acoes__botoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.agendamento-acoes__botao {
+    min-height: 36px;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border, #777);
+    border-radius: 8px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.agendamento-acoes__botao--cancelar {
+    border-color: #b45353;
+}
+
+.agendamento-acoes__botao--concluir {
+    border-color: #3d8061;
+}
+
+.agendamento-acoes__botao:hover:not(:disabled) {
+    background: rgba(128, 128, 128, 0.12);
+}
+
+.agendamento-acoes__botao:disabled {
+    cursor: wait;
+    opacity: 0.5;
+}
+
+.agendamento-acoes__erro {
+    color: #c45252;
+    font-size: 0.875rem;
+}
+
+.agendamento-acoes__sucesso {
+    color: #3d946b;
+    font-size: 0.875rem;
+}
+
+@media (max-width: 767px) {
+    .agendamento-acoes__botoes {
+        width: 100%;
+    }
+
+    .agendamento-acoes__botao {
+        flex: 1 1 auto;
+    }
+}
