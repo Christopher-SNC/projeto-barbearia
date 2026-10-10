@@ -4,6 +4,7 @@ import {
     useState,
 } from 'react'
 
+import AgendamentoAcoes from '../../components/AgendamentoAcoes/AgendamentoAcoes'
 import StatusBadge from '../../components/StatusBadge/StatusBadge'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
@@ -330,6 +331,19 @@ function MeusAgendamentos() {
                                                     agendamento.status,
                                                 )}
                                             </StatusBadge>
+<AgendamentoAcoes
+    agendamento={agendamento}
+    perfil="cliente"
+    onAtualizado={(atualizado) =>
+        setAgendamentos((atuais) =>
+            atuais.map((item) =>
+                item.idAgendamento === atualizado.idAgendamento
+                    ? atualizado
+                    : item,
+            ),
+        )
+    }
+/>
                                         </article>
                                     ),
                                 )}

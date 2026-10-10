@@ -4,6 +4,7 @@ import {
     useState,
 } from 'react'
 
+import AgendamentoAcoes from '../../components/AgendamentoAcoes/AgendamentoAcoes'
 import StatusBadge from '../../components/StatusBadge/StatusBadge'
 
 import useAuth from '../../hooks/useAuth'
@@ -425,6 +426,19 @@ function AgendamentosBarbeiro() {
                                                         agendamento.status,
                                                     )}
                                                 </StatusBadge>
+<AgendamentoAcoes
+    agendamento={agendamento}
+    perfil="barbeiro"
+    onAtualizado={(atualizado) =>
+        setAgendamentos((atuais) =>
+            atuais.map((item) =>
+                item.idAgendamento === atualizado.idAgendamento
+                    ? atualizado
+                    : item,
+            ),
+        )
+    }
+/>
                                             </article>
                                         ),
                                     )}
@@ -504,6 +518,19 @@ function AgendamentosBarbeiro() {
                                                         agendamento.status,
                                                     )}
                                                 </StatusBadge>
+<AgendamentoAcoes
+    agendamento={agendamento}
+    perfil="barbeiro"
+    onAtualizado={(atualizado) =>
+        setAgendamentos((atuais) =>
+            atuais.map((item) =>
+                item.idAgendamento === atualizado.idAgendamento
+                    ? atualizado
+                    : item,
+            ),
+        )
+    }
+/>
                                             </div>
 
                                             <div className="barber-appointments__card-service">

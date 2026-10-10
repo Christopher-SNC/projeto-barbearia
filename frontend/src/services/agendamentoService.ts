@@ -42,3 +42,32 @@ export async function criarAgendamento(
 
   return response.data
 }
+export async function cancelarAgendamento(
+  idAgendamento: number,
+): Promise<Agendamento> {
+  const response = await api.patch<Agendamento>(
+    `/api/agendamentos/${idAgendamento}/cancelar`,
+  )
+
+  return response.data
+}
+
+export async function concluirAgendamento(
+  idAgendamento: number,
+): Promise<Agendamento> {
+  const response = await api.patch<Agendamento>(
+    `/api/agendamentos/${idAgendamento}/concluir`,
+  )
+
+  return response.data
+}
+
+export async function registrarNaoComparecimento(
+  idAgendamento: number,
+): Promise<Agendamento> {
+  const response = await api.patch<Agendamento>(
+    `/api/agendamentos/${idAgendamento}/nao-compareceu`,
+  )
+
+  return response.data
+}
