@@ -18,6 +18,37 @@ interface LoginLocationState {
     from?: string
 }
 
+function destinoPorPerfil(
+    perfis: string[],
+    origem?: string,
+): string {
+    const destinoPadrao = perfis.includes('PROPRIETARIO')
+        ? '/proprietario'
+        : perfis.includes('BARBEIRO')
+            ? '/barbeiro'
+            : '/'
+
+    if (!origem || !origem.startsWith('/') || origem.startsWith('//')) {
+        return destinoPadrao
+    }
+
+    if (
+        origem.startsWith('/proprietario') &&
+        !perfis.includes('PROPRIETARIO')
+    ) {
+        return destinoPadrao
+    }
+
+    if (
+        origem.startsWith('/barbeiro') &&
+        !perfis.includes('BARBEIRO')
+    ) {
+        return destinoPadrao
+    }
+
+    return origem
+}
+
 function Login() {
     const { usuario, entrar } = useAuth()
 
@@ -37,7 +68,7 @@ function Login() {
     if (usuario) {
         return (
             <Navigate
-                to={destino}
+                to={destinoPorPerfil(usuario.perfis, estado?.from)}
                 replace
             />
         )
@@ -52,9 +83,9 @@ function Login() {
         setEnviando(true)
 
         try {
-            await entrar(email, senha)
+            const dados = await entrar(email, senha)
 
-            navigate(destino, {
+            navigate(destinoPorPerfil(dados.perfis, estado?.from), {
                 replace: true,
             })
         } catch (error) {
