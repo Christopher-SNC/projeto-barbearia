@@ -199,3 +199,21 @@
         }
     }
 }
+/* CORRECAO VISIBILIDADE RESPONSIVA */
+
+.appointments-description__mobile,
+.appointments-title__mobile {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .appointments-description__desktop,
+    .appointments-title__desktop {
+        display: none;
+    }
+
+    .appointments-description__mobile,
+    .appointments-title__mobile {
+        display: inline;
+    }
+}
