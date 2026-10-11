@@ -26,7 +26,7 @@ function destinoPorPerfil(
         ? '/proprietario'
         : perfis.includes('BARBEIRO')
             ? '/barbeiro'
-            : '/'
+            : '/cliente'
 
     if (!origem || !origem.startsWith('/') || origem.startsWith('//')) {
         return destinoPadrao

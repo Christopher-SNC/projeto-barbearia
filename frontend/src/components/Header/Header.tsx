@@ -90,6 +90,7 @@ function Header() {
                         <details ref={menuContaRef} className="site-header__account-menu">
                             <summary className="site-header__link">Minha conta</summary>
                             <div className="site-header__account-dropdown">
+                                <NavLink className="site-header__link" to="/cliente" onClick={fecharMenu}>Painel do cliente</NavLink>
                                 <NavLink className="site-header__link" to="/meus-agendamentos" onClick={fecharMenu}>Meus agendamentos</NavLink>
                                 <NavLink className="site-header__link" to="/meus-favoritos" onClick={fecharMenu}>Favoritos</NavLink>
                                 {!usuario.perfis.includes('PROPRIETARIO') && (

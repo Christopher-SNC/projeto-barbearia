@@ -13,6 +13,7 @@ import Login from '../pages/publico/Login'
 import Cadastro from '../pages/publico/Cadastro'
 import CadastrarBarbearia from '../pages/publico/CadastrarBarbearia'
 
+import DashboardCliente from '../pages/cliente/DashboardCliente'
 import NovoAgendamento from '../pages/cliente/NovoAgendamento'
 import MeusAgendamentos from '../pages/cliente/MeusAgendamentos'
 import MeusFavoritos from '../pages/cliente/MeusFavoritos'
@@ -41,6 +42,14 @@ function AppRoutes() {
   return (
     <Routes>
       <Route element={<PublicLayout />}>
+        <Route
+          path="/cliente"
+          element={
+            <ProtectedRoute perfilObrigatorio="CLIENTE">
+              <DashboardCliente />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/" element={<Home />} />
 
         <Route path="/login" element={<Login />} />

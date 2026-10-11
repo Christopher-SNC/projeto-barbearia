@@ -133,7 +133,7 @@ function BarbeiroSidebar() {
                 )}
                 <NavLink
                     className="admin-navigation__item admin-navigation__item--area"
-                    to="/"
+                    to="/cliente"
                     onClick={fecharMenu}
                 >
                     Área do cliente
