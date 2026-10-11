@@ -8,9 +8,11 @@ import useAuth from '../../hooks/useAuth'
 import { listarBarbearias } from '../../services/barbeariaService'
 import { listarEnderecos } from '../../services/enderecoService'
 import { listarFavoritos } from '../../services/favoritoService'
+import { listarFotosPublicas } from '../../services/fotoService'
 
 import type { Barbearia } from '../../types/Barbearia'
 import type { Endereco } from '../../types/Endereco'
+import type { Foto } from '../../types/Foto'
 import type { Favorito } from '../../services/favoritoService'
 
 import './MeusFavoritos.css'
@@ -20,22 +22,25 @@ function MeusFavoritos() {
   const [favoritos, setFavoritos] = useState<Favorito[]>([])
   const [barbearias, setBarbearias] = useState<Barbearia[]>([])
   const [enderecos, setEnderecos] = useState<Endereco[]>([])
+  const [fotos, setFotos] = useState<Foto[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
 
   useEffect(() => {
     async function carregar() {
       try {
-        const [dadosFavoritos, dadosBarbearias, dadosEnderecos] =
+        const [dadosFavoritos, dadosBarbearias, dadosEnderecos, dadosFotos] =
           await Promise.all([
             listarFavoritos(),
             listarBarbearias(),
             listarEnderecos(),
+            listarFotosPublicas(),
           ])
 
         setFavoritos(dadosFavoritos)
         setBarbearias(dadosBarbearias)
         setEnderecos(dadosEnderecos)
+        setFotos(dadosFotos)
       } catch (error) {
         console.error(error)
         setErro('Não foi possível carregar seus favoritos.')
@@ -83,6 +88,12 @@ function MeusFavoritos() {
                     (item) =>
                       item.idBarbearia === favorito.idBarbearia,
                   )}
+                  fotoPrincipal={
+                    fotos.find(
+                      (foto) =>
+                        foto.idBarbearia === favorito.idBarbearia,
+                    ) ?? null
+                  }
                 />
 
                 <BotaoFavorito
