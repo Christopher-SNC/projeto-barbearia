@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +63,21 @@ public class BarbeariaService {
     public Barbearia salvar(Barbearia barbearia) {
 
         boolean novaBarbearia = barbearia.getIdBarbearia() == null;
+
+        if (novaBarbearia) {
+            Long idUsuario = autorizacaoService.obterIdUsuarioAutenticado();
+            boolean barbeiroAtivo = barbeiroRepository
+                    .findByUsuario_IdUsuarioAndAtivoTrue(idUsuario)
+                    .isPresent();
+            boolean proprietarioAtivo = !proprietarioBarbeariaRepository
+                    .findByUsuario_IdUsuarioAndAtivoTrue(idUsuario)
+                    .isEmpty();
+
+            if (barbeiroAtivo && !proprietarioAtivo) {
+                throw new AccessDeniedException(
+                        "Barbeiro funcionario nao pode cadastrar uma barbearia.");
+            }
+        }
 
         if (!novaBarbearia) {
             autorizacaoService.exigirProprietarioDaBarbearia(
