@@ -5,6 +5,9 @@ import {
 } from 'react'
 
 import AgendamentoAcoes from '../../components/AgendamentoAcoes/AgendamentoAcoes'
+import AvaliacaoAgendamento from '../../components/AvaliacaoAgendamento/AvaliacaoAgendamento'
+import { listarAvaliacoes } from '../../services/avaliacaoService'
+import type { Avaliacao } from '../../types/Avaliacao'
 import StatusBadge from '../../components/StatusBadge/StatusBadge'
 
 import { listarAgendamentos } from '../../services/agendamentoService'
@@ -98,6 +101,9 @@ function MeusAgendamentos() {
         Barbearia[]
     >([])
 
+    const [avaliacoes, setAvaliacoes] = useState<Avaliacao[]>([])
+    const [avaliacoesCarregando, setAvaliacoesCarregando] = useState(true)
+    const [erroAvaliacoes, setErroAvaliacoes] = useState('')
     const [carregando, setCarregando] = useState(true)
     const [erro, setErro] = useState('')
 
@@ -134,6 +140,26 @@ function MeusAgendamentos() {
         carregarDados()
     }, [usuario])
 
+    useEffect(() => {
+        async function carregarAvaliacoes() {
+            setAvaliacoesCarregando(true)
+            setErroAvaliacoes('')
+
+            try {
+                const dados = await listarAvaliacoes()
+                setAvaliacoes(dados)
+            } catch (error) {
+                console.error(error)
+                setErroAvaliacoes(
+                    'Não foi possível consultar suas avaliações. Tente atualizar a página.',
+                )
+            } finally {
+                setAvaliacoesCarregando(false)
+            }
+        }
+
+        carregarAvaliacoes()
+    }, [])
     const proximos = useMemo(() => {
         const agora = new Date()
 
@@ -344,7 +370,30 @@ function MeusAgendamentos() {
         )
     }
 />
-                                        </article>
+                                            {agendamento.status === 'CONCLUIDO' && (
+                                                avaliacoesCarregando ? (
+                                                    <p>Carregando avaliações...</p>
+                                                ) : erroAvaliacoes ? (
+                                                    <p className="appointments-message">
+                                                        {erroAvaliacoes}
+                                                    </p>
+                                                ) : (
+                                                    <AvaliacaoAgendamento
+                                                        agendamento={agendamento}
+                                                        jaAvaliado={avaliacoes.some(
+                                                            (avaliacao) =>
+                                                                avaliacao.idAgendamento ===
+                                                                agendamento.idAgendamento,
+                                                        )}
+                                                        onAvaliado={(avaliacao) =>
+                                                            setAvaliacoes((atuais) => [
+                                                                ...atuais,
+                                                                avaliacao,
+                                                            ])
+                                                        }
+                                                    />
+                                                )
+                                            )}                                        </article>
                                     ),
                                 )}
                             </div>

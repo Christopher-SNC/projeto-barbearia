@@ -217,3 +217,36 @@
         display: inline;
     }
 }
+/* Layout da avaliacao do cliente */
+
+.appointments-page .appointment-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    column-gap: var(--spacing-lg);
+    row-gap: 0;
+}
+
+.appointments-page .appointment-card__content {
+    min-width: 0;
+}
+
+.appointments-page .appointment-card > .appointment-review {
+    grid-column: 1 / -1;
+    min-width: 0;
+}
+
+.appointments-page .appointment-review__form {
+    margin-top: 4px;
+}
+
+@media (max-width: 767px) {
+    .appointments-page .appointment-card {
+        grid-template-columns: 1fr;
+        row-gap: var(--spacing-sm);
+    }
+
+    .appointments-page .appointment-card > * {
+        grid-column: 1;
+    }
+}
