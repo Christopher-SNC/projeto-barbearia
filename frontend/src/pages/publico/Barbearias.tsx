@@ -17,6 +17,8 @@ import Button from '../../components/Button/Button'
 import { listarBarbearias } from '../../services/barbeariaService'
 import { listarEnderecos } from '../../services/enderecoService'
 import { listarServicos } from '../../services/servicoService'
+import { listarFotosPublicas } from '../../services/fotoService'
+import type { Foto } from '../../types/Foto'
 import type { Servico } from '../../types/Servico'
 import {
   listarResumoAvaliacoes,
@@ -95,6 +97,7 @@ function Barbearias() {
   >([])
 
   const [servicos, setServicos] = useState<Servico[]>([])
+  const [fotos, setFotos] = useState<Foto[]>([])
 
   const [resumos, setResumos] = useState<
     ResumoAvaliacaoBarbearia[]
@@ -128,16 +131,18 @@ function Barbearias() {
   useEffect(() => {
     async function carregarDados() {
       try {
-        const [dadosBarbearias, dadosEnderecos, dadosServicos] =
+        const [dadosBarbearias, dadosEnderecos, dadosServicos, dadosFotos] =
           await Promise.all([
             listarBarbearias(),
             listarEnderecos(),
             listarServicos(),
+            listarFotosPublicas(),
           ])
 
         setBarbearias(dadosBarbearias)
         setEnderecos(dadosEnderecos)
         setServicos(dadosServicos)
+        setFotos(dadosFotos)
       } catch (error) {
         console.error(error)
 
@@ -573,6 +578,12 @@ function Barbearias() {
                           barbearia={barbearia}
                           endereco={endereco}
                           distanciaKm={distanciaKm}
+                          fotoPrincipal={
+                            fotos.find(
+                              (foto) =>
+                                foto.idBarbearia === barbearia.idBarbearia,
+                            ) ?? null
+                          }
                         />
                         <p className="barbershops-rating">
                           {resumo

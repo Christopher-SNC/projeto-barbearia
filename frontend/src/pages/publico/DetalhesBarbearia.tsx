@@ -12,14 +12,17 @@ import { listarBarbeiros } from '../../services/barbeiroService'
 import { listarEnderecos } from '../../services/enderecoService'
 import { listarHorariosFuncionamento } from '../../services/horarioFuncionamentoService'
 import { listarServicos } from '../../services/servicoService'
+import { listarFotosPublicas } from '../../services/fotoService'
 
 import type { Barbearia } from '../../types/Barbearia'
 import type { Barbeiro } from '../../types/Barbeiro'
 import type { Endereco } from '../../types/Endereco'
 import type { HorarioFuncionamento } from '../../types/HorarioFuncionamento'
 import type { Servico } from '../../types/Servico'
+import type { Foto } from '../../types/Foto'
 
 import './DetalhesBarbearia.css'
+import './GaleriaPublica.css'
 
 const nomesDias: Record<string, string> = {
   SEGUNDA: 'Segunda-feira',
@@ -62,6 +65,10 @@ function DetalhesBarbearia() {
     Barbeiro[]
   >([])
 
+  const [fotos, setFotos] = useState<Foto[]>([])
+  const [idFotoSelecionada, setIdFotoSelecionada] =
+    useState<number | null>(null)
+
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
 
@@ -82,15 +89,23 @@ function DetalhesBarbearia() {
           dadosHorarios,
           dadosServicos,
           dadosBarbeiros,
+          dadosFotos,
         ] = await Promise.all([
           buscarBarbeariaPorId(idBarbearia),
           listarEnderecos(),
           listarHorariosFuncionamento(),
           listarServicos(),
           listarBarbeiros(),
+          listarFotosPublicas(),
         ])
 
         setBarbearia(dadosBarbearia)
+
+        setFotos(
+          dadosFotos.filter(
+            (foto) => foto.idBarbearia === idBarbearia,
+          ),
+        )
 
         setEndereco(
           dadosEnderecos.find(
@@ -135,6 +150,10 @@ function DetalhesBarbearia() {
 
     carregarDados()
   }, [id])
+
+  const fotoPrincipal =
+    fotos.find((foto) => foto.idFoto === idFotoSelecionada) ??
+    fotos[0]
 
   function irParaAgendamento() {
     if (!barbearia) {
@@ -181,6 +200,16 @@ function DetalhesBarbearia() {
       <section className="barbershop-details__hero">
         <div className="barbershop-details__container barbershop-details__hero-grid">
           <div className="barbershop-details__image">
+            {fotoPrincipal && (
+              <img
+                key={fotoPrincipal.idFoto}
+                src={fotoPrincipal.url}
+                alt={fotoPrincipal.legenda || barbearia.nome}
+                onError={(event) => {
+                  event.currentTarget.style.display = 'none'
+                }}
+              />
+            )}
             <span />
           </div>
 
@@ -213,6 +242,46 @@ function DetalhesBarbearia() {
       <section className="barbershop-details__content">
         <div className="barbershop-details__container barbershop-details__content-grid">
           <div className="barbershop-details__main">
+            {fotos.length > 0 && (
+              <section className="barbershop-details__section">
+                <h2>Galeria de fotos</h2>
+
+                <div className="barbershop-gallery">
+                  {fotos.map((foto, index) => (
+                    <button
+                      key={foto.idFoto}
+                      type="button"
+                      className={[
+                        'barbershop-gallery__item',
+                        fotoPrincipal?.idFoto === foto.idFoto
+                          ? 'barbershop-gallery__item--active'
+                          : '',
+                      ].filter(Boolean).join(' ')}
+                      aria-label={
+                        `Selecionar foto: ${foto.legenda || `Foto ${index + 1}`}`
+                      }
+                      aria-pressed={
+                        fotoPrincipal?.idFoto === foto.idFoto
+                      }
+                      onClick={() => setIdFotoSelecionada(foto.idFoto)}
+                    >
+                      <img
+                        src={foto.url}
+                        alt={foto.legenda || `Foto ${index + 1}`}
+                        loading="lazy"
+                        onError={(event) => {
+                          event.currentTarget.style.display = 'none'
+                        }}
+                      />
+                      <span>
+                        {foto.legenda || `Foto ${index + 1}`}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
+
             <section className="barbershop-details__section">
               <h2>Serviços</h2>
 

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 
 import type { Barbearia } from '../../types/Barbearia'
 import type { Endereco } from '../../types/Endereco'
+import type { Foto } from '../../types/Foto'
 
 import './BarbeariaCard.css'
 
@@ -9,12 +10,14 @@ interface BarbeariaCardProps {
   barbearia: Barbearia
   endereco?: Endereco
   distanciaKm?: number | null
+  fotoPrincipal?: Foto | null
 }
 
 function BarbeariaCard({
   barbearia,
   endereco,
   distanciaKm,
+  fotoPrincipal,
 }: BarbeariaCardProps) {
   const localizacao = endereco
     ? `${endereco.bairro} • ${endereco.cidade}`
@@ -26,6 +29,17 @@ function BarbeariaCard({
       to={`/barbearias/${barbearia.idBarbearia}`}
     >
       <div className="barbershop-card__image">
+        {fotoPrincipal && (
+          <img
+            key={fotoPrincipal.idFoto}
+            src={fotoPrincipal.url}
+            alt={fotoPrincipal.legenda || barbearia.nome}
+            loading="lazy"
+            onError={(event) => {
+              event.currentTarget.style.display = 'none'
+            }}
+          />
+        )}
         <span />
       </div>
 
