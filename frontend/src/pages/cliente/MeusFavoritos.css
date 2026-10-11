@@ -1,0 +1,50 @@
+.favorites-page {
+  width: min(100% - 32px, 960px);
+  margin: 0 auto;
+  padding: 48px 0 80px;
+}
+
+.favorites-page h1 {
+  margin-bottom: 8px;
+}
+
+.favorites-page > p {
+  margin-bottom: 20px;
+}
+
+.favorites-page__list {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.favorites-page__item {
+  min-width: 0;
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.favorites-page__item .favorite-control {
+  padding: 12px 16px;
+}
+/* Grade responsiva dos favoritos */
+
+.favorites-page__list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 255px), 1fr));
+  align-items: start;
+}
+
+.favorites-page__item {
+  width: 100%;
+}
+
+.favorites-page__item .barbershop-card {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .favorites-page__list {
+    grid-template-columns: 1fr;
+  }
+}

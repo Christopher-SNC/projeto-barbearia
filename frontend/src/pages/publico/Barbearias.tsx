@@ -7,6 +7,11 @@ import type { FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import BarbeariaCard from '../../components/BarbeariaCard/BarbeariaCard'
+import BotaoFavorito from '../../components/BotaoFavorito/BotaoFavorito'
+import useAuth from '../../hooks/useAuth'
+import { listarFavoritos } from '../../services/favoritoService'
+import type { Favorito } from '../../services/favoritoService'
+import { Link } from 'react-router-dom'
 import Button from '../../components/Button/Button'
 
 import { listarBarbearias } from '../../services/barbeariaService'
@@ -67,6 +72,9 @@ function calcularDistancia(
 }
 
 function Barbearias() {
+  const { usuario } = useAuth()
+  const [favoritos, setFavoritos] = useState<Favorito[]>([])
+  const [erroFavoritos, setErroFavoritos] = useState('')
   const [searchParams, setSearchParams] =
     useSearchParams()
 
@@ -119,6 +127,26 @@ function Barbearias() {
     carregarDados()
   }, [])
 
+  useEffect(() => {
+    if (!usuario?.idUsuario) return
+
+    let ativo = true
+
+    void listarFavoritos()
+      .then((dados) => {
+        if (ativo) setFavoritos(dados)
+      })
+      .catch((error) => {
+        console.error(error)
+        if (ativo) {
+          setErroFavoritos('Não foi possível carregar os favoritos.')
+        }
+      })
+
+    return () => {
+      ativo = false
+    }
+  }, [usuario?.idUsuario])
   const resultados = useMemo(() => {
     const termo = normalizarTexto(
       searchParams.get('busca')?.trim() ?? '',
@@ -368,6 +396,17 @@ function Barbearias() {
         <div className="barbershops-container">
           <div className="barbershops-results__grid">
             <div>
+              {usuario && (
+                <p>
+                  <Link to="/meus-favoritos">
+                    ♥ Meus favoritos
+                  </Link>
+                </p>
+              )}
+
+              {erroFavoritos && (
+                <p role="alert">{erroFavoritos}</p>
+              )}
               <p className="barbershops-results__count">
                 {resultados.length}{' '}
                 {resultados.length === 1
@@ -388,12 +427,30 @@ function Barbearias() {
                       endereco,
                       distanciaKm,
                     }) => (
-                      <BarbeariaCard
-                        key={barbearia.idBarbearia}
-                        barbearia={barbearia}
-                        endereco={endereco}
-                        distanciaKm={distanciaKm}
-                      />
+                      <div key={barbearia.idBarbearia}>
+                        <BarbeariaCard
+                          barbearia={barbearia}
+                          endereco={endereco}
+                          distanciaKm={distanciaKm}
+                        />
+                        <BotaoFavorito
+                          idBarbearia={barbearia.idBarbearia}
+                          favorito={favoritos.find(
+                            (item) =>
+                              item.idBarbearia ===
+                              barbearia.idBarbearia,
+                          )}
+                          onAlterado={(idBarbearia, atualizado) => {
+                            setFavoritos((atuais) => [
+                              ...atuais.filter(
+                                (item) =>
+                                  item.idBarbearia !== idBarbearia,
+                              ),
+                              ...(atualizado ? [atualizado] : []),
+                            ])
+                          }}
+                        />
+                      </div>
                     ),
                   )}
                 </div>

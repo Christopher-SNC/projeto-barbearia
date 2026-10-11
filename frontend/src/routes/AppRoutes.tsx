@@ -14,6 +14,7 @@ import Cadastro from '../pages/publico/Cadastro'
 
 import NovoAgendamento from '../pages/cliente/NovoAgendamento'
 import MeusAgendamentos from '../pages/cliente/MeusAgendamentos'
+import MeusFavoritos from '../pages/cliente/MeusFavoritos'
 
 import DashboardProprietario from '../pages/proprietario/DashboardProprietario'
 import AgendaBarbearia from '../pages/proprietario/AgendaBarbearia'
@@ -58,6 +59,14 @@ function AppRoutes() {
           element={<DetalhesBarbearia />}
         />
 
+        <Route
+          path="/meus-favoritos"
+          element={
+            <ProtectedRoute perfilObrigatorio="CLIENTE">
+              <MeusFavoritos />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/barbearias/:id/agendar"
           element={
