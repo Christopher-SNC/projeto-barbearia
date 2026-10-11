@@ -206,3 +206,31 @@
   font: inherit;
   cursor: pointer;
 }
+/* Menu de conta autenticada */
+.site-header__account-menu { position: relative; }
+.site-header__account-menu summary { cursor: pointer; list-style: none; }
+.site-header__account-menu summary::-webkit-details-marker { display: none; }
+.site-header__account-menu summary:focus-visible { outline: 2px solid var(--color-gold-500); outline-offset: 2px; }
+.site-header__account-dropdown {
+  display: grid;
+  min-width: 220px;
+  padding: var(--spacing-xs);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+.site-header__account-dropdown .site-header__link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+}
+@media (min-width: 768px) {
+  .site-header__account-dropdown {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 10px);
+    right: 0;
+  }
+}

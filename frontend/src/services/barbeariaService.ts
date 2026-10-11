@@ -25,6 +25,13 @@ export async function buscarBarbeariaPorId(
   return response.data
 }
 
+export async function cadastrarBarbearia(
+  dados: BarbeariaRequest,
+): Promise<Barbearia> {
+  const response = await api.post<Barbearia>('/api/barbearias', dados)
+  return response.data
+}
+
 export async function atualizarBarbearia(
   id: number,
   dados: BarbeariaRequest,

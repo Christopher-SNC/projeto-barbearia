@@ -87,6 +87,12 @@ function AuthProvider({
         return dados
     }
 
+    async function atualizarSessao(): Promise<UsuarioAutenticado> {
+        const dados = await buscarSessao()
+        setUsuario(dados)
+        return dados
+    }
+
     async function sair(): Promise<void> {
         try {
             await fazerLogout()
@@ -111,6 +117,7 @@ function AuthProvider({
                 carregando,
                 entrar,
                 sair,
+                atualizarSessao,
                 possuiPerfil,
             }}
         >

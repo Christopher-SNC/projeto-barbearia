@@ -11,6 +11,7 @@ import Barbearias from '../pages/publico/Barbearias'
 import DetalhesBarbearia from '../pages/publico/DetalhesBarbearia'
 import Login from '../pages/publico/Login'
 import Cadastro from '../pages/publico/Cadastro'
+import CadastrarBarbearia from '../pages/publico/CadastrarBarbearia'
 
 import NovoAgendamento from '../pages/cliente/NovoAgendamento'
 import MeusAgendamentos from '../pages/cliente/MeusAgendamentos'
@@ -47,6 +48,15 @@ function AppRoutes() {
         <Route
           path="/cadastro"
           element={<Cadastro />}
+        />
+
+        <Route
+          path="/cadastrar-barbearia"
+          element={
+            <ProtectedRoute perfilObrigatorio="CLIENTE">
+              <CadastrarBarbearia />
+            </ProtectedRoute>
+          }
         />
 
         <Route

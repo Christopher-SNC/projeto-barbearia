@@ -1,0 +1,58 @@
+.onboarding-page {
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  min-height: calc(100vh - 80px);
+  background: var(--color-bg-page);
+}
+.onboarding-card {
+  width: min(100%, 900px);
+  margin: auto;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+  padding: clamp(22px, 4vw, 44px);
+  box-shadow: var(--shadow-card);
+}
+.onboarding-eyebrow {
+  color: var(--color-gold-600);
+  font-size: .75rem;
+  font-weight: 750;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.onboarding-card h1 { font-size: clamp(1.65rem, 4vw, 2.3rem); margin: 12px 0; }
+.onboarding-intro { color: var(--color-text-secondary); line-height: 1.6; }
+.onboarding-form { display: grid; gap: 16px; }
+.onboarding-form h2 { font-size: 1.1rem; margin: 20px 0 0; }
+.onboarding-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.onboarding-grid label { display: grid; gap: 7px; font-size: .86rem; font-weight: 600; }
+.onboarding-grid input {
+  min-height: 46px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: white;
+}
+.onboarding-grid input:focus-visible, .onboarding-actions button:focus-visible {
+  outline: 2px solid var(--color-gold-500);
+  outline-offset: 2px;
+}
+.onboarding-checkbox { display: flex; align-items: center; gap: 12px; font-weight: 600; }
+.onboarding-checkbox input { width: 18px; height: 18px; accent-color: var(--color-gold-600); }
+.onboarding-note { color: var(--color-text-secondary); line-height: 1.55; margin: 0; font-size: .85rem; }
+.onboarding-error { background: #fff0ef; color: var(--color-error); padding: 13px; border-radius: var(--radius-md); }
+.onboarding-actions { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 12px; }
+.onboarding-actions a { color: var(--color-gold-600); font-weight: 600; }
+.onboarding-actions button {
+  background: var(--color-bg-inverse);
+  color: white;
+  border: 0;
+  border-radius: var(--radius-md);
+  padding: 13px 22px;
+  font-weight: 700;
+}
+.onboarding-actions button:disabled { opacity: .6; cursor: wait; }
+@media (max-width: 680px) {
+  .onboarding-page { padding: var(--spacing-md); }
+  .onboarding-grid { grid-template-columns: 1fr; }
+}

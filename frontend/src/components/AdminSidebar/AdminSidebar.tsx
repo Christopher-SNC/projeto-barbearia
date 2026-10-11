@@ -68,7 +68,7 @@ function AdminSidebar() {
         useState('Barbearia')
 
     const navigate = useNavigate()
-    const { sair } = useAuth()
+    const { usuario, sair } = useAuth()
 
     useEffect(() => {
         let componenteAtivo = true
@@ -129,6 +129,26 @@ function AdminSidebar() {
                     </NavLink>
                 ))}
             </div>
+
+            <nav className="admin-navigation__areas" aria-label="Trocar de área">
+                <span className="admin-navigation__areas-label">Trocar de área</span>
+                {usuario?.perfis.includes('BARBEIRO') && (
+                    <NavLink
+                        className="admin-navigation__item admin-navigation__item--area"
+                        to="/barbeiro"
+                        onClick={fecharMenu}
+                    >
+                        Área do barbeiro
+                    </NavLink>
+                )}
+                <NavLink
+                    className="admin-navigation__item admin-navigation__item--area"
+                    to="/"
+                    onClick={fecharMenu}
+                >
+                    Área do cliente
+                </NavLink>
+            </nav>
 
             <button
                 className="admin-sidebar__logout"
