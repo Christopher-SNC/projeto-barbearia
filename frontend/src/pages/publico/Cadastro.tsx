@@ -43,7 +43,7 @@ function Cadastro() {
     const estado =
         location.state as CadastroLocationState | null
 
-    const destino = estado?.from ?? '/'
+    const destino = estado?.from ?? '/cliente'
 
     if (usuario) {
         return (
