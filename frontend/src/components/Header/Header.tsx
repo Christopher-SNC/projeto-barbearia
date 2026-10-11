@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
     Link,
     NavLink,
@@ -11,12 +11,14 @@ import './Header.css'
 
 function Header() {
     const [menuAberto, setMenuAberto] = useState(false)
+    const menuContaRef = useRef<HTMLDetailsElement>(null)
 
     const navigate = useNavigate()
     const { usuario, sair } = useAuth()
 
     function fecharMenu() {
         setMenuAberto(false)
+        menuContaRef.current?.removeAttribute('open')
     }
 
     async function sairDaConta() {
@@ -85,13 +87,24 @@ function Header() {
                     </a>
 
                     {usuario ? (
-                        <button
-                            className="site-header__link site-header__link--action"
-                            type="button"
-                            onClick={sairDaConta}
-                        >
-                            Sair
-                        </button>
+                        <details ref={menuContaRef} className="site-header__account-menu">
+                            <summary className="site-header__link">Minha conta</summary>
+                            <div className="site-header__account-dropdown">
+                                <NavLink className="site-header__link" to="/meus-agendamentos" onClick={fecharMenu}>Meus agendamentos</NavLink>
+                                <NavLink className="site-header__link" to="/meus-favoritos" onClick={fecharMenu}>Favoritos</NavLink>
+                                {!usuario.perfis.includes('PROPRIETARIO') && (
+                                    <NavLink className="site-header__link" to="/cadastrar-barbearia" onClick={fecharMenu}>Cadastrar barbearia</NavLink>
+                                )}
+                                {usuario.perfis.includes('PROPRIETARIO') && (
+                                    <NavLink className="site-header__link" to="/proprietario" onClick={fecharMenu}>Painel do proprietário</NavLink>
+                                )}
+                                {usuario.perfis.includes('BARBEIRO') && (
+                                    <NavLink className="site-header__link" to="/barbeiro" onClick={fecharMenu}>Área do barbeiro</NavLink>
+                                )}
+                                <button className="site-header__link site-header__link--action"
+                                    type="button" onClick={sairDaConta}>Sair</button>
+                            </div>
+                        </details>
                     ) : (
                         <>
 <NavLink

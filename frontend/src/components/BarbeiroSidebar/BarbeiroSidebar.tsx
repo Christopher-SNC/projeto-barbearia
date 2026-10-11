@@ -120,6 +120,26 @@ function BarbeiroSidebar() {
                 ))}
             </div>
 
+            <nav className="admin-navigation__areas" aria-label="Trocar de área">
+                <span className="admin-navigation__areas-label">Trocar de área</span>
+                {usuario?.perfis.includes('PROPRIETARIO') && (
+                    <NavLink
+                        className="admin-navigation__item admin-navigation__item--area"
+                        to="/proprietario"
+                        onClick={fecharMenu}
+                    >
+                        Painel do proprietário
+                    </NavLink>
+                )}
+                <NavLink
+                    className="admin-navigation__item admin-navigation__item--area"
+                    to="/"
+                    onClick={fecharMenu}
+                >
+                    Área do cliente
+                </NavLink>
+            </nav>
+
             <button
                 className="admin-sidebar__logout"
                 type="button"

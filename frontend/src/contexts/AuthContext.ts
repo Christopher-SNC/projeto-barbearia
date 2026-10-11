@@ -13,6 +13,7 @@ export interface AuthContextValue {
     senha: string,
   ) => Promise<UsuarioAutenticado>
   sair: () => Promise<void>
+  atualizarSessao: () => Promise<UsuarioAutenticado>
   possuiPerfil: (perfil: PerfilUsuario) => boolean
 }
 
