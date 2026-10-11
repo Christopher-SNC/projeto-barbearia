@@ -245,6 +245,11 @@
   font-weight: 500;
 }
 
+.booking-summary > .booking-help {
+  margin-bottom: var(--spacing-md);
+  line-height: 1.5;
+}
+
 /* CONFIRMAR */
 
 .booking-confirm-button--incomplete {

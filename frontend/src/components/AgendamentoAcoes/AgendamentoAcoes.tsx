@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import type { Agendamento } from '../../types/Agendamento'
 
@@ -38,7 +38,38 @@ function AgendamentoAcoes({
         confirmado &&
         (perfil === 'proprietario' || perfil === 'barbeiro')
 
-    if (!podeCancelar && !podeGerenciar && !erro && !mensagem) {
+    const inicio = new Date(agendamento.dataHoraInicio).getTime()
+    const duracaoMinutos = agendamento.itens.reduce(
+        (total, item) => total + item.duracaoMinutos,
+        0,
+    )
+
+    const [agora, setAgora] = useState<number | null>(null)
+
+    useEffect(() => {
+        const atualizar = () => setAgora(Date.now())
+
+        const inicioTimer = window.setTimeout(atualizar, 0)
+        const intervalo = window.setInterval(atualizar, 30_000)
+
+        return () => {
+            window.clearTimeout(inicioTimer)
+            window.clearInterval(intervalo)
+        }
+    }, [])
+
+    const podeConcluir =
+        podeGerenciar &&
+        agora !== null &&
+        duracaoMinutos > 0 &&
+        agora >= inicio + duracaoMinutos * 60_000
+
+    const podeMarcarAusencia =
+        podeGerenciar &&
+        agora !== null &&
+        agora >= inicio
+
+    if (!podeCancelar && !podeConcluir && !podeMarcarAusencia && !erro && !mensagem) {
         return null
     }
 
@@ -46,7 +77,8 @@ function AgendamentoAcoes({
         if (executando || !confirmado) return
 
         if (operacao === 'cancelar' && !podeCancelar) return
-        if (operacao !== 'cancelar' && !podeGerenciar) return
+        if (operacao === 'concluir' && !podeConcluir) return
+        if (operacao === 'nao-compareceu' && !podeMarcarAusencia) return
 
         const perguntas: Record<Operacao, string> = {
             cancelar: 'Deseja realmente cancelar este agendamento?',
@@ -95,7 +127,7 @@ function AgendamentoAcoes({
 
     return (
         <div className="agendamento-acoes">
-            {(podeCancelar || podeGerenciar) && (
+            {(podeCancelar || podeConcluir || podeMarcarAusencia) && (
                 <div className="agendamento-acoes__botoes">
                     {podeCancelar && (
                         <button
@@ -108,26 +140,26 @@ function AgendamentoAcoes({
                         </button>
                     )}
 
-                    {podeGerenciar && (
-                        <>
-                            <button
-                                type="button"
-                                className="agendamento-acoes__botao agendamento-acoes__botao--concluir"
-                                disabled={executando}
-                                onClick={() => executar('concluir')}
-                            >
-                                Concluir
-                            </button>
+                    {podeConcluir && (
+                        <button
+                            type="button"
+                            className="agendamento-acoes__botao agendamento-acoes__botao--concluir"
+                            disabled={executando}
+                            onClick={() => executar('concluir')}
+                        >
+                            Concluir
+                        </button>
+                    )}
 
-                            <button
-                                type="button"
-                                className="agendamento-acoes__botao"
-                                disabled={executando}
-                                onClick={() => executar('nao-compareceu')}
-                            >
-                                Não compareceu
-                            </button>
-                        </>
+                    {podeMarcarAusencia && (
+                        <button
+                            type="button"
+                            className="agendamento-acoes__botao"
+                            disabled={executando}
+                            onClick={() => executar('nao-compareceu')}
+                        >
+                            Não compareceu
+                        </button>
                     )}
                 </div>
             )}
