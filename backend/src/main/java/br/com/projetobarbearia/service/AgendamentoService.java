@@ -217,7 +217,7 @@ public class AgendamentoService {
         }
 
         Barbeiro barbeiro = barbeiroRepository
-                .findById(agendamento.getBarbeiro().getIdBarbeiro())
+                .buscarParaAgendamentoComLock(agendamento.getBarbeiro().getIdBarbeiro())
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "Barbeiro não encontrado."));
