@@ -73,3 +73,10 @@ export async function excluirFoto(
     `/api/fotos/${id}`,
   )
 }
+export async function listarFotosPublicas(): Promise<Foto[]> {
+  const response = await api.get<Foto[]>(
+    '/api/barbearias/fotos-publicas',
+  )
+
+  return response.data
+}
