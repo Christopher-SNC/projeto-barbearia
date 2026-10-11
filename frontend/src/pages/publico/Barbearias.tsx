@@ -16,6 +16,8 @@ import Button from '../../components/Button/Button'
 
 import { listarBarbearias } from '../../services/barbeariaService'
 import { listarEnderecos } from '../../services/enderecoService'
+import { listarServicos } from '../../services/servicoService'
+import type { Servico } from '../../types/Servico'
 import {
   listarResumoAvaliacoes,
 } from '../../services/avaliacaoResumoService'
@@ -92,6 +94,8 @@ function Barbearias() {
     Endereco[]
   >([])
 
+  const [servicos, setServicos] = useState<Servico[]>([])
+
   const [resumos, setResumos] = useState<
     ResumoAvaliacaoBarbearia[]
   >([])
@@ -109,6 +113,9 @@ function Barbearias() {
   const latitude = Number(searchParams.get('lat'))
   const longitude = Number(searchParams.get('lng'))
 
+  const filtrarCorte = searchParams.get('corte') === '1'
+  const filtrarBarba = searchParams.get('barba') === '1'
+
   const ordenarPorAvaliacao =
     searchParams.get('avaliadas') === '1'
 
@@ -121,14 +128,16 @@ function Barbearias() {
   useEffect(() => {
     async function carregarDados() {
       try {
-        const [dadosBarbearias, dadosEnderecos] =
+        const [dadosBarbearias, dadosEnderecos, dadosServicos] =
           await Promise.all([
             listarBarbearias(),
             listarEnderecos(),
+            listarServicos(),
           ])
 
         setBarbearias(dadosBarbearias)
         setEnderecos(dadosEnderecos)
+        setServicos(dadosServicos)
       } catch (error) {
         console.error(error)
 
@@ -187,6 +196,18 @@ function Barbearias() {
     }
   }, [])
 
+  function alternarFiltroServico(tipo: 'corte' | 'barba') {
+    const novosParametros = new URLSearchParams(searchParams)
+
+    if (novosParametros.get(tipo) === '1') {
+      novosParametros.delete(tipo)
+    } else {
+      novosParametros.set(tipo, '1')
+    }
+
+    setSearchParams(novosParametros)
+  }
+
   function alternarMelhorAvaliadas() {
     const novosParametros = new URLSearchParams(searchParams)
 
@@ -200,6 +221,23 @@ function Barbearias() {
   }
 
   const resultados = useMemo(() => {
+    const idsComCorte = new Set<number>()
+    const idsComBarba = new Set<number>()
+
+    for (const servico of servicos) {
+      if (!servico.ativo) continue
+
+      const nome = normalizarTexto(servico.nome)
+
+      if (/\bcortes?\b/.test(nome)) {
+        idsComCorte.add(servico.idBarbearia)
+      }
+
+      if (/\bbarbas?\b/.test(nome)) {
+        idsComBarba.add(servico.idBarbearia)
+      }
+    }
+
     const termo = normalizarTexto(
       searchParams.get('busca')?.trim() ?? '',
     )
@@ -212,7 +250,14 @@ function Barbearias() {
       : null
 
     return barbearias
-      .filter((barbearia) => barbearia.ativa)
+      .filter(
+        (barbearia) =>
+          barbearia.ativa &&
+          (!filtrarCorte ||
+            idsComCorte.has(barbearia.idBarbearia)) &&
+          (!filtrarBarba ||
+            idsComBarba.has(barbearia.idBarbearia)),
+      )
       .map((barbearia) => {
         const endereco = enderecos.find(
           (item) =>
@@ -294,6 +339,9 @@ function Barbearias() {
     enderecos,
     resumos,
     ordenarPorAvaliacao,
+    filtrarCorte,
+    filtrarBarba,
+    servicos,
     latitude,
     longitude,
     possuiLocalizacao,
@@ -450,17 +498,29 @@ function Barbearias() {
             </button>
 
             <button
-              className="barbershops-filter"
+              className={[
+                'barbershops-filter',
+                filtrarCorte
+                  ? 'barbershops-filter--active'
+                  : '',
+              ].filter(Boolean).join(' ')}
               type="button"
-              disabled
+              aria-pressed={filtrarCorte}
+              onClick={() => alternarFiltroServico('corte')}
             >
               Corte
             </button>
 
             <button
-              className="barbershops-filter"
+              className={[
+                'barbershops-filter',
+                filtrarBarba
+                  ? 'barbershops-filter--active'
+                  : '',
+              ].filter(Boolean).join(' ')}
               type="button"
-              disabled
+              aria-pressed={filtrarBarba}
+              onClick={() => alternarFiltroServico('barba')}
             >
               Barba
             </button>
