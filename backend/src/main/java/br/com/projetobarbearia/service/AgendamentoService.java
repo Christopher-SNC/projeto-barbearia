@@ -49,6 +49,7 @@ public class AgendamentoService {
     private final UsuarioRepository usuarioRepository;
     private final ProprietarioBarbeariaRepository proprietarioBarbeariaRepository;
     private final AutorizacaoService autorizacaoService;
+    private final PrecoPromocionalService precoPromocionalService;
 
     public AgendamentoService(
             AgendamentoRepository agendamentoRepository,
@@ -61,7 +62,8 @@ public class AgendamentoService {
             DisponibilidadeRepository disponibilidadeRepository,
             UsuarioRepository usuarioRepository,
             ProprietarioBarbeariaRepository proprietarioBarbeariaRepository,
-            AutorizacaoService autorizacaoService) {
+            AutorizacaoService autorizacaoService,
+            PrecoPromocionalService precoPromocionalService) {
 
         this.agendamentoRepository = agendamentoRepository;
         this.itemAgendamentoRepository = itemAgendamentoRepository;
@@ -74,6 +76,7 @@ public class AgendamentoService {
         this.usuarioRepository = usuarioRepository;
         this.proprietarioBarbeariaRepository = proprietarioBarbeariaRepository;
         this.autorizacaoService = autorizacaoService;
+        this.precoPromocionalService = precoPromocionalService;
     }
 
     public List<Agendamento> listarTodos() {
@@ -235,7 +238,8 @@ public class AgendamentoService {
         validarServicos(
                 itens,
                 barbearia.getIdBarbearia(),
-                barbeiro.getIdBarbeiro());
+                barbeiro.getIdBarbeiro(),
+                agendamento.getDataHoraInicio().toLocalDate());
 
         agendamento.setCliente(cliente);
         agendamento.setBarbearia(barbearia);
@@ -396,7 +400,8 @@ public class AgendamentoService {
     private void validarServicos(
             List<ItemAgendamento> itens,
             Long idBarbearia,
-            Long idBarbeiro) {
+            Long idBarbeiro,
+            LocalDate dataAtendimento) {
 
         for (ItemAgendamento item : itens) {
 
@@ -439,9 +444,12 @@ public class AgendamentoService {
 
             item.setServico(servico);
 
-            item.setPrecoOriginal(servico.getPreco());
-            item.setPercentualDesconto(BigDecimal.ZERO);
-            item.setPrecoFinal(servico.getPreco());
+            var preco = precoPromocionalService.calcular(
+                    servico, dataAtendimento);
+
+            item.setPrecoOriginal(preco.precoOriginal());
+            item.setPercentualDesconto(preco.percentualDesconto());
+            item.setPrecoFinal(preco.precoFinal());
             item.setDuracaoMinutos(
                     servico.getDuracaoMinutos());
         }

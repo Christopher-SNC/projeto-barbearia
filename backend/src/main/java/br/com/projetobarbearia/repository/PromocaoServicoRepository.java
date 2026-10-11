@@ -13,6 +13,9 @@ public interface PromocaoServicoRepository
                         Long idPromocao,
                         Long idServico);
 
+        List<PromocaoServico> findByServico_IdServico(
+                        Long idServico);
+
         List<PromocaoServico> findByPromocao_IdPromocao(
                         Long idPromocao);
 
