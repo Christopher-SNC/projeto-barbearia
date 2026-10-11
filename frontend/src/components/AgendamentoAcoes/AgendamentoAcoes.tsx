@@ -30,9 +30,6 @@ function AgendamentoAcoes({
 
     const confirmado = agendamento.status === 'CONFIRMADO'
 
-    const podeCancelar =
-        confirmado &&
-        (perfil === 'proprietario' || perfil === 'cliente')
 
     const podeGerenciar =
         confirmado &&
@@ -58,6 +55,12 @@ function AgendamentoAcoes({
         }
     }, [])
 
+    const podeCancelar =
+        confirmado &&
+        (perfil === 'proprietario' || perfil === 'cliente') &&
+        agora !== null &&
+        agora < inicio
+
     const podeConcluir =
         podeGerenciar &&
         agora !== null &&
@@ -67,7 +70,7 @@ function AgendamentoAcoes({
     const podeMarcarAusencia =
         podeGerenciar &&
         agora !== null &&
-        agora >= inicio
+        agora >= inicio + 15 * 60_000
 
     if (!podeCancelar && !podeConcluir && !podeMarcarAusencia && !erro && !mensagem) {
         return null
