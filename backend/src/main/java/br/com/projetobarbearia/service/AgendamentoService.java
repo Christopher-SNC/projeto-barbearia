@@ -306,6 +306,7 @@ public class AgendamentoService {
                         agendamento);
 
         validarStatusConfirmado(agendamento);
+        validarConclusaoAposTermino(agendamento);
 
         agendamento.setStatus(
                 StatusAgendamento.CONCLUIDO);
@@ -323,11 +324,47 @@ public class AgendamentoService {
                         agendamento);
 
         validarStatusConfirmado(agendamento);
+        validarAusenciaAposInicio(agendamento);
 
         agendamento.setStatus(
                 StatusAgendamento.NAO_COMPARECEU);
 
         return agendamentoRepository.save(agendamento);
+    }
+
+    private void validarConclusaoAposTermino(
+            Agendamento agendamento) {
+
+        int duracaoMinutos = itemAgendamentoRepository
+                .findByAgendamento_IdAgendamento(
+                        agendamento.getIdAgendamento())
+                .stream()
+                .mapToInt(ItemAgendamento::getDuracaoMinutos)
+                .sum();
+
+        if (duracaoMinutos <= 0) {
+            throw new IllegalArgumentException(
+                    "O agendamento precisa possuir serviços com duração válida.");
+        }
+
+        LocalDateTime terminoPrevisto =
+                agendamento.getDataHoraInicio()
+                        .plusMinutes(duracaoMinutos);
+
+        if (LocalDateTime.now().isBefore(terminoPrevisto)) {
+            throw new IllegalArgumentException(
+                    "Não é possível concluir o atendimento antes do término previsto.");
+        }
+    }
+
+    private void validarAusenciaAposInicio(
+            Agendamento agendamento) {
+
+        if (LocalDateTime.now().isBefore(
+                agendamento.getDataHoraInicio())) {
+            throw new IllegalArgumentException(
+                    "Não é possível registrar ausência antes do início do atendimento.");
+        }
     }
 
     private Agendamento buscarAgendamento(Long id) {
