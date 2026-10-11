@@ -400,3 +400,9 @@
 }
 
 }
+.barbershops-rating {
+  margin: 8px 0 10px;
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+}

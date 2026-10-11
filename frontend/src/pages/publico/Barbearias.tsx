@@ -16,6 +16,12 @@ import Button from '../../components/Button/Button'
 
 import { listarBarbearias } from '../../services/barbeariaService'
 import { listarEnderecos } from '../../services/enderecoService'
+import {
+  listarResumoAvaliacoes,
+} from '../../services/avaliacaoResumoService'
+import type {
+  ResumoAvaliacaoBarbearia,
+} from '../../services/avaliacaoResumoService'
 
 import type { Barbearia } from '../../types/Barbearia'
 import type { Endereco } from '../../types/Endereco'
@@ -86,6 +92,13 @@ function Barbearias() {
     Endereco[]
   >([])
 
+  const [resumos, setResumos] = useState<
+    ResumoAvaliacaoBarbearia[]
+  >([])
+  const [carregandoResumos, setCarregandoResumos] =
+    useState(true)
+  const [erroResumos, setErroResumos] = useState('')
+
   const [busca, setBusca] = useState(
     searchParams.get('busca') ?? '',
   )
@@ -95,6 +108,9 @@ function Barbearias() {
 
   const latitude = Number(searchParams.get('lat'))
   const longitude = Number(searchParams.get('lng'))
+
+  const ordenarPorAvaliacao =
+    searchParams.get('avaliadas') === '1'
 
   const possuiLocalizacao =
     Number.isFinite(latitude) &&
@@ -147,6 +163,42 @@ function Barbearias() {
       ativo = false
     }
   }, [usuario?.idUsuario])
+  useEffect(() => {
+    let ativo = true
+
+    void listarResumoAvaliacoes()
+      .then((dados) => {
+        if (ativo) setResumos(dados)
+      })
+      .catch((error) => {
+        console.error(error)
+        if (ativo) {
+          setErroResumos(
+            'Não foi possível carregar as avaliações.',
+          )
+        }
+      })
+      .finally(() => {
+        if (ativo) setCarregandoResumos(false)
+      })
+
+    return () => {
+      ativo = false
+    }
+  }, [])
+
+  function alternarMelhorAvaliadas() {
+    const novosParametros = new URLSearchParams(searchParams)
+
+    if (ordenarPorAvaliacao) {
+      novosParametros.delete('avaliadas')
+    } else {
+      novosParametros.set('avaliadas', '1')
+    }
+
+    setSearchParams(novosParametros)
+  }
+
   const resultados = useMemo(() => {
     const termo = normalizarTexto(
       searchParams.get('busca')?.trim() ?? '',
@@ -187,6 +239,7 @@ function Barbearias() {
           barbearia,
           endereco,
           distanciaKm,
+        resumo: resumos.find((item) => item.idBarbearia === barbearia.idBarbearia),
         }
       })
       .filter(({ barbearia, endereco }) => {
@@ -206,6 +259,22 @@ function Barbearias() {
         return conteudo.includes(termo)
       })
       .sort((a, b) => {
+        if (ordenarPorAvaliacao) {
+          const mediaA = a.resumo?.media ?? -1
+          const mediaB = b.resumo?.media ?? -1
+
+          if (mediaA !== mediaB) {
+            return mediaB - mediaA
+          }
+
+          const quantidadeA = a.resumo?.quantidade ?? 0
+          const quantidadeB = b.resumo?.quantidade ?? 0
+
+          if (quantidadeA !== quantidadeB) {
+            return quantidadeB - quantidadeA
+          }
+        }
+
         if (!possuiLocalizacao) {
           return 0
         }
@@ -223,6 +292,8 @@ function Barbearias() {
   }, [
     barbearias,
     enderecos,
+    resumos,
+    ordenarPorAvaliacao,
     latitude,
     longitude,
     possuiLocalizacao,
@@ -358,10 +429,16 @@ function Barbearias() {
             </button>
 
             <button
-              className="barbershops-filter"
+              className={[
+                'barbershops-filter',
+                ordenarPorAvaliacao
+                  ? 'barbershops-filter--active'
+                  : '',
+              ].filter(Boolean).join(' ')}
               type="button"
-              disabled
-              title="Filtro disponível após integração das avaliações"
+              aria-pressed={ordenarPorAvaliacao}
+              disabled={carregandoResumos || Boolean(erroResumos)}
+              onClick={alternarMelhorAvaliadas}
             >
               <span className="barbershops-filter__desktop">
                 Melhor avaliadas
@@ -407,6 +484,9 @@ function Barbearias() {
               {erroFavoritos && (
                 <p role="alert">{erroFavoritos}</p>
               )}
+              {erroResumos && (
+                <p role="alert">{erroResumos}</p>
+              )}
               <p className="barbershops-results__count">
                 {resultados.length}{' '}
                 {resultados.length === 1
@@ -426,6 +506,7 @@ function Barbearias() {
                       barbearia,
                       endereco,
                       distanciaKm,
+                      resumo,
                     }) => (
                       <div key={barbearia.idBarbearia}>
                         <BarbeariaCard
@@ -433,6 +514,11 @@ function Barbearias() {
                           endereco={endereco}
                           distanciaKm={distanciaKm}
                         />
+                        <p className="barbershops-rating">
+                          {resumo
+                            ? `★ ${resumo.media.toFixed(1).replace('.', ',')} · ${resumo.quantidade} ${resumo.quantidade === 1 ? 'avaliação' : 'avaliações'}`
+                            : 'Ainda sem avaliações'}
+                        </p>
                         <BotaoFavorito
                           idBarbearia={barbearia.idBarbearia}
                           favorito={favoritos.find(
