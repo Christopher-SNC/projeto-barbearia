@@ -177,7 +177,7 @@ class AgendamentoStatusTemporalTests {
                 IllegalArgumentException.class,
                 () -> service.marcarNaoCompareceu(77L));
 
-        assertTrue(erro.getMessage().contains("antes do início"));
+        assertTrue(erro.getMessage().contains("15 minutos"));
         assertEquals(StatusAgendamento.CONFIRMADO,
                 agendamento.getStatus());
 
@@ -185,9 +185,9 @@ class AgendamentoStatusTemporalTests {
     }
 
     @Test
-    void permiteRegistrarAusenciaDepoisDoInicio() {
+    void permiteRegistrarAusenciaAposTolerancia() {
         Agendamento agendamento =
-                prepararAgendamento(LocalDateTime.now().minusMinutes(10));
+                prepararAgendamento(LocalDateTime.now().minusMinutes(20));
 
         when(agendamentoRepository.save(any(Agendamento.class)))
                 .thenAnswer(invocacao -> invocacao.getArgument(0));
@@ -198,5 +198,118 @@ class AgendamentoStatusTemporalTests {
                 resultado.getStatus());
 
         verify(agendamentoRepository).save(agendamento);
+    }
+
+
+    @Test
+
+    void naoPermiteAusenciaUmMinutoAposInicio() {
+
+        Agendamento agendamento =
+
+                prepararAgendamento(LocalDateTime.now().minusMinutes(1));
+
+
+
+        IllegalArgumentException erro = assertThrows(
+
+                IllegalArgumentException.class,
+
+                () -> service.marcarNaoCompareceu(77L));
+
+
+
+        assertTrue(erro.getMessage().contains("15 minutos"));
+
+        assertEquals(StatusAgendamento.CONFIRMADO,
+
+                agendamento.getStatus());
+
+        verify(agendamentoRepository, never()).save(any());
+
+    }
+
+
+
+    @Test
+
+    void naoPermiteAusenciaAosQuatorzeMinutos() {
+
+        Agendamento agendamento =
+
+                prepararAgendamento(LocalDateTime.now().minusMinutes(14));
+
+
+
+        assertThrows(IllegalArgumentException.class,
+
+                () -> service.marcarNaoCompareceu(77L));
+
+        assertEquals(StatusAgendamento.CONFIRMADO,
+
+                agendamento.getStatus());
+
+        verify(agendamentoRepository, never()).save(any());
+
+    }
+
+
+
+    @Test
+
+    void permiteCancelarAntesDoInicio() {
+
+        Agendamento agendamento =
+
+                prepararAgendamento(LocalDateTime.now().plusHours(2));
+
+
+
+        when(agendamentoRepository.save(any(Agendamento.class)))
+
+                .thenAnswer(invocacao -> invocacao.getArgument(0));
+
+
+
+        Agendamento resultado = service.cancelar(77L);
+
+
+
+        assertEquals(StatusAgendamento.CANCELADO,
+
+                resultado.getStatus());
+
+        verify(agendamentoRepository).save(agendamento);
+
+    }
+
+
+
+    @Test
+
+    void naoPermiteCancelarDepoisDoInicio() {
+
+        Agendamento agendamento =
+
+                prepararAgendamento(LocalDateTime.now().minusMinutes(1));
+
+
+
+        IllegalArgumentException erro = assertThrows(
+
+                IllegalArgumentException.class,
+
+                () -> service.cancelar(77L));
+
+
+
+        assertTrue(erro.getMessage().contains("após o início"));
+
+        assertEquals(StatusAgendamento.CONFIRMADO,
+
+                agendamento.getStatus());
+
+        verify(agendamentoRepository, never()).save(any());
+
     }
 }

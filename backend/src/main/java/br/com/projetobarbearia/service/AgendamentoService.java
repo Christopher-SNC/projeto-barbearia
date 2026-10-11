@@ -37,6 +37,7 @@ import br.com.projetobarbearia.repository.UsuarioRepository;
 public class AgendamentoService {
 
     private static final int BUFFER_MINUTOS = 15;
+    private static final int TOLERANCIA_ATRASO_MINUTOS = 15;
 
     private final AgendamentoRepository agendamentoRepository;
     private final ItemAgendamentoRepository itemAgendamentoRepository;
@@ -289,6 +290,7 @@ public class AgendamentoService {
                         agendamento);
 
         validarStatusConfirmado(agendamento);
+        validarCancelamentoAntesDoInicio(agendamento);
 
         agendamento.setStatus(
                 StatusAgendamento.CANCELADO);
@@ -324,7 +326,7 @@ public class AgendamentoService {
                         agendamento);
 
         validarStatusConfirmado(agendamento);
-        validarAusenciaAposInicio(agendamento);
+        validarAusenciaAposTolerancia(agendamento);
 
         agendamento.setStatus(
                 StatusAgendamento.NAO_COMPARECEU);
@@ -357,13 +359,25 @@ public class AgendamentoService {
         }
     }
 
-    private void validarAusenciaAposInicio(
+    private void validarCancelamentoAntesDoInicio(
             Agendamento agendamento) {
 
-        if (LocalDateTime.now().isBefore(
+        if (!LocalDateTime.now().isBefore(
                 agendamento.getDataHoraInicio())) {
             throw new IllegalArgumentException(
-                    "Não é possível registrar ausência antes do início do atendimento.");
+                    "Não é possível cancelar após o início do atendimento.");
+        }
+    }
+
+    private void validarAusenciaAposTolerancia(
+            Agendamento agendamento) {
+
+        LocalDateTime limiteTolerancia = agendamento.getDataHoraInicio()
+                .plusMinutes(TOLERANCIA_ATRASO_MINUTOS);
+
+        if (LocalDateTime.now().isBefore(limiteTolerancia)) {
+            throw new IllegalArgumentException(
+                    "Não é possível registrar ausência antes de completar 15 minutos de tolerância.");
         }
     }
 
