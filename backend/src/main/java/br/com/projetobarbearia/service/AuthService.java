@@ -56,7 +56,6 @@ public class AuthService {
                                                 "Usuário não encontrado."));
 
                 List<String> perfis = new ArrayList<>();
-                perfis.add("CLIENTE");
 
                 Long idBarbeiro = null;
                 Long idBarbeariaBarbeiro = null;
@@ -88,6 +87,12 @@ public class AuthService {
 
                 if (!idsBarbeariasProprietario.isEmpty()) {
                         perfis.add("PROPRIETARIO");
+                }
+
+                // Barbeiro funcionario possui apenas o perfil BARBEIRO.
+                // Proprietario que tambem atua como barbeiro mantem os tres perfis.
+                if (barbeiro == null || !idsBarbeariasProprietario.isEmpty()) {
+                        perfis.add(0, "CLIENTE");
                 }
 
                 return new LoginResponse(

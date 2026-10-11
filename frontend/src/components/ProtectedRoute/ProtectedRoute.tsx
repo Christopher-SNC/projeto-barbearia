@@ -41,7 +41,13 @@ function ProtectedRoute({
         perfilObrigatorio &&
         !usuario.perfis.includes(perfilObrigatorio)
     ) {
-        return <Navigate to="/" replace />
+        const destino = usuario.perfis.includes('PROPRIETARIO')
+            ? '/proprietario'
+            : usuario.perfis.includes('BARBEIRO')
+                ? '/barbeiro'
+                : '/'
+
+        return <Navigate to={destino} replace />
     }
 
     return children

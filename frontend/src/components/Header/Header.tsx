@@ -15,6 +15,10 @@ function Header() {
 
     const navigate = useNavigate()
     const { usuario, sair } = useAuth()
+    const acessoCliente = usuario?.perfis.includes('CLIENTE') ?? false
+    const funcionarioExclusivo = Boolean(
+        usuario?.perfis.includes('BARBEIRO') && !acessoCliente,
+    )
 
     function fecharMenu() {
         setMenuAberto(false)
@@ -70,31 +74,39 @@ function Header() {
                         .filter(Boolean)
                         .join(' ')}
                 >
-                    <NavLink
-                        className="site-header__link"
-                        to="/barbearias"
-                        onClick={fecharMenu}
-                    >
-                        Barbearias
-                    </NavLink>
+                    {!funcionarioExclusivo && (
+                        <>
+                            <NavLink
+                                className="site-header__link"
+                                to="/barbearias"
+                                onClick={fecharMenu}
+                            >
+                                Barbearias
+                            </NavLink>
 
-                    <a
-                        className="site-header__link"
-                        href="/#como-funciona"
-                        onClick={fecharMenu}
-                    >
-                        Como funciona
-                    </a>
+                            <a
+                                className="site-header__link"
+                                href="/#como-funciona"
+                                onClick={fecharMenu}
+                            >
+                                Como funciona
+                            </a>
+                        </>
+                    )}
 
                     {usuario ? (
                         <details ref={menuContaRef} className="site-header__account-menu">
                             <summary className="site-header__link">Minha conta</summary>
                             <div className="site-header__account-dropdown">
-                                <NavLink className="site-header__link" to="/cliente" onClick={fecharMenu}>Painel do cliente</NavLink>
-                                <NavLink className="site-header__link" to="/meus-agendamentos" onClick={fecharMenu}>Meus agendamentos</NavLink>
-                                <NavLink className="site-header__link" to="/meus-favoritos" onClick={fecharMenu}>Favoritos</NavLink>
-                                {!usuario.perfis.includes('PROPRIETARIO') && (
-                                    <NavLink className="site-header__link" to="/cadastrar-barbearia" onClick={fecharMenu}>Cadastrar barbearia</NavLink>
+                                {acessoCliente && (
+                                    <>
+                                        <NavLink className="site-header__link" to="/cliente" onClick={fecharMenu}>Painel do cliente</NavLink>
+                                        <NavLink className="site-header__link" to="/meus-agendamentos" onClick={fecharMenu}>Meus agendamentos</NavLink>
+                                        <NavLink className="site-header__link" to="/meus-favoritos" onClick={fecharMenu}>Favoritos</NavLink>
+                                        {!usuario.perfis.includes('PROPRIETARIO') && !usuario.perfis.includes('BARBEIRO') && (
+                                            <NavLink className="site-header__link" to="/cadastrar-barbearia" onClick={fecharMenu}>Cadastrar barbearia</NavLink>
+                                        )}
+                                    </>
                                 )}
                                 {usuario.perfis.includes('PROPRIETARIO') && (
                                     <NavLink className="site-header__link" to="/proprietario" onClick={fecharMenu}>Painel do proprietário</NavLink>
@@ -125,13 +137,15 @@ function Header() {
                         </>
                     )}
 
-                    <Link
-                        className="site-header__cta"
-                        to="/barbearias"
-                        onClick={fecharMenu}
-                    >
-                        Agendar agora
-                    </Link>
+                    {!funcionarioExclusivo && (
+                        <Link
+                            className="site-header__cta"
+                            to="/barbearias"
+                            onClick={fecharMenu}
+                        >
+                            Agendar agora
+                        </Link>
+                    )}
                 </nav>
             </div>
         </header>
