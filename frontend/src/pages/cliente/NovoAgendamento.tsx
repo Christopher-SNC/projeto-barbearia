@@ -17,6 +17,12 @@ import { listarBarbeirosServicos } from '../../services/barbeiroServicoService'
 import { listarDisponibilidades } from '../../services/disponibilidadeService'
 import { listarHorariosFuncionamento } from '../../services/horarioFuncionamentoService'
 import { listarServicos } from '../../services/servicoService'
+import {
+  buscarPrecoServico,
+} from '../../services/precoServicoService'
+import type {
+  PrecoServico,
+} from '../../services/precoServicoService'
 
 import type { OcupacaoAgendamento } from '../../types/Agendamento'
 import type { Barbeiro } from '../../types/Barbeiro'
@@ -101,6 +107,17 @@ function NovoAgendamento() {
     setHorariosFuncionamento,
   ] = useState<HorarioFuncionamento[]>([])
   const [ocupacoes, setOcupacoes] = useState<OcupacaoAgendamento[]>([])
+
+  const [cotacao, setCotacao] = useState<{
+    idServico: number
+    data: string
+    preco: PrecoServico
+  } | null>(null)
+
+  const [erroCotacao, setErroCotacao] = useState<{
+    idServico: number
+    data: string
+  } | null>(null)
 
   const [idServico, setIdServico] = useState<
     number | null
@@ -209,6 +226,30 @@ function NovoAgendamento() {
       ativo = false
     }
   }, [idBarbeiro, data])
+
+  useEffect(() => {
+    if (!idServico || !data) return
+
+    let ativo = true
+
+    void buscarPrecoServico(idServico, data)
+      .then((preco) => {
+        if (ativo) {
+          setCotacao({ idServico, data, preco })
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+
+        if (ativo) {
+          setErroCotacao({ idServico, data })
+        }
+      })
+
+    return () => {
+      ativo = false
+    }
+  }, [idServico, data])
 
   const servicoSelecionado = servicos.find(
     (servico) => servico.idServico === idServico,
@@ -377,6 +418,8 @@ function NovoAgendamento() {
 
   function selecionarServico(idSelecionado: number) {
     setIdServico(idSelecionado)
+    setCotacao(null)
+    setErroCotacao(null)
     setIdBarbeiro(null)
     setData('')
     setHora('')
@@ -392,11 +435,30 @@ function NovoAgendamento() {
     setSucesso('')
   }
 
+  const cotacaoAtual =
+    cotacao?.idServico === idServico &&
+    cotacao.data === data
+      ? cotacao.preco
+      : null
+
+  const erroPrecoAtual = Boolean(
+    erroCotacao?.idServico === idServico &&
+    erroCotacao.data === data,
+  )
+
+  const consultandoPreco = Boolean(
+    idServico &&
+    data &&
+    !cotacaoAtual &&
+    !erroPrecoAtual,
+  )
+
   const agendamentoCompleto = Boolean(
     idServico &&
     idBarbeiro &&
     data &&
-    hora,
+    hora &&
+    cotacaoAtual,
   )
 
   async function confirmarAgendamento() {
@@ -427,6 +489,13 @@ function NovoAgendamento() {
       return
     }
 
+    if (!cotacaoAtual) {
+      setErro(
+        'Aguarde a consulta do preço antes de confirmar.',
+      )
+      return
+    }
+
     try {
       setEnviando(true)
       setErro('')
@@ -444,7 +513,7 @@ function NovoAgendamento() {
       })
 
       setSucesso(
-        `Agendamento #${agendamento.idAgendamento} criado com sucesso.`,
+        `Agendamento #${agendamento.idAgendamento} criado com sucesso. Total: ${formatarPreco(agendamento.valorTotal)}.`,
       )
 
       setHora('')
@@ -691,6 +760,8 @@ function NovoAgendamento() {
                 }
                 onChange={(event) => {
                   setData(event.target.value)
+                  setCotacao(null)
+                  setErroCotacao(null)
                   setHora('')
                   setErro('')
                 }}
@@ -773,14 +844,50 @@ function NovoAgendamento() {
               <div>
                 <dt>Total</dt>
                 <dd>
-                  {servicoSelecionado
-                    ? formatarPreco(
-                      servicoSelecionado.preco,
-                    )
-                    : '—'}
+                  {!servicoSelecionado
+                    ? '—'
+                    : !data
+                      ? `${formatarPreco(servicoSelecionado.preco)} (preço base)`
+                      : cotacaoAtual
+                        ? formatarPreco(cotacaoAtual.precoFinal)
+                        : erroPrecoAtual
+                          ? 'Preço indisponível'
+                          : 'Consultando preço...'}
                 </dd>
               </div>
+
+              {cotacaoAtual &&
+                cotacaoAtual.percentualDesconto > 0 && (
+                  <div>
+                    <dt>Desconto</dt>
+                    <dd>
+                      {cotacaoAtual.percentualDesconto}%
+                      {' sobre '}
+                      {formatarPreco(cotacaoAtual.precoOriginal)}
+                    </dd>
+                  </div>
+                )}
             </dl>
+
+            {erroPrecoAtual && (
+              <p className="booking-message booking-message--error">
+                Não foi possível consultar o preço.
+                Selecione novamente a data para tentar.
+              </p>
+            )}
+
+            {consultandoPreco && (
+              <p className="booking-help">
+                Atualizando o valor do atendimento...
+              </p>
+            )}
+
+            {cotacaoAtual && (
+              <p className="booking-help">
+                O valor será recalculado pelo servidor
+                ao confirmar o agendamento.
+              </p>
+            )}
 
             <Button
               className={[
@@ -793,7 +900,7 @@ function NovoAgendamento() {
                 .join(' ')}
               fullWidth
               type="button"
-              disabled={enviando}
+              disabled={enviando || (Boolean(idServico && data) && !cotacaoAtual)}
               onClick={confirmarAgendamento}
             >
               {enviando

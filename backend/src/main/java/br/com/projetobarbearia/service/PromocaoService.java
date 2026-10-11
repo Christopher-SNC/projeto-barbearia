@@ -144,7 +144,9 @@ public class PromocaoService {
         }
 
         if (promocao.getPercentualDesconto() == null
-                || promocao.getPercentualDesconto().signum() <= 0) {
+                || promocao.getPercentualDesconto().signum() <= 0
+                || promocao.getPercentualDesconto()
+                        .compareTo(new java.math.BigDecimal("100")) > 0) {
             throw new IllegalArgumentException(
                     "O percentual de desconto deve ser maior que zero.");
         }
