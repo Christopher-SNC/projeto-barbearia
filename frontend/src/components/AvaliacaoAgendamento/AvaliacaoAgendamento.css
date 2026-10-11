@@ -1,0 +1,90 @@
+.appointment-review {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.appointment-review__open,
+.appointment-review__submit {
+  background: #af8648;
+  color: #171717;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.appointment-review__open:hover,
+.appointment-review__submit:hover {
+  background: #c5a069;
+}
+
+.appointment-review__form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #b18b5055;
+  border-radius: 12px;
+  background: rgba(175, 134, 72, 0.05);
+}
+
+.appointment-review__form h4 {
+  margin: 0;
+}
+
+.appointment-review__form label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-weight: 600;
+}
+
+.appointment-review__form select,
+.appointment-review__form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #b7a58b;
+  border-radius: 8px;
+  background: #fff;
+  color: #202020;
+  font: inherit;
+}
+
+.appointment-review__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.appointment-review__cancel {
+  padding: 10px 16px;
+  border: 1px solid #aaa;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.appointment-review button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.appointment-review__error {
+  color: #b42318;
+}
+
+.appointment-review__done {
+  margin-top: 12px;
+  font-weight: 600;
+  color: #39804d;
+}
+
+@media (max-width: 600px) {
+  .appointment-review__open,
+  .appointment-review__actions button {
+    width: 100%;
+  }
+}
