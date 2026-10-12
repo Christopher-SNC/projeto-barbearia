@@ -18,18 +18,17 @@ Este documento separa **verificações já confirmadas** de **testes finais aind
 - [x] Revisão visual mobile (390 px): Home, listagem de barbearias, detalhes, dashboard do cliente, dashboard do proprietário e dashboard do barbeiro. A captura completa da Home confirmou que os textos não estavam cortados.
 - [x] Teste de leitura de `/api/favoritos`: a conta de barbeiro funcionário recebeu acesso negado e o proprietário com perfil de cliente recebeu uma lista vazia. Os códigos HTTP devem ser conferidos separadamente se necessários como evidência.
 - [x] Regras de cliente da API reforçadas (agendamentos, favoritos e avaliações), com quatro novos testes aprovados.
+- [x] Tela de login em celular (390 px), campos e link visíveis; Tab e Shift+Tab funcionam. Tentativa de senha incorreta recusada com 401 e mensagem apropriada.
+- [x] Segunda unidade ativada no banco de testes; agendamento #6 confirmado e isolado da primeira unidade.
+- [x] Nove capturas adicionadas ao README, sem senhas, tokens ou e-mails visíveis; painel do cliente recortado.
 
 ## Verificações pendentes antes de encerrar a versão acadêmica
 
-- [x] Tela de login em celular (390 px), campos e link visíveis; Tab e Shift+Tab funcionam. Tentativa de senha incorreta recusada com 401 e mensagem apropriada.
-- [ ] Fazer uma ultima navegacao de regressao no desktop depois dos commits finais. - [x] Segunda unidade ativada no banco de testes com horario aberto, servico, barbeiro e disponibilidade; agendamento #6 de 19/10/2026 as 09:00 confirmado e ausente da lista da primeira unidade. - [x] Navegacao por teclado verificada na tela de login.
-- [ ] Conferir foco e textos de outros formularios essenciais. - [x] Selecionadas nove capturas de demonstracao para README e portfolio, sem senhas, tokens ou e-mails; screenshot do cliente recortado antes da secao Dados da conta.
+- [ ] Fazer uma última navegação de regressão no desktop depois dos commits finais.
+- [ ] Conferir foco e textos de outros formulários essenciais.
 - [ ] Reexecutar, se necessário, o teste de concorrência PostgreSQL em separado e arquivar o resultado final.
 - [ ] Confirmar estados de carregamento, vazio e erro da Home e da busca pública.
 - [ ] Confirmar em testes HTTP finais os códigos 401/403/200 e os bloqueios administrativos entre contas, sem realizar gravações no banco principal.
-
-
-
 - [ ] Revisar instruções de configuração a partir de um clone limpo ou ambiente separado, sem expor credenciais.
 
 ## Comandos de validação (PowerShell)

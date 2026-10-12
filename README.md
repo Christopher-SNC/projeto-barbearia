@@ -265,6 +265,7 @@ Telas reais da aplicação local, utilizando **contas e dados fictícios** no am
 </details>
 
 As imagens foram selecionadas para não incluir senhas, tokens ou e-mails das contas fictícias. A captura da área do cliente foi limitada à parte superior para ocultar os dados da conta. Nenhum dado foi alterado no PostgreSQL para gerar esta galeria.
+
 ## Documentação de apresentação e validação
 
 - [Roteiro de apresentação](docs/roteiro-apresentacao.md): sequência sugerida para demonstrar o projeto.
