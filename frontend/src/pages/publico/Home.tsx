@@ -1,34 +1,123 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 import Button from '../../components/Button/Button'
 
+import { listarBarbearias } from '../../services/barbeariaService'
+import { listarEnderecos } from '../../services/enderecoService'
+import { listarServicos } from '../../services/servicoService'
+import { listarFotosPublicas } from '../../services/fotoService'
+import { listarResumoAvaliacoes } from '../../services/avaliacaoResumoService'
+
+import type { Barbearia } from '../../types/Barbearia'
+import type { Endereco } from '../../types/Endereco'
+import type { Foto } from '../../types/Foto'
+import type { Servico } from '../../types/Servico'
+import type { ResumoAvaliacaoBarbearia } from '../../services/avaliacaoResumoService'
+
 import './Home.css'
 
-const barbeariasDestaque = [
-  {
-    nome: 'Barbearia Central',
-    local: 'Praia do Canto • 1,8 km',
-    servicos: 'Corte • Barba • Combo',
-    avaliacao: '★ 4,9 (128 avaliações)',
-  },
-  {
-    nome: 'Studio Navalha',
-    local: 'Jardim da Penha • 2,4 km',
-    servicos: 'Corte • Degradê • Barba',
-    avaliacao: '★ 4,8 (94 avaliações)',
-  },
-  {
-    nome: 'Casa do Barbeiro',
-    local: 'Mata da Praia • 3,1 km',
-    servicos: 'Corte • Barba • Sobrancelha',
-    avaliacao: '★ 4,9 (76 avaliações)',
-  },
-]
+interface DestaqueBarbearia {
+  barbearia: Barbearia
+  endereco?: Endereco
+  servicos: Servico[]
+  foto?: Foto
+  resumo?: ResumoAvaliacaoBarbearia
+}
 
 function Home() {
   const navigate = useNavigate()
   const [busca, setBusca] = useState('')
+  const [destaques, setDestaques] = useState<DestaqueBarbearia[]>([])
+  const [carregandoDestaques, setCarregandoDestaques] = useState(true)
+  const [erroDestaques, setErroDestaques] = useState('')
+
+  useEffect(() => {
+    let ativo = true
+
+    async function carregarDestaques() {
+      try {
+        const [barbearias, enderecos, servicos, fotos, resumos] =
+          await Promise.all([
+            listarBarbearias(),
+            listarEnderecos(),
+            listarServicos(),
+            listarFotosPublicas(),
+            listarResumoAvaliacoes(),
+          ])
+
+        if (!ativo) return
+
+        const resumosPorId = new Map(
+          resumos.map((resumo) => [resumo.idBarbearia, resumo]),
+        )
+
+        const dados: DestaqueBarbearia[] = barbearias
+          .filter((barbearia) => barbearia.ativa)
+          .sort((a, b) => {
+            const resumoA = resumosPorId.get(a.idBarbearia)
+            const resumoB = resumosPorId.get(b.idBarbearia)
+            const possuiA = (resumoA?.quantidade ?? 0) > 0
+            const possuiB = (resumoB?.quantidade ?? 0) > 0
+
+            if (possuiA !== possuiB) return possuiA ? -1 : 1
+
+            if (possuiA && possuiB) {
+              const mediaA = resumoA?.media ?? 0
+              const mediaB = resumoB?.media ?? 0
+              if (mediaA !== mediaB) return mediaB - mediaA
+
+              const quantidadeA = resumoA?.quantidade ?? 0
+              const quantidadeB = resumoB?.quantidade ?? 0
+              if (quantidadeA !== quantidadeB) {
+                return quantidadeB - quantidadeA
+              }
+            }
+
+            return a.nome.localeCompare(b.nome, 'pt-BR')
+          })
+          .slice(0, 3)
+          .map((barbearia) => ({
+            barbearia,
+            endereco: enderecos.find(
+              (endereco) => endereco.idBarbearia === barbearia.idBarbearia,
+            ),
+            servicos: servicos
+              .filter(
+                (servico) =>
+                  servico.idBarbearia === barbearia.idBarbearia &&
+                  servico.ativo,
+              )
+              .slice(0, 3),
+            foto: fotos
+              .filter(
+                (foto) =>
+                  foto.idBarbearia === barbearia.idBarbearia &&
+                  foto.ativa,
+              )
+              .sort((a, b) => a.ordem - b.ordem)[0],
+            resumo: resumosPorId.get(barbearia.idBarbearia),
+          }))
+
+        setDestaques(dados)
+      } catch (erro) {
+        console.error('Nao foi possivel carregar os destaques:', erro)
+        if (ativo) {
+          setErroDestaques(
+            'Não foi possível carregar as barbearias em destaque.',
+          )
+        }
+      } finally {
+        if (ativo) setCarregandoDestaques(false)
+      }
+    }
+
+    void carregarDestaques()
+
+    return () => {
+      ativo = false
+    }
+  }, [])
 
   function buscarBarbearias(
     event: React.FormEvent<HTMLFormElement>,
@@ -163,29 +252,65 @@ function Home() {
             </p>
           </div>
 
-          <div className="home-featured__grid">
-            {barbeariasDestaque.map((barbearia) => (
-              <article
-                className="home-barbershop-card"
-                key={barbearia.nome}
-              >
-                <div className="home-barbershop-card__image">
-                  <span />
-                </div>
+          {carregandoDestaques ? (
+            <p className="home-featured__status" role="status">
+              Carregando barbearias em destaque...
+            </p>
+          ) : erroDestaques ? (
+            <p className="home-featured__status" role="alert">
+              {erroDestaques}
+            </p>
+          ) : destaques.length === 0 ? (
+            <p className="home-featured__status">
+              Ainda não há barbearias ativas para destacar.
+            </p>
+          ) : (
+            <div className="home-featured__grid">
+              {destaques.map(({ barbearia, endereco, servicos, foto, resumo }) => (
+                <Link
+                  className="home-barbershop-card"
+                  key={barbearia.idBarbearia}
+                  to={`/barbearias/${barbearia.idBarbearia}`}
+                >
+                  <div className="home-barbershop-card__image">
+                    {foto && (
+                      <img
+                        src={foto.url}
+                        alt={foto.legenda || barbearia.nome}
+                        loading="lazy"
+                        onError={(event) => {
+                          event.currentTarget.style.display = 'none'
+                        }}
+                      />
+                    )}
+                    <span aria-hidden="true" />
+                  </div>
 
-                <div className="home-barbershop-card__content">
-                  <h3>{barbearia.nome}</h3>
-
-                  <p>{barbearia.local}</p>
-                  <p>{barbearia.servicos}</p>
-
-                  <strong>
-                    {barbearia.avaliacao}
-                  </strong>
-                </div>
-              </article>
-            ))}
-          </div>
+                  <div className="home-barbershop-card__content">
+                    <h3>{barbearia.nome}</h3>
+                    <p>
+                      {endereco
+                        ? `${endereco.bairro} • ${endereco.cidade}`
+                        : 'Localização não informada'}
+                    </p>
+                    {servicos.length > 0 && (
+                      <p>{servicos.map((servico) => servico.nome).join(' • ')}</p>
+                    )}
+                    <strong>
+                      {resumo && resumo.quantidade > 0
+                        ? `★ ${resumo.media.toLocaleString('pt-BR', {
+                            minimumFractionDigits: 1,
+                            maximumFractionDigits: 1,
+                          })} (${resumo.quantidade} ${
+                            resumo.quantidade === 1 ? 'avaliação' : 'avaliações'
+                          })`
+                        : 'Ainda sem avaliações'}
+                    </strong>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
 
           <div className="home-featured__mobile-action">
             <Button
