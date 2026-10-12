@@ -600,3 +600,35 @@
 .home-barbershop-card__content p {
   line-height: 1.45;
 }
+
+/* Responsividade: corrigir largura intrinseca da Home em celulares. */
+@media (max-width: 767px) {
+  .home-hero__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-hero__content,
+  .home-search,
+  .home-search__field,
+  .home-map {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .home-hero__content,
+  .home-search,
+  .home-map {
+    width: 100%;
+  }
+
+  .home-search__field input {
+    flex: 1 1 0%;
+    width: auto;
+    min-width: 0;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(1.85rem, 8.5vw, 2.35rem);
+    line-height: 1.05;
+  }
+}
