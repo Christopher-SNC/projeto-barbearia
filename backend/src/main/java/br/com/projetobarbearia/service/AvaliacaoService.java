@@ -56,6 +56,7 @@ public class AvaliacaoService {
 
     public Avaliacao salvar(Avaliacao avaliacao) {
 
+        autorizacaoService.exigirPerfilCliente();
         validarNotas(avaliacao);
 
         if (avaliacao.getAgendamento() == null
@@ -105,6 +106,8 @@ public class AvaliacaoService {
     }
 
     public void excluir(Long id) {
+
+        autorizacaoService.exigirPerfilCliente();
 
         Avaliacao avaliacao =
                 avaliacaoRepository

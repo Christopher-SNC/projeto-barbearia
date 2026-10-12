@@ -37,6 +37,7 @@ public class FavoritoService {
     @Transactional(readOnly = true)
     public List<Favorito> listarMeusFavoritos() {
 
+        autorizacaoService.exigirPerfilCliente();
         Long idUsuario = autorizacaoService.obterIdUsuarioAutenticado();
 
         return favoritoRepository.findByUsuario_IdUsuario(idUsuario);
@@ -44,6 +45,8 @@ public class FavoritoService {
 
     @Transactional
     public Favorito adicionar(Long idBarbearia) {
+
+        autorizacaoService.exigirPerfilCliente();
 
         if (idBarbearia == null) {
             throw new IllegalArgumentException(
@@ -89,6 +92,7 @@ public class FavoritoService {
     @Transactional
     public void remover(Long idFavorito) {
 
+        autorizacaoService.exigirPerfilCliente();
         Long idUsuario = autorizacaoService.obterIdUsuarioAutenticado();
 
         Favorito favorito = favoritoRepository.findById(idFavorito)

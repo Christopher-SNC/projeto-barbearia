@@ -193,6 +193,7 @@ public class AgendamentoService {
             Agendamento agendamento,
             List<ItemAgendamento> itens) {
 
+        autorizacaoService.exigirPerfilCliente();
         validarDados(agendamento, itens);
 
         Usuario cliente = usuarioRepository

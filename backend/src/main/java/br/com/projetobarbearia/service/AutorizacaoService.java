@@ -52,6 +52,29 @@ public class AutorizacaoService {
                 .getIdUsuario();
     }
 
+    // O perfil CLIENTE e implicito para usuarios que nao sao barbeiros
+    // funcionarios exclusivos. O mesmo criterio e aplicado no AuthService.
+    public void exigirPerfilCliente() {
+
+        Long idUsuario = obterIdUsuarioAutenticado();
+
+        boolean barbeiroAtivo = barbeiroRepository
+                .findByUsuario_IdUsuarioAndAtivoTrue(idUsuario)
+                .isPresent();
+
+        if (!barbeiroAtivo) {
+            return;
+        }
+
+        boolean proprietarioAtivo = !proprietarioBarbeariaRepository
+                .findByUsuario_IdUsuarioAndAtivoTrue(idUsuario)
+                .isEmpty();
+
+        if (!proprietarioAtivo) {
+            negarAcesso();
+        }
+    }
+
     public void exigirProprioUsuario(
             Long idUsuario) {
 
