@@ -27,6 +27,7 @@ Projeto acadêmico desenvolvido com **Java, Spring Boot, React, TypeScript e Pos
 - Acompanhamento de próximos atendimentos e histórico.
 - Avaliação de serviços concluídos.
 - Lista de barbearias favoritas e consulta de promoções aplicáveis.
+- Página inicial com até três barbearias ativas cadastradas, usando endereço, serviços e avaliações reais da API; sem avaliações fictícias.
 
 ### Proprietários
 
@@ -35,6 +36,7 @@ Projeto acadêmico desenvolvido com **Java, Spring Boot, React, TypeScript e Pos
 - Consulta e gerenciamento de agendamentos.
 - Cadastro de promoções e gerenciamento da galeria de fotos.
 - Consulta de avaliações e configurações da barbearia.
+- Cadastro de múltiplas unidades e seleção da barbearia administrada, com dados separados e seleção mantida após atualização da página.
 
 ### Barbeiros
 
@@ -42,6 +44,7 @@ Projeto acadêmico desenvolvido com **Java, Spring Boot, React, TypeScript e Pos
 - Consulta de serviços vinculados e avaliações.
 - Configuração da disponibilidade.
 - Conclusão de atendimentos e registro de não comparecimento, quando permitidos.
+- Acesso exclusivo à área profissional para barbeiros funcionários; proprietários também cadastrados como barbeiros mantêm os três perfis.
 
 ## Arquitetura
 
@@ -60,14 +63,15 @@ Durante o desenvolvimento, o Vite utiliza um proxy para encaminhar as chamadas `
 
 ## Regras de negócio principais
 
-- Um proprietário pode administrar várias barbearias; um barbeiro está vinculado a uma barbearia.
+- Um proprietário pode administrar várias barbearias e escolher a unidade atual no painel; um barbeiro está vinculado a uma barbearia.
 - Cada serviço possui preço e duração, e cada barbeiro só pode realizar serviços aos quais está vinculado.
 - Agendamentos respeitam o funcionamento da barbearia e a disponibilidade do profissional.
 - Existe um intervalo obrigatório de **15 minutos** entre atendimentos.
 - O backend utiliza transações e bloqueio pessimista durante a reserva para evitar conflitos entre solicitações simultâneas.
 - Agendamentos não podem ser criados no passado; seus valores são calculados pelo servidor.
 - Promoções válidas podem aplicar descontos aos serviços elegíveis.
-- Um atendimento só pode ser concluído após seu término previsto; a ausência só pode ser registrada após seu início previsto.
+- O cancelamento de um agendamento confirmado só é permitido antes do horário de início.
+- Um atendimento só pode ser concluído após seu término previsto; a ausência só pode ser registrada após a tolerância de 15 minutos contada do horário de início.
 - Avaliações dependem de um agendamento concluído, com autorização do cliente correspondente.
 - A ativação de uma barbearia exige proprietário ativo, endereço, funcionamento, barbeiro ativo e serviço ativo.
 - A autorização de operações depende do usuário autenticado e de seus vínculos com os recursos.
@@ -178,7 +182,7 @@ $env:SPRING_DATASOURCE_URL = "jdbc:postgresql://localhost:5432/projeto_barbearia
 mvn test
 ```
 
-**Última execução verificada: 55 testes aprovados, 0 falhas.** A suíte cobre, entre outros pontos, autorização, segurança de rotas HTTP, conflitos de horários, regras temporais, favoritos e preços promocionais.
+**Última execução confirmada: 66 testes aprovados, 0 falhas (11/10/2026, banco `projeto_barbearia_teste`).** A suíte cobre, entre outros pontos, autorização, segurança de rotas HTTP, conflitos de horários, regras temporais, permissões de funcionários, favoritos e preços promocionais. As alterações posteriores na Home e na seleção de múltiplas unidades foram verificadas com lint, build e testes manuais; não foram adicionados testes automatizados de frontend.
 
 ### Teste de concorrência no PostgreSQL
 
@@ -190,7 +194,7 @@ Na pasta `backend`, com o banco isolado preparado:
 mvn "-Dtest=AgendamentoConcorrenciaIT" test
 ```
 
-Esse teste de integração foi aprovado em execução separada e **não integra a contagem dos 55 testes da suíte regular**.
+Esse teste de integração foi aprovado em execução separada e **não integra a contagem dos 66 testes da suíte regular**.
 
 ### Frontend
 
@@ -215,6 +219,10 @@ Os fluxos principais foram verificados manualmente no navegador com contas fict�
 6. Barbeiro registra um não comparecimento.
 7. A conclusão e as notas da avaliação são verificadas diretamente no PostgreSQL.
 8. Agendamentos futuros deixam de exibir ações antecipadas de conclusão e ausência.
+9. Funcionário barbeiro acessa apenas sua área profissional e é redirecionado ao tentar acessar o cadastro de barbearia.
+10. Proprietário que também é barbeiro alterna entre as três áreas na mesma sessão.
+11. Proprietário cadastra uma segunda unidade, alterna entre estabelecimentos sem misturar dados de serviços e agendamentos, e mantém a seleção após atualizar a página.
+12. A página inicial destaca barbearias ativas com informações e avaliações fornecidas pela API; unidades inativas não aparecem.
 
 As telas das áreas pública, de cliente, de proprietário e de barbeiro também foram verificadas visualmente. Os quatro status de agendamento foram exercitados nos testes. Essas verificações não representam cobertura exaustiva de todos os cenários possíveis.
 
@@ -228,9 +236,15 @@ Os testes realizados não substituem uma auditoria de segurança completa para d
 
 Arquivos de imagem locais ficam em `frontend/public/imagens`. O proprietário pode organizar registros de fotos por URL, ativação e ordem. Fotografias públicas ativas são utilizadas nas listagens, nos detalhes das barbearias e nos favoritos.
 
+## Documentação de apresentação e validação
+
+- [Roteiro de apresentação](docs/roteiro-apresentacao.md): sequência sugerida para demonstrar o projeto.
+- [Checklist de validação final](docs/checklist-validacao-final.md): evidências existentes e verificações pendentes para a entrega.
+- [Fluxo Git](docs/fluxo-git.md): organização das branches e colaboração.
+
 ## Estado do projeto
 
-Os principais fluxos estão implementados e foram validados localmente. A aplicação está funcional para demonstração acadêmica e apresentação em portfólio.
+Os principais fluxos estão implementados e foram validados localmente. A aplicação está funcional para demonstração acadêmica e apresentação em portfólio. Ainda é recomendada uma revisão responsiva final e um último teste de regressão no banco isolado, conforme o checklist acima.
 
 Antes de uma implantação pública, ainda são recomendados testes mais amplos de segurança e carga, revisão de casos extremos, configuração de hospedagem, monitoramento e backups.
 
