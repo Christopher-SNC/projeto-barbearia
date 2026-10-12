@@ -75,6 +75,7 @@ Durante o desenvolvimento, o Vite utiliza um proxy para encaminhar as chamadas `
 - Avaliações dependem de um agendamento concluído, com autorização do cliente correspondente.
 - A ativação de uma barbearia exige proprietário ativo, endereço, funcionamento, barbeiro ativo e serviço ativo.
 - A autorização de operações depende do usuário autenticado e de seus vínculos com os recursos.
+- O barbeiro funcionário, sem perfil de cliente, não pode realizar operações de cliente pela API (criação de agendamentos, favoritos e avaliações). Um proprietário também vinculado como barbeiro conserva seus três perfis.
 
 ### Status de agendamento
 
@@ -182,7 +183,7 @@ $env:SPRING_DATASOURCE_URL = "jdbc:postgresql://localhost:5432/projeto_barbearia
 mvn test
 ```
 
-**Última execução confirmada: 66 testes aprovados, 0 falhas (11/10/2026, banco `projeto_barbearia_teste`).** A suíte cobre, entre outros pontos, autorização, segurança de rotas HTTP, conflitos de horários, regras temporais, permissões de funcionários, favoritos e preços promocionais. As alterações posteriores na Home e na seleção de múltiplas unidades foram verificadas com lint, build e testes manuais; não foram adicionados testes automatizados de frontend.
+**Última execução confirmada: 70 testes aprovados, 0 falhas (12/10/2026, banco `projeto_barbearia_teste`).** A suíte cobre, entre outros pontos, autorização, segurança de rotas HTTP, conflitos de horários, regras temporais, permissões de funcionários, favoritos e preços promocionais. As alterações posteriores na Home e na seleção de múltiplas unidades foram verificadas com lint, build e testes manuais; não foram adicionados testes automatizados de frontend.
 
 ### Teste de concorrência no PostgreSQL
 
@@ -194,7 +195,7 @@ Na pasta `backend`, com o banco isolado preparado:
 mvn "-Dtest=AgendamentoConcorrenciaIT" test
 ```
 
-Esse teste de integração foi aprovado em execução separada e **não integra a contagem dos 66 testes da suíte regular**.
+Esse teste de integração foi aprovado em execução separada e **não integra a contagem dos 70 testes da suíte regular**.
 
 ### Frontend
 
@@ -224,7 +225,9 @@ Os fluxos principais foram verificados manualmente no navegador com contas fict�
 11. Proprietário cadastra uma segunda unidade, alterna entre estabelecimentos sem misturar dados de serviços e agendamentos, e mantém a seleção após atualizar a página.
 12. A página inicial destaca barbearias ativas com informações e avaliações fornecidas pela API; unidades inativas não aparecem.
 
-As telas das áreas pública, de cliente, de proprietário e de barbeiro também foram verificadas visualmente. Os quatro status de agendamento foram exercitados nos testes. Essas verificações não representam cobertura exaustiva de todos os cenários possíveis.
+As telas das áreas pública, de cliente, de proprietário e de barbeiro também foram verificadas visualmente. A revisão mobile incluiu Home, listagem, detalhes e os três dashboards, em largura de 390 px, incluindo captura de página completa. Os quatro status de agendamento foram exercitados nos testes. Essas verificações não representam cobertura exaustiva de todos os cenários possíveis.
+
+Após a correção da autorização, o endpoint de leitura `/api/favoritos` negou a consulta à conta de funcionário barbeiro e retornou uma lista vazia para a conta de proprietário que também possui perfil de cliente. Os códigos HTTP exatos não foram registrados nas capturas compartilhadas; os testes automatizados de autorização também foram aprovados.
 
 ## Segurança
 
@@ -244,7 +247,7 @@ Arquivos de imagem locais ficam em `frontend/public/imagens`. O proprietário po
 
 ## Estado do projeto
 
-Os principais fluxos estão implementados e foram validados localmente. A aplicação está funcional para demonstração acadêmica e apresentação em portfólio. Ainda é recomendada uma revisão responsiva final e um último teste de regressão no banco isolado, conforme o checklist acima.
+Os principais fluxos estão implementados e foram validados localmente. A aplicação está funcional para demonstração acadêmica e apresentação em portfólio. A revisão mobile de seis áreas e a suíte Java de 70 testes foram concluídas. Permanecem verificações complementares no checklist, incluindo o fluxo completo de ativação de uma segunda unidade, estados de erro, acesso por teclado e reprodução a partir de um clone limpo.
 
 Antes de uma implantação pública, ainda são recomendados testes mais amplos de segurança e carga, revisão de casos extremos, configuração de hospedagem, monitoramento e backups.
 
