@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -210,5 +211,47 @@ class AutorizacaoPerfisTests {
                         .exigirPermissaoGerenciarDisponibilidade(
                                 barbeiro(true))
         );
+    }
+
+    @Test
+    void clienteComumPodeUsarOperacoesDeCliente() {
+        autenticar(10L);
+
+        assertDoesNotThrow(
+                () -> autorizacaoService.exigirPerfilCliente());
+    }
+
+    @Test
+    void funcionarioBarbeiroNaoPodeUsarOperacoesDeCliente() {
+        autenticar(30L);
+
+        when(barbeiroRepository.findByUsuario_IdUsuarioAndAtivoTrue(30L))
+                .thenReturn(Optional.of(barbeiro(true)));
+
+        assertThrows(
+                AccessDeniedException.class,
+                () -> autorizacaoService.exigirPerfilCliente());
+    }
+
+    @Test
+    void proprietarioQueTambemEBarbeiroMantemPerfilCliente() {
+        autenticar(60L);
+
+        when(barbeiroRepository.findByUsuario_IdUsuarioAndAtivoTrue(60L))
+                .thenReturn(Optional.of(barbeiro(true)));
+        when(proprietarioRepository.findByUsuario_IdUsuarioAndAtivoTrue(60L))
+                .thenReturn(List.of(vinculo(20L)));
+
+        assertDoesNotThrow(
+                () -> autorizacaoService.exigirPerfilCliente());
+    }
+
+    @Test
+    void perfilClienteExigeSessaoAutenticada() {
+        SecurityContextHolder.clearContext();
+
+        assertThrows(
+                AccessDeniedException.class,
+                () -> autorizacaoService.exigirPerfilCliente());
     }
 }
