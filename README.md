@@ -239,6 +239,32 @@ Os testes realizados não substituem uma auditoria de segurança completa para d
 
 Arquivos de imagem locais ficam em `frontend/public/imagens`. O proprietário pode organizar registros de fotos por URL, ativação e ordem. Fotografias públicas ativas são utilizadas nas listagens, nos detalhes das barbearias e nos favoritos.
 
+## Capturas do sistema
+
+Telas reais da aplicação local, utilizando **contas e dados fictícios** no ambiente isolado de testes. Clique nas imagens para ampliá-las. As capturas registram o estado da aplicação durante os testes de outubro de 2026; os registros exibidos podem mudar.
+
+| Página inicial e destaques da API | Agendamento de serviço |
+| --- | --- |
+| <a href="docs/imagens/screenshots/home-desktop.png"><img src="docs/imagens/screenshots/home-desktop.png" alt="Página inicial da plataforma com barbearia de demonstração" width="480" /></a> | <a href="docs/imagens/screenshots/agendamento-desktop.png"><img src="docs/imagens/screenshots/agendamento-desktop.png" alt="Fluxo de agendamento com confirmação de teste" width="480" /></a> |
+
+| Painel administrativo do proprietário |
+| --- |
+| <a href="docs/imagens/screenshots/proprietario-desktop.png"><img src="docs/imagens/screenshots/proprietario-desktop.png" alt="Dashboard administrativo com agendamentos, faturamento e avaliações" width="560" /></a> |
+
+<details>
+<summary><strong>Ver capturas da versão para celular</strong></summary>
+
+| Início | Busca | Detalhes |
+| --- | --- | --- |
+| <a href="docs/imagens/screenshots/home-mobile.png"><img src="docs/imagens/screenshots/home-mobile.png" alt="Página inicial em celular" width="210" /></a> | <a href="docs/imagens/screenshots/busca-mobile.png"><img src="docs/imagens/screenshots/busca-mobile.png" alt="Busca pública em celular" width="210" /></a> | <a href="docs/imagens/screenshots/detalhes-mobile.png"><img src="docs/imagens/screenshots/detalhes-mobile.png" alt="Detalhes da barbearia em celular" width="210" /></a> |
+
+| Cliente | Proprietário | Barbeiro |
+| --- | --- | --- |
+| <a href="docs/imagens/screenshots/cliente-mobile.png"><img src="docs/imagens/screenshots/cliente-mobile.png" alt="Resumo do painel do cliente em celular" width="210" /></a> | <a href="docs/imagens/screenshots/proprietario-mobile.png"><img src="docs/imagens/screenshots/proprietario-mobile.png" alt="Painel do proprietário em celular" width="210" /></a> | <a href="docs/imagens/screenshots/barbeiro-mobile.png"><img src="docs/imagens/screenshots/barbeiro-mobile.png" alt="Painel do barbeiro em celular" width="210" /></a> |
+
+</details>
+
+As imagens foram selecionadas para não incluir senhas, tokens ou e-mails das contas fictícias. A captura da área do cliente foi limitada à parte superior para ocultar os dados da conta. Nenhum dado foi alterado no PostgreSQL para gerar esta galeria.
 ## Documentação de apresentação e validação
 
 - [Roteiro de apresentação](docs/roteiro-apresentacao.md): sequência sugerida para demonstrar o projeto.
@@ -247,7 +273,7 @@ Arquivos de imagem locais ficam em `frontend/public/imagens`. O proprietário po
 
 ## Estado do projeto
 
-Os principais fluxos estão implementados e foram validados localmente. A aplicação está funcional para demonstração acadêmica e apresentação em portfólio. A revisão mobile de seis áreas e a suíte Java de 70 testes foram concluídas. Permanecem verificações complementares no checklist, incluindo o fluxo completo de ativação de uma segunda unidade, estados de erro, acesso por teclado e reprodução a partir de um clone limpo.
+Os principais fluxos estão implementados e foram validados localmente. A aplicação está funcional para demonstração acadêmica e apresentação em portfólio. A revisão mobile de seis áreas e a suíte Java de 70 testes foram concluídas. A ativação completa de uma segunda unidade, um agendamento nela e o isolamento de reservas entre unidades também foram verificados no banco de testes. A tela de login foi conferida em celular, inclusive com Tab, Shift+Tab e senha incorreta (401). Permanecem verificações complementares no checklist, como cenários adicionais de erro, navegação por teclado em outros formulários e reprodução a partir de um clone limpo.
 
 Antes de uma implantação pública, ainda são recomendados testes mais amplos de segurança e carga, revisão de casos extremos, configuração de hospedagem, monitoramento e backups.
 
