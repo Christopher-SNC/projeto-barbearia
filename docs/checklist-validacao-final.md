@@ -2,11 +2,11 @@
 
 Este documento separa **verificações já confirmadas** de **testes finais ainda pendentes**. Não marque um cenário como aprovado somente porque a tela existe.
 
-## Evidências confirmadas até 12/10/2026
+## Evidências confirmadas até 12/10/2026 (70 testes)
 
 - [x] Banco PostgreSQL e backend funcionando no ambiente isolado de testes (`8081` / `projeto_barbearia_teste`).
-- [x] Suíte Java regular: **66 testes aprovados, 0 falhas**, na execução informada em 11/10/2026.
-- [x] ESLint e build de produção do frontend aprovados após a funcionalidade de destaques reais.
+- [x] Suíte Java regular: **70 testes aprovados, 0 falhas**, em 12/10/2026, apontando para `projeto_barbearia_teste`.
+- [x] ESLint e build de produção do frontend aprovados após a correção mobile da Home (12/10/2026).
 - [x] Fluxo demonstrado: cliente agenda, proprietário/barbeiro visualizam, conclusão, avaliação, cancelamento e ausência.
 - [x] Funcionário barbeiro sem área de cliente ou proprietário; rota de cadastro redireciona ao painel do barbeiro.
 - [x] Proprietário que também é barbeiro com acesso às três áreas.
@@ -15,14 +15,16 @@ Este documento separa **verificações já confirmadas** de **testes finais aind
 - [x] Unidade selecionada mantida após atualizar a página.
 - [x] Home com destaque dinâmico de barbearia ativa, avaliação da API e navegação para os detalhes; unidade inativa fora dos destaques.
 - [x] Código das funcionalidades recentes publicado na branch `main` e árvore Git limpa, conforme logs compartilhados.
+- [x] Revisão visual mobile (390 px): Home, listagem de barbearias, detalhes, dashboard do cliente, dashboard do proprietário e dashboard do barbeiro. A captura completa da Home confirmou que os textos não estavam cortados.
+- [x] Teste de leitura de `/api/favoritos`: a conta de barbeiro funcionário recebeu acesso negado e o proprietário com perfil de cliente recebeu uma lista vazia. Os códigos HTTP devem ser conferidos separadamente se necessários como evidência.
+- [x] Regras de cliente da API reforçadas (agendamentos, favoritos e avaliações), com quatro novos testes aprovados.
 
 ## Verificações pendentes antes de encerrar a versão acadêmica
 
-- [ ] Executar novamente `mvn test` apontando explicitamente para `projeto_barbearia_teste` e registrar o resultado final. O teste de concorrência PostgreSQL pode ser executado separadamente se o ambiente estiver preparado.
-- [ ] Executar `npm run lint` e `npm run build` na versão final e registrar as saídas.
-- [ ] Conferir Home, listagem, detalhes, login e áreas de cliente, proprietário e barbeiro em largura de celular e de desktop.
+- [ ] Conferir especificamente a tela de login em celular e uma última navegação de regressão no desktop, após os commits finais.
+- [ ] Reexecutar, se necessário, o teste de concorrência PostgreSQL em separado e arquivar o resultado final.
 - [ ] Confirmar estados de carregamento, vazio e erro da Home e da busca pública.
-- [ ] Validar manualmente que usuário sem autenticação não modifica dados privados e que funcionário barbeiro não cadastra barbearia pela API.
+- [ ] Confirmar em testes HTTP finais os códigos 401/403/200 e os bloqueios administrativos entre contas, sem realizar gravações no banco principal.
 - [ ] Validar o fluxo completo de uma nova unidade (cadastrar serviços, barbeiro, disponibilidade, horários e ativar) somente no banco de testes; cuidado para não modificar a unidade original.
 - [ ] Fazer checagem de navegação com teclado e textos dos formulários essenciais.
 - [ ] Capturar e selecionar imagens sem dados pessoais para documentar o portfólio/README.

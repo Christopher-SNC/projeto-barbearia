@@ -46,8 +46,9 @@ Demonstrar uma plataforma full-stack para descoberta de barbearias, agendamento 
 
 - Explique React + TypeScript, API Java/Spring Boot, Spring Security e persistência PostgreSQL.
 - Mostre o histórico de commits no GitHub e a estrutura `backend/`, `frontend/`, `database/` e `docs/`.
-- Cite a última suíte Java confirmada: **66 testes aprovados**, além de lint e build frontend. O teste de concorrência é separado da suíte regular.
+- Cite a última suíte Java confirmada: **70 testes aprovados, 0 falhas**, além de lint e build frontend. O teste de concorrência é separado da suíte regular.
 - Explique que o sistema usa sessões autenticadas, proteção CSRF e verificações de autorização no backend.
+- Cite o teste de API: um barbeiro funcionário não consulta favoritos como cliente, enquanto um proprietário com perfil de cliente consegue consultar. Evite mostrar cookies de sessão ou senhas.
 
 ## Encerramento
 
