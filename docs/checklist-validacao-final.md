@@ -21,13 +21,15 @@ Este documento separa **verificações já confirmadas** de **testes finais aind
 
 ## Verificações pendentes antes de encerrar a versão acadêmica
 
-- [ ] Conferir especificamente a tela de login em celular e uma última navegação de regressão no desktop, após os commits finais.
+- [x] Tela de login em celular (390 px), campos e link visíveis; Tab e Shift+Tab funcionam. Tentativa de senha incorreta recusada com 401 e mensagem apropriada.
+- [ ] Fazer uma ultima navegacao de regressao no desktop depois dos commits finais. - [x] Segunda unidade ativada no banco de testes com horario aberto, servico, barbeiro e disponibilidade; agendamento #6 de 19/10/2026 as 09:00 confirmado e ausente da lista da primeira unidade. - [x] Navegacao por teclado verificada na tela de login.
+- [ ] Conferir foco e textos de outros formularios essenciais. - [x] Selecionadas nove capturas de demonstracao para README e portfolio, sem senhas, tokens ou e-mails; screenshot do cliente recortado antes da secao Dados da conta.
 - [ ] Reexecutar, se necessário, o teste de concorrência PostgreSQL em separado e arquivar o resultado final.
 - [ ] Confirmar estados de carregamento, vazio e erro da Home e da busca pública.
 - [ ] Confirmar em testes HTTP finais os códigos 401/403/200 e os bloqueios administrativos entre contas, sem realizar gravações no banco principal.
-- [ ] Validar o fluxo completo de uma nova unidade (cadastrar serviços, barbeiro, disponibilidade, horários e ativar) somente no banco de testes; cuidado para não modificar a unidade original.
-- [ ] Fazer checagem de navegação com teclado e textos dos formulários essenciais.
-- [ ] Capturar e selecionar imagens sem dados pessoais para documentar o portfólio/README.
+
+
+
 - [ ] Revisar instruções de configuração a partir de um clone limpo ou ambiente separado, sem expor credenciais.
 
 ## Comandos de validação (PowerShell)
