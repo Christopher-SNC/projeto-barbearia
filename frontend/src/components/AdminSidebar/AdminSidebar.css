@@ -65,6 +65,47 @@
     background-color: #242422;
 }
 
+.admin-store__label {
+    display: grid;
+    gap: 6px;
+    color: var(--color-graphite-300);
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.admin-store__select {
+    width: 100%;
+    min-width: 0;
+    padding: 9px 8px;
+    border: 1px solid #595650;
+    border-radius: 8px;
+    background: #302e2b;
+    color: var(--color-white);
+    font: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+}
+
+.admin-store__select:focus-visible,
+.admin-store__add:focus-visible {
+    outline: 2px solid var(--color-gold-500);
+    outline-offset: 2px;
+}
+
+.admin-store__add {
+    margin-top: 5px;
+    color: #dfb16d;
+    font-size: 0.69rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
+}
+
+.admin-store__add:hover {
+    color: var(--color-white);
+    text-decoration: underline;
+}
+
 .admin-store strong {
     color: var(--color-white);
 

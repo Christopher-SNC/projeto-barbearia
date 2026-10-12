@@ -3,6 +3,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import useAuth from '../../hooks/useAuth'
+import { salvarBarbeariaSelecionada } from '../../utils/barbeariaSelecionada'
 import { cadastrarBarbearia } from '../../services/barbeariaService'
 import { cadastrarEndereco } from '../../services/enderecoService'
 import { cadastrarBarbeiro } from '../../services/barbeiroService'
@@ -101,7 +102,11 @@ function CadastrarBarbearia() {
         setBarbeiroVinculado(true)
       }
 
-      await atualizarSessao()
+      const sessao = await atualizarSessao()
+      if (!sessao.idsBarbeariasProprietario.includes(idBarbearia)) {
+        throw new Error('A nova barbearia não apareceu na sessão atualizada.')
+      }
+      salvarBarbeariaSelecionada(sessao.idUsuario, idBarbearia)
       navigate('/proprietario/dados', { replace: true })
     } catch (falha) {
       console.error(falha)
