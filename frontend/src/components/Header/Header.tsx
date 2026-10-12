@@ -109,7 +109,10 @@ function Header() {
                                     </>
                                 )}
                                 {usuario.perfis.includes('PROPRIETARIO') && (
-                                    <NavLink className="site-header__link" to="/proprietario" onClick={fecharMenu}>Painel do proprietário</NavLink>
+                                    <>
+                                        <NavLink className="site-header__link" to="/proprietario" onClick={fecharMenu}>Painel do proprietário</NavLink>
+                                        <NavLink className="site-header__link" to="/cadastrar-barbearia" onClick={fecharMenu}>Cadastrar outra barbearia</NavLink>
+                                    </>
                                 )}
                                 {usuario.perfis.includes('BARBEIRO') && (
                                     <NavLink className="site-header__link" to="/barbeiro" onClick={fecharMenu}>Área do barbeiro</NavLink>

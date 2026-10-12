@@ -6,7 +6,7 @@ import {
 
 import useAuth from '../../hooks/useAuth'
 
-import useBarbeariaProprietario from '../../hooks/useBarbeariaProprietario'
+import useBarbeariaAtual from '../../hooks/useBarbeariaAtual'
 import { buscarBarbeariaPorId } from '../../services/barbeariaService'
 
 import './AdminSidebar.css'
@@ -60,36 +60,38 @@ const links = [
 ]
 
 function AdminSidebar() {
-    const idBarbearia = useBarbeariaProprietario()
-
+    const { idBarbearia, selecionarBarbearia } = useBarbeariaAtual()
     const [menuAberto, setMenuAberto] = useState(false)
-
-    const [nomeBarbearia, setNomeBarbearia] =
-        useState('Barbearia')
+    const [nomes, setNomes] = useState<Record<number, string>>({})
 
     const navigate = useNavigate()
     const { usuario, sair } = useAuth()
+    const idsBarbearias = usuario?.idsBarbeariasProprietario
 
     useEffect(() => {
-        let componenteAtivo = true
+        let ativo = true
+        const ids = idsBarbearias ?? []
 
-        buscarBarbeariaPorId(idBarbearia)
-            .then((barbearia) => {
-                if (componenteAtivo) {
-                    setNomeBarbearia(barbearia.nome)
-                }
-            })
-            .catch((error) => {
-                console.error(
-                    'Não foi possível carregar o nome da barbearia.',
-                    error,
-                )
-            })
+        void Promise.all(ids.map(async (id) => {
+            try {
+                const barbearia = await buscarBarbeariaPorId(id)
+                return [id, barbearia.nome] as const
+            } catch (error) {
+                console.error('Não foi possível carregar a barbearia.', error)
+                return [id, `Barbearia #${id}`] as const
+            }
+        })).then((itens) => {
+            if (ativo) setNomes(Object.fromEntries(itens))
+        })
 
-        return () => {
-            componenteAtivo = false
-        }
-    }, [idBarbearia])
+        return () => { ativo = false }
+    }, [idsBarbearias])
+
+    function trocarBarbearia(id: number) {
+        selecionarBarbearia(id)
+        fecharMenu()
+        navigate('/proprietario')
+    }
 
     function fecharMenu() {
         setMenuAberto(false)
@@ -105,7 +107,44 @@ function AdminSidebar() {
         })
     }
 
-    const navigation = (
+    const seletorUnidade = (
+    <div className="admin-store">
+        {(idsBarbearias?.length ?? 0) > 1 ? (
+            <>
+                <label className="admin-store__label">
+                    Barbearia selecionada
+                    <select
+                        className="admin-store__select"
+                        aria-label="Selecionar barbearia para administrar"
+                        value={idBarbearia}
+                        onChange={(event) => trocarBarbearia(Number(event.target.value))}
+                    >
+                        {idsBarbearias?.map((id) => (
+                            <option key={id} value={id}>
+                                {nomes[id] ?? `Barbearia #${id}`}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+                <span>Proprietário</span>
+            </>
+        ) : (
+            <>
+                <strong>{nomes[idBarbearia] ?? `Barbearia #${idBarbearia}`}</strong>
+                <span>Proprietário</span>
+            </>
+        )}
+        <NavLink
+            to="/cadastrar-barbearia"
+            className="admin-store__add"
+            onClick={fecharMenu}
+        >
+            + Cadastrar outra barbearia
+        </NavLink>
+    </div>
+)
+
+const navigation = (
         <>
             <div className="admin-navigation">
                 {links.map((link) => (
@@ -172,10 +211,7 @@ function AdminSidebar() {
                     <span>BARBER ADMIN</span>
                 </div>
 
-                <div className="admin-store">
-                    <strong>{nomeBarbearia}</strong>
-                    <span>Proprietário</span>
-                </div>
+                {seletorUnidade}
 
                 {navigation}
             </aside>
@@ -209,10 +245,7 @@ function AdminSidebar() {
 
             {menuAberto && (
                 <div className="admin-mobile-menu">
-                    <div className="admin-store admin-store--mobile">
-                        <strong>{nomeBarbearia}</strong>
-                        <span>Proprietário</span>
-                    </div>
+                    {seletorUnidade}
 
                     {navigation}
                 </div>
