@@ -22,6 +22,9 @@ Este documento separa **verificações já confirmadas** de **testes finais aind
 - [x] Segunda unidade ativada no banco de testes; agendamento #6 confirmado e isolado da primeira unidade.
 - [x] Nove capturas adicionadas ao README, sem senhas, tokens ou e-mails visíveis; painel do cliente recortado.
 
+- [x] Limpeza parcial controlada de 17 registros da segunda unidade fictícia (ID 4), somente em `projeto_barbearia_teste`; unidades #2 e #3 preservadas.
+- [x] Novo backup local antes da limpeza e verificações de integridade aprovadas; restauração integral do backup ainda não testada.
+- [x] Conferência pós-limpeza na interface: listagem pública e painel administrativo da Barbearia Demonstração E2E preservados.
 ## Verificações pendentes antes de encerrar a versão acadêmica
 
 - [ ] Fazer uma última navegação de regressão no desktop depois dos commits finais.

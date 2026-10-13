@@ -270,6 +270,7 @@ As imagens foram selecionadas para não incluir senhas, tokens ou e-mails das co
 
 - [Roteiro de apresentação](docs/roteiro-apresentacao.md): sequência sugerida para demonstrar o projeto.
 - [Checklist de validação final](docs/checklist-validacao-final.md): evidências existentes e verificações pendentes para a entrega.
+- [Relatório final da versão acadêmica](docs/relatorio-final.md): entregas, testes, limitações e próximos passos.
 - [Fluxo Git](docs/fluxo-git.md): organização das branches e colaboração.
 
 ## Estado do projeto
