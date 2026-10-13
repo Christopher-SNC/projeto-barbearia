@@ -32,8 +32,8 @@ Demonstrar uma plataforma full-stack para descoberta de barbearias, agendamento 
 
 - Abra `/proprietario` com uma conta de proprietário de demonstração.
 - Mostre agenda, agendamentos, serviços, profissionais, promoções, fotos e ativação da barbearia.
-- Use o seletor de unidades: compare uma barbearia ativa com a segunda unidade fictícia inativa.
-- Mostre que os serviços e agendamentos são separados por unidade e que a seleção permanece após F5.
+- Mostre a barbearia de demonstração ativa e explique que a administração de múltiplas unidades foi validada anteriormente com uma unidade fictícia já removida do banco de testes.
+- Explique que o isolamento de serviços e reservas por unidade e a persistência da seleção após F5 foram demonstrados antes da limpeza.
 - Explique a regra de ativação: proprietário, endereço, funcionamento, barbeiro e serviço ativos.
 
 ## 4. Área do barbeiro — cerca de 1 minuto
@@ -54,6 +54,8 @@ Demonstrar uma plataforma full-stack para descoberta de barbearias, agendamento 
 
 A aplicação é uma demonstração local funcional para avaliação acadêmica e portfólio. Publicá-la como serviço aberto exigiria implantação, monitoramento, backups e testes adicionais de segurança/carga.
 
-## Imagens recomendadas para o README ou portfólio
+## Imagens disponíveis para apresentação e portfólio
 
-Quando for produzir as capturas, evite dados pessoais, e-mails, senhas e informações sensíveis. Sugestões de telas: Home com destaque real, detalhes da barbearia, agendamento do cliente, dashboard administrativo, seletor com duas unidades e dashboard do barbeiro. As capturas ainda precisam ser selecionadas e adicionadas ao repositório.
+O README já apresenta nove capturas selecionadas das áreas pública, cliente, proprietário e barbeiro, incluindo versões desktop e mobile. As imagens foram selecionadas para não exibir credenciais e estão em `docs/imagens/screenshots/`.
+
+A demonstração da segunda unidade foi validada antes da limpeza controlada do banco de testes; não dependa de sua existência atual durante a apresentação.
